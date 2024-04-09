@@ -215,9 +215,7 @@ $republish_content = apply_filters( 'republication_tracker_tool_republish_articl
 						</section>
 					<?php endif; ?>
 					<section class="republish-article__info">
-						<textarea rows="19" readonly aria-readonly="true" aria-label="<?php esc_attr_e( 'Republish this article', 'republication-tracker-tool' ); ?>">
-							<?php echo esc_html( $republish_content ); ?>
-						</textarea>
+						<textarea rows="19" readonly aria-readonly="true" aria-label="<?php esc_attr_e( 'Republish this article', 'republication-tracker-tool' ); ?>"><?php echo esc_html( $republish_content ); ?></textarea>
 						<button class="republish-article__copy-button" aria-label="<?php esc_attr_e( 'Copy to clipboard', 'republication-tracker-tool' ); ?>">
 							<?php esc_html_e( 'Copy to clipboard', 'republication-tracker-tool' ); ?>
 						</button>
