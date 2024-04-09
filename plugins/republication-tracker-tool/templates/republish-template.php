@@ -209,9 +209,11 @@ $republish_content = apply_filters( 'republication_tracker_tool_republish_articl
 				<h3><?php esc_html_e( 'Republish this article', 'republication-tracker-tool' ); ?></h3>
 				<h1><?php echo esc_html( $post_object->post_title ); ?></h1>
 				<div class="republish-article__content">
-					<section class="republish-article__license">
-						<?php echo wp_kses_post( $license_statement ); ?>
-					</section>
+					<?php if ( ! empty( $license_statement ) ) : ?>
+						<section class="republish-article__license">
+							<?php echo wp_kses_post( $license_statement ); ?>
+						</section>
+					<?php endif; ?>
 					<section class="republish-article__info">
 						<textarea rows="19" readonly aria-readonly="true" aria-label="<?php esc_attr_e( 'Republish this article', 'republication-tracker-tool' ); ?>">
 							<?php echo esc_html( $republish_content ); ?>
