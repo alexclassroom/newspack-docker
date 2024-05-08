@@ -20,9 +20,30 @@ steps:
       command: |
         sudo apt-get update && sudo apt-get install -y subversion default-mysql-client
   - run:
-      name: Run Tests
+      name: Run Tests with Coverage
       command: |
         composer update
         rm -rf $WP_TESTS_DIR $WP_CORE_DIR
         bash bin/install-wp-tests.sh wordpress_test root '' 127.0.0.1 latest
-        ./vendor/bin/phpunit
+        # https://circleci.com/docs/code-coverage/#php
+        XDEBUG_MODE=coverage phpdbg -qrr vendor/bin/phpunit --coverage-clover coverage.xml
+  - run:
+      name: Upload Test Results to Codecov
+      command: |
+        if [[ -n $CODECOV_TOKEN ]]; then
+          # download Codecov CLI
+          curl -Os https://cli.codecov.io/latest/linux/codecov
+
+          # integrity check
+          curl https://keybase.io/codecovsecurity/pgp_keys.asc | gpg --no-default-keyring --keyring trustedkeys.gpg --import # One-time step
+          curl -Os https://cli.codecov.io/latest/linux/codecov
+          curl -Os https://cli.codecov.io/latest/linux/codecov.SHA256SUM
+          curl -Os https://cli.codecov.io/latest/linux/codecov.SHA256SUM.sig
+          gpgv codecov.SHA256SUM.sig codecov.SHA256SUM
+
+          shasum -a 256 -c codecov.SHA256SUM
+          sudo chmod +x codecov
+          ./codecov upload-process -t $CODECOV_TOKEN
+        else
+          echo "CODECOV_TOKEN is not set. Skipping upload to Codecov."
+        fi
