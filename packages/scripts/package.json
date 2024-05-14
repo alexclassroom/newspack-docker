@@ -65,6 +65,15 @@
   "scripts": {
     "semantic-release": "semantic-release"
   },
+  "release": {
+    "branches": [
+      "trunk",
+      {
+        "name": "alpha",
+        "prerelease": true
+      }
+    ]
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/Automattic/newspack-scripts.git"
