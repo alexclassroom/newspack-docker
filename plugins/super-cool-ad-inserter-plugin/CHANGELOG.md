@@ -1,3 +1,10 @@
+## [0.7.1](https://github.com/Automattic/super-cool-ad-inserter-plugin/compare/v0.7.0...v0.7.1) (2024-07-01)
+
+
+### Bug Fixes
+
+* update newspack-scripts to v5.5.1 ([#188](https://github.com/Automattic/super-cool-ad-inserter-plugin/issues/188)) ([76559ec](https://github.com/Automattic/super-cool-ad-inserter-plugin/commit/76559ec2b07f774ccbce26b719020d26d6d61058))
+
 # [0.7.0](https://github.com/Automattic/super-cool-ad-inserter-plugin/compare/v0.6.3...v0.7.0) (2024-04-24)
 
 
