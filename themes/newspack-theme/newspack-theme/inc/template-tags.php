@@ -207,7 +207,7 @@ if ( ! function_exists( 'newspack_author_get_social_links' ) ) :
 		foreach ( $social_profiles as $profile ) {
 			if ( '' !== get_the_author_meta( $profile, $author_id ) ) {
 				if ( 'twitter' === $profile ) {
-					$links .= '<li class="twitter"><a href="https://twitter.com/' . esc_attr( get_the_author_meta( $profile, $author_id ) ) . '" target="_blank">' . newspack_get_social_icon_svg( $profile, $size, $profile ) . '</a></li>';
+					$links .= '<li class="twitter"><a href="https://x.com/' . esc_attr( get_the_author_meta( $profile, $author_id ) ) . '" target="_blank">' . newspack_get_social_icon_svg( 'x', $size, 'x' ) . '</a></li>';
 				} else {
 					$links .= '<li class="' . esc_attr( $profile ) . '"><a href="' . esc_url( get_the_author_meta( $profile, $author_id ) ) . '" target="_blank">' . newspack_get_social_icon_svg( $profile, $size, $profile ) . '</a></li>';
 				}
