@@ -1,3 +1,11 @@
+# [2.3.0-alpha.3](https://github.com/Automattic/newspack-theme/compare/v2.3.0-alpha.2...v2.3.0-alpha.3) (2024-11-21)
+
+
+### Features
+
+* add Bluesky to the profile fields ([#2413](https://github.com/Automattic/newspack-theme/issues/2413)) ([a4eb21b](https://github.com/Automattic/newspack-theme/commit/a4eb21b46e15c54c35df6d87bfcca95cb523145e))
+* add Bluesky to the Social Links menu ([#2412](https://github.com/Automattic/newspack-theme/issues/2412)) ([e32f604](https://github.com/Automattic/newspack-theme/commit/e32f6046677945f7b4d1d1c6be2c38945b37a9c3))
+
 # [2.3.0-alpha.2](https://github.com/Automattic/newspack-theme/compare/v2.3.0-alpha.1...v2.3.0-alpha.2) (2024-11-19)
 
 
