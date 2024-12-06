@@ -745,8 +745,9 @@ final class Modal_Checkout {
 			'stripe',
 			'select2',
 			'selectWoo',
-			// Metorik.
-			'metorik',
+			'metorik', // Metorik.
+			'ppcp', // PayPal Payments.
+			'gateway',  // PayPal Payments.
 		];
 
 		/**
