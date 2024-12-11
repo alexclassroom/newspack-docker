@@ -21,12 +21,6 @@ class Newspack_Blocks {
 	];
 
 	/**
-	 * Regex pattern we can use to search for and remove custom SQL statements.
-	 * Custom statements added by this class are wrapped by `newspack-blocks` comments.
-	 */
-	const SQL_PATTERN = '/\/\* newspack-blocks \*\/(.|\n)*\/\* \/newspack-blocks \*\//';
-
-	/**
 	 * Add hooks and filters.
 	 */
 	public static function init() {
