@@ -1,3 +1,10 @@
+## [2.4.1-alpha.1](https://github.com/Automattic/newspack-theme/compare/v2.4.0...v2.4.1-alpha.1) (2024-12-12)
+
+
+### Bug Fixes
+
+* make captions styles more specific ([#2423](https://github.com/Automattic/newspack-theme/issues/2423)) ([b6f3c5b](https://github.com/Automattic/newspack-theme/commit/b6f3c5b76844171b26b25670571adc9614f77301))
+
 # [2.4.0](https://github.com/Automattic/newspack-theme/compare/v2.3.0...v2.4.0) (2024-12-09)
 
 
