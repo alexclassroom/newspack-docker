@@ -3,6 +3,7 @@
 
 ### Bug Fixes
 
+* make captions styles more specific ([#2423](https://github.com/Automattic/newspack-theme/issues/2423)) ([b6f3c5b](https://github.com/Automattic/newspack-theme/commit/b6f3c5b76844171b26b25670571adc9614f77301))
 * workaround for block editor crash ([53cd463](https://github.com/Automattic/newspack-theme/commit/53cd4638d9ce269c3158b3aa1b02c3157403568c))
 
 # [2.4.0](https://github.com/Automattic/newspack-theme/compare/v2.3.0...v2.4.0) (2024-12-09)
