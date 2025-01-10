@@ -62,12 +62,12 @@
 			}
 
 			&:not(
-				:has(
-					.wp-block-paragraph[data-empty="true"]
-					+ .block-list-appender
-				)
-			) {
-				.block-list-appender {
+			:has(
+				.wp-block-paragraph[data-empty="true"]
+				+ .block-list-appender
+			)
+		) {
+			.block-list-appender {
 					display: flex;
 					flex-direction: row-reverse;
 					margin: 0;
