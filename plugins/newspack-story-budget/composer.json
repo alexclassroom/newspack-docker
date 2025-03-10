@@ -7,11 +7,6 @@
 	"support": {
 		"issues": "https://github.com/Automattic/newspack-story-budget/issues"
 	},
-	"require": {
-		"composer/installers": "~2.0",
-		"joshtronic/php-loremipsum": "^2.1",
-		"google/auth": "^1.15"
-	},
 	"require-dev": {
 		"brainmaestro/composer-git-hooks": "^3.0",
 		"automattic/vipwpcs": "^3.0",
