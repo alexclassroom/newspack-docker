@@ -15,6 +15,8 @@ class Initializer {
 	 * Runs the initialization.
 	 */
 	public static function init() {
+		Budgets::init();
 		Fields::init();
+		API::init();
 	}
 }
