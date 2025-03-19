@@ -7,80 +7,114 @@
 
 namespace Newspack_Story_Budget\Fields;
 
+use Newspack_Story_Budget\Budgets;
+
 /**
  * Class for editable fields.
  */
 class Editable_Field extends Abstract_Field {
-	/**
-	 * The type of the field's input UI, e.g. 'text', 'number', 'date', 'select', 'checkbox'.
-	 *
-	 * @var string
-	 */
-	protected $type = 'text';
 
+	/**
+	 * Optional callback to calculate a default value for the field.
+	 *
+	 * @var mixed
+	 */
+	protected $default_value = null;
 	/**
 	 * Whether the field is editable or read-only.
 	 *
 	 * @var bool
 	 */
-	protected $editable = true;
+	protected $is_editable = true;
+
+	/**
+	 * Optional possible values for the field. If given, the field's value must be one of these.
+	 *
+	 * @var mixed
+	 */
+	protected $options = [];
+
+	/**
+	 * Optional callback used to determine if the current user can edit the value of this field, if editable. Defaults to true.
+	 *
+	 * Note that the user must also be allowed to edit the post itself. This callback doesn't need to check that.
+	 *
+	 * @var callable|null
+	 */
+	protected $permission_callback = null;
 
 	/**
 	 * Register an editable field.
 	 *
-	 * @param array $args Configuration for registering a field. See abstract class constructor for possible params.
+	 * @param array $args {
+	 *    Configuration for registering an editable field. See abstract class constructor for additional params.
+	 *    @type callable $permission_callback? Optional callback used to determine if the current user can edit the field value.
+	 *    @type mixed    $default_value?       Optional callback to calculate default value for the field.
+	 *    @type array    $options? {
+	 *        Optional possible values for the field. These will be rendered in UI as a select dropdown, or a multiselect if $is_multiple is also true.
+	 *        @type string     $label                The label for the option.
+	 *        @type string|int $value                The value for the option.
+	 *        @type bool       $permission_callback? Optional callback to determine if the current user can select this option. If not provided, the option will always be selectable.
+	 *        @type bool       $selected?            If true, this option is selected by default.
+	 *    }
+	 * }
 	 */
 	public function __construct( $args ) {
-
 		parent::__construct( $args );
 
-		$type = $this->set_type( $args['type'] );
-		if ( \is_wp_error( $type ) ) {
-			$this->errors->add( $type->get_error_code(), $type->get_error_message() );
-		}
+		$this->is_multiple         = ! empty( $args['is_multiple'] );
+		$this->default_value       = ! empty( $args['default_value'] ) && is_callable( $args['default_value'] ) ? $args['default_value'] : $this->default_value;
+		$this->permission_callback = ! empty( $args['permission_callback'] ) && is_callable( $args['permission_callback'] ) ? $args['permission_callback'] : $this->permission_callback;
 
-		if ( 'select' === $this->get_type() && empty( $args['values'] ) ) {
-			$this->errors->add(
-				'newspack_story_budget_invalid_field_configuration',
-				__( 'A select field must have values.', 'newspack-story-budget' )
-			);
+		if ( ! empty( $args['options'] ) ) {
+			$this->options = $args['options'];
+			if ( empty( $this->default_value ) || ! is_callable( $this->default_value ) ) {
+				$default_values = [];
+				foreach ( $this->options as $option ) {
+					if ( ! empty( $option['selected'] ) ) {
+						$default_values[] = $option['value'];
+						if ( ! $this->is_multiple ) {
+							break;
+						}
+					}
+				}
+				if ( ! empty( $default_values ) ) {
+					$default_value = $this->is_multiple ? $default_values : reset( $default_values );
+					$this->default_value = function() use ( $default_value ) {
+						return $default_value;
+					};
+				}
+			}
 		}
 	}
 
 	/**
-	 * Get the field's type.
+	 * Get the field's value.
 	 *
-	 * @return string The field's type.
-	 */
-	public function get_type() {
-		return $this->type;
-	}
-
-	/**
-	 * Sets the field's UI input type.
+	 * @param int   $post_id The post ID to get the value for. If not passed, return the default value, if any.
+	 * @param mixed $default_value The default value to return if no post ID is passed or no value has been set.
+	 *                             Allows the default value to be dynamic at the point of retrieval, if needed.
 	 *
-	 * @param string $type The field's type.
+	 * @return mixed The field's value or WP_Error.
 	 */
-	protected function set_type( $type ) {
-		/**
-		 * Filters the allowed editable field types.
-		 *
-		 * @param string[] $allowed_types The allowed field types for editable fields.
-		 */
-		$allowed_types = apply_filters( 'newspack_story_budget_editable_field_types', [ 'boolean', 'text', 'number', 'date', 'select', 'checkbox' ] );
-		if ( ! in_array( $type, $allowed_types, true ) ) {
+	public function get_value( $post_id, $default_value = null ) {
+		if ( ! in_array( \get_post_type( $post_id ), Budgets::get_post_types(), true ) ) {
 			return new \WP_Error(
-				'newspack_story_budget_invalid_field_configuration',
+				'newspack_story_budget_invalid_post_type',
 				sprintf(
-					// Translators: 1: Field type passed in configuration, 2: Allowed field types.
-					__( 'Invalid field type "%1$s". Must be one of: %2$s', 'newspack-story-budget' ),
-					$type,
-					implode( ', ', $allowed_types )
+					// Translators: %d is the post ID.
+					__( 'Post ID %d is not a valid post type for story budgets.', 'newspack-story-budget' ),
+					$post_id
 				)
 			);
 		}
-		$this->type = $type;
-		return $this->type;
+
+		$default_value = is_callable( $this->default_value ) ? call_user_func( $this->default_value, $post_id ) : $default_value;
+		if ( ! $post_id || ! get_post( $post_id ) ) {
+			return $this->is_multiple && ! is_array( $default_value ) ? [ $default_value ] : $default_value;
+		}
+		$value = \get_post_meta( $post_id, $this->get_post_meta_name(), ! $this->is_multiple );
+		return ! empty( $value ) ? $value : $default_value;
 	}
 
 	/**
@@ -97,18 +131,64 @@ class Editable_Field extends Abstract_Field {
 	}
 
 	/**
-	 * Reset the value of the field to null.
-	 * After being reset, the field will effectively return a default value, if any.
+	 * Add a value for the field.
+	 * Only editable fields can have their value updated directly.
 	 *
-	 * @param int $post_id The post ID to reset the value for.
+	 * @param int   $post_id The post ID to update the value for.
+	 * @param mixed $value The value to add.
+	 *
+	 * @return bool True if updated successfully, otherwise false.
+	 */
+	public function add_value( $post_id, $value ) {
+		if ( ! $this->is_multiple ) {
+			_doing_it_wrong( __FUNCTION__, 'Only fields with the $is_multiple property can add multiple values.', '0.0.0' );
+			return $this->update_value( $post_id, $value );
+		}
+		return $this->add_stored_value( $post_id, $value );
+	}
+
+	/**
+	 * Delete the value of the field.
+	 *
+	 * @param int   $post_id The post ID to reset the value for.
+	 * @param mixed $value If provided, only delete the value if it matches this value. Useful for fields with multiple values.
 	 *
 	 * @return bool True if reset successfully, otherwise false.
 	 */
-	public function delete_value( $post_id ) {
-		$updated = \delete_post_meta( $post_id, $this->get_post_meta_name() );
+	public function delete_value( $post_id, $value = '' ) {
+		if ( ! in_array( \get_post_type( $post_id ), Budgets::get_post_types(), true ) ) {
+			return false;
+		}
+
+		$updated = \delete_post_meta( $post_id, $this->get_post_meta_name(), $value );
 		if ( ! $updated ) {
 			return false;
 		}
 		return true;
+	}
+
+	/**
+	 * Whether a user can edit this field.
+	 *
+	 * @param int $user_id The user ID.
+	 * @return bool
+	 */
+	public function user_can_edit( $user_id ) {
+		if ( ! $this->is_editable() ) {
+			return false;
+		}
+		if ( ! $this->permission_callback || ! is_callable( $this->permission_callback ) ) {
+			return true;
+		}
+		return call_user_func( $this->permission_callback, $user_id );
+	}
+
+	/**
+	 * Whether the current user can edit the field.
+	 *
+	 * @return bool
+	 */
+	public function current_user_can_edit() {
+		return $this->user_can_edit( get_current_user_id() );
 	}
 }

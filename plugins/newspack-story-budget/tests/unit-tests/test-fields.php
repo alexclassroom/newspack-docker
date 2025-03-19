@@ -69,13 +69,8 @@ class TestFields extends WP_UnitTestCase {
 	 * Test a read-only field.
 	 */
 	public function test_read_only_field() {
-		$post_id      = self::create_post();
-		$field_config = [
-			'callback' => 'get_the_title',
-			'name'     => 'Read-Only',
-		];
-
-		$field = Fields::get_field( 'word-count' );
+		$post_id = self::create_post();
+		$field    = Fields::get_field( 'word-count' );
 
 		$this->assertEquals( 'Length', $field->get_name(), 'Field name is correct.' );
 		$this->assertFalse( $field->is_editable(), 'Field is not editable.' );
@@ -103,6 +98,67 @@ class TestFields extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Test a select dropdown field.
+	 */
+	public function test_field_with_options() {
+		$post_id = self::create_post();
+		$select  = new Editable_Field(
+			[
+				'name'    => 'Select Dropdown',
+				'type'    => 'text',
+				'options' => [
+					[
+						'label' => 'Option 1',
+						'value' => 'option1',
+					],
+					[
+						'label'    => 'Option 2',
+						'value'    => 'option2',
+						'selected' => true,
+					],
+				],
+			]
+		);
+		$this->assertFalse( $select->has_errors(), 'Select fields are registered with a list of available options.' );
+		$this->assertEquals(
+			$select->get_value( $post_id ),
+			'option2',
+			'Returns default selected value before being set.'
+		);
+	}
+
+	/**
+	 * Test field with multiple values.
+	 */
+	public function test_is_multiple_field() {
+		$post_id = self::create_post();
+		$field    = new Editable_Field(
+			[
+				'name'        => 'Multiple values',
+				'type'        => 'text',
+				'is_multiple' => true,
+			]
+		);
+		$field->update_value( $post_id, 'value1' );
+		$this->assertTrue(
+			is_array( $field->get_value( $post_id ) ),
+			'is_multiple fields return values as an array.'
+		);
+		$field->add_value( $post_id, 'value2' );
+		$this->assertEquals(
+			$field->get_value( $post_id ),
+			[ 'value1', 'value2' ],
+			'is_multiple fields can have multiple values.'
+		);
+		$field->delete_value( $post_id, 'value1' );
+		$this->assertEquals(
+			$field->get_value( $post_id ),
+			[ 'value2' ],
+			'is_multiple fields can remove values.'
+		);
+	}
+
+	/**
 	 * Test invalid field configuration.
 	 */
 	public function test_invalid_field_configuration() {
@@ -120,25 +176,6 @@ class TestFields extends WP_UnitTestCase {
 			]
 		);
 		$this->assertTrue( $select->has_errors(), 'Provided field slug must not be too long.' );
-		$select = new Editable_Field(
-			[
-				'name' => 'Select Dropdown',
-				'type' => 'select',
-			]
-		);
-		$this->assertTrue( $select->has_errors(), 'Select fields must have a list of available options.' );
-		$select = new Editable_Field(
-			[
-				'name'   => 'Select Dropdown',
-				'type'   => 'select',
-				'values' => [
-					'option1' => 'Option 1',
-					'option2' => 'Option 2',
-				],
-			]
-		);
-		$this->assertFalse( $select->has_errors(), 'Select fields are registered with a list of available options.' );
-
 		$read_only = new Read_Only_Field(
 			[ 'name' => 'Read-Only' ]
 		);
@@ -146,8 +183,8 @@ class TestFields extends WP_UnitTestCase {
 
 		$read_only = new Read_Only_Field(
 			[
-				'callback' => 'get_the_ID',
-				'name'     => 'Read-Only',
+				'get_value_callback' => 'get_the_ID',
+				'name'               => 'Read-Only',
 			]
 		);
 		$this->assertFalse( $read_only->has_errors(), 'Read-only fields are registered with a callback to get their value.' );

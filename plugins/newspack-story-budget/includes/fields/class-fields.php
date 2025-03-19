@@ -25,9 +25,7 @@ class Fields {
 	 * Initializes default fields.
 	 */
 	public static function init() {
-
 		self::register_fields();
-
 		self::initialize_hooks();
 	}
 
@@ -35,7 +33,7 @@ class Fields {
 	 * Initialize hooks.
 	 */
 	public static function initialize_hooks() {
-		\add_action( 'save_post_post', [ __CLASS__, 'on_post_update' ] );
+		\add_action( 'save_post', [ __CLASS__, 'on_post_update' ] );
 	}
 
 	/**
@@ -50,7 +48,7 @@ class Fields {
 		$field_configs = apply_filters( 'newspack_story_budget_fields', array_merge( $default_fields_config, [] ) );
 
 		foreach ( $field_configs as $field_config ) {
-			if ( ! empty( $field_config['editable'] ) ) {
+			if ( ! empty( $field_config['is_editable'] ) ) {
 				$field = new Editable_Field( $field_config );
 			} else {
 				$field = new Read_Only_Field( $field_config );
@@ -81,53 +79,71 @@ class Fields {
 			// Editable fields.
 			[
 				'description' => __( 'The internal name for the story.', 'newspack-story-budget' ),
-				'editable'    => true,
+				'is_editable' => true,
 				'name'        => __( 'Story Name', 'newspack-story-budget' ),
 				'slug'        => 'name',
 				'type'        => 'text',
 			],
 			[
-				'default'     => 'writing',
-				'description' => __( 'The current editorial status of the story.', 'newspack-story-budget' ),
-				'editable'    => true,
-				'filterable'  => true,
-				'name'        => __( 'Status', 'newspack-story-budget' ),
-				'slug'        => 'status',
-				'type'        => 'select',
+				'default_value' => function() {
+					return 'writing';
+				},
+				'description'   => __( 'The current editorial status of the story.', 'newspack-story-budget' ),
+				'is_editable'   => true,
+				'is_filterable' => true,
+				'name'          => __( 'Status', 'newspack-story-budget' ),
+				'slug'          => 'status',
+				'type'          => 'text',
 
 				/**
 				 * Filters the story budget statuses.
 				 *
 				 * @param array $statuses Keyed array of available statuses for story budget lines.
 				 */
-				'values'      => apply_filters(
+				'options'       => apply_filters(
 					'newspack_story_budget_statuses',
 					[
-						'writing'   => __( 'Writing', 'newspack-story-budget' ),
-						'editing'   => __( 'Editing', 'newspack-story-budget' ),
-						'factcheck' => __( 'Fact-checking', 'newspack-story-budget' ),
-						'approved'  => __( 'Approved', 'newspack-story-budget' ),
-						'published' => __( 'Published', 'newspack-story-budget' ),
+						[
+							'label'    => __( 'Writing', 'newspack-story-budget' ),
+							'value'    => 'writing',
+							'selected' => true,
+						],
+						[
+							'label' => __( 'Editing', 'newspack-story-budget' ),
+							'value' => 'editing',
+						],
+						[
+							'label' > __( 'Fact-checking', 'newspack-story-budget' ),
+							'value' => 'factcheck',
+						],
+						[
+							'label' => __( 'Approved', 'newspack-story-budget' ),
+							'value' => 'approved',
+						],
+						[
+							'label' > __( 'Published', 'newspack-story-budget' ),
+							'value' => 'published',
+						],
 					]
 				),
 			],
 
 			// Read-only fields.
 			[
-				'callback'    => [ __CLASS__, 'get_word_count' ],
-				'description' => __( 'The word count of the story.', 'newspack-story-budget' ),
-				'editable'    => false,
-				'name'        => __( 'Length', 'newspack-story-budget' ),
-				'slug'        => 'word-count',
-				'type'        => 'number',
+				'save_value_callback' => [ __CLASS__, 'get_word_count' ],
+				'description'         => __( 'The word count of the story.', 'newspack-story-budget' ),
+				'is_editable'         => false,
+				'name'                => __( 'Length', 'newspack-story-budget' ),
+				'slug'                => 'word-count',
+				'type'                => 'number',
 			],
 			[
-				'callback'    => [ __CLASS__, 'get_publish_date' ],
-				'description' => __( 'The date the story was published online.', 'newspack-story-budget' ),
-				'editable'    => false,
-				'name'        => __( 'Publish date (online)', 'newspack-story-budget' ),
-				'slug'        => 'publish-date-online',
-				'type'        => 'number',
+				'get_value_callback' => [ __CLASS__, 'get_publish_date' ],
+				'description'        => __( 'The date the story was published online.', 'newspack-story-budget' ),
+				'is_editable'        => false,
+				'name'               => __( 'Publish date (online)', 'newspack-story-budget' ),
+				'slug'               => 'publish-date-online',
+				'type'               => 'number',
 			],
 		];
 	}
@@ -152,19 +168,20 @@ class Fields {
 	}
 
 	/**
-	 * Update stored field value when post is updated.
+	 * Update stored field value of read-only fields when post is updated.
 	 *
 	 * @param int $post_id The post ID being updated.
 	 */
 	public static function on_post_update( $post_id ) {
-
+		if ( ! in_array( \get_post_type( $post_id ), Budgets::get_post_types(), true ) ) {
+			return;
+		}
 		$fields = self::get_all_fields();
-
 		foreach ( $fields as $field ) {
-			if ( ! $field->get_callback() ) {
+			if ( $field->is_editable() || ! $field->get_save_value_callback() ) {
 				continue;
 			}
-			$value = call_user_func( $field->get_callback(), $post_id );
+			$value = call_user_func( $field->get_save_value_callback(), $post_id );
 			if ( ! empty( $value ) ) {
 				\update_post_meta( $post_id, $field->get_post_meta_name(), $value );
 			}
