@@ -89,6 +89,19 @@ class Editable_Field extends Abstract_Field {
 	}
 
 	/**
+	 * Get an array representation of the field.
+	 */
+	public function to_array() {
+		$parent_array = parent::to_array();
+		return array_merge(
+			$parent_array,
+			[
+				'options' => $this->options,
+			]
+		);
+	}
+
+	/**
 	 * Get the field's value.
 	 *
 	 * @param int   $post_id The post ID to get the value for. If not passed, return the default value, if any.
@@ -113,6 +126,11 @@ class Editable_Field extends Abstract_Field {
 		if ( ! $post_id || ! get_post( $post_id ) ) {
 			return $this->is_multiple && ! is_array( $default_value ) ? [ $default_value ] : $default_value;
 		}
+
+		if ( ! is_null( $this->get_value_callback ) ) {
+			return call_user_func( $this->get_value_callback, $post_id );
+		}
+
 		$value = \get_post_meta( $post_id, $this->get_post_meta_name(), ! $this->is_multiple );
 		return ! empty( $value ) ? $value : $default_value;
 	}
@@ -127,6 +145,9 @@ class Editable_Field extends Abstract_Field {
 	 * @return bool True if updated successfully, otherwise false.
 	 */
 	public function update_value( $post_id, $value ) {
+		if ( ! is_null( $this->save_value_callback ) ) {
+			return call_user_func( $this->save_value_callback, $post_id, $value );
+		}
 		return $this->update_stored_value( $post_id, $value );
 	}
 
@@ -144,6 +165,13 @@ class Editable_Field extends Abstract_Field {
 			_doing_it_wrong( __FUNCTION__, 'Only fields with the $is_multiple property can add multiple values.', '0.0.0' );
 			return $this->update_value( $post_id, $value );
 		}
+
+		if ( ! is_null( $this->save_value_callback ) ) {
+			$current_values = $this->get_value( $post_id, [] );
+			$new_values     = array_values( array_unique( array_merge( $current_values, [ $value ] ) ) );
+			return call_user_func( $this->save_value_callback, $post_id, $new_values );
+		}
+
 		return $this->add_stored_value( $post_id, $value );
 	}
 
@@ -158,6 +186,16 @@ class Editable_Field extends Abstract_Field {
 	public function delete_value( $post_id, $value = '' ) {
 		if ( ! in_array( \get_post_type( $post_id ), Budgets::get_post_types(), true ) ) {
 			return false;
+		}
+
+		if ( ! is_null( $this->save_value_callback ) ) {
+			$current_values = $this->get_value( $post_id, [] );
+			if ( in_array( $value, $current_values, true ) ) {
+				$new_values = array_values( array_diff( $current_values, [ $value ] ) );
+			} else {
+				return false;
+			}
+			return call_user_func( $this->save_value_callback, $post_id, $new_values );
 		}
 
 		$updated = \delete_post_meta( $post_id, $this->get_post_meta_name(), $value );

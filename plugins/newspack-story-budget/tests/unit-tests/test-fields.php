@@ -70,7 +70,7 @@ class TestFields extends WP_UnitTestCase {
 	 */
 	public function test_read_only_field() {
 		$post_id = self::create_post();
-		$field    = Fields::get_field( 'word-count' );
+		$field    = Fields::get_field( 'word_count' );
 
 		$this->assertEquals( 'Length', $field->get_name(), 'Field name is correct.' );
 		$this->assertFalse( $field->is_editable(), 'Field is not editable.' );

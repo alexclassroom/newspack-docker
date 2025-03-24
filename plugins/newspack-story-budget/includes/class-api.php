@@ -83,6 +83,42 @@ class API {
 
 		register_rest_route(
 			self::NAMESPACE,
+			'/fields',
+			[
+				'methods'             => 'GET',
+				'callback'            => [ __CLASS__, 'get_fields' ],
+				'permission_callback' => [ __CLASS__, 'permission_callback' ],
+				'args'                => [
+					'fields' => [
+						'description' => __( 'Array of field slugs to return. If not provided, all fields will be returned.', 'newspack-story-budget' ),
+						'type'        => 'array',
+					],
+				],
+			]
+		);
+
+		register_rest_route(
+			self::NAMESPACE,
+			'/fields/(?P<slug>[\a-z]+)',
+			[
+				'methods'             => 'POST',
+				'callback'            => [ __CLASS__, 'update_field' ],
+				'permission_callback' => [ __CLASS__, 'permission_callback' ],
+				'args'                => [
+					'post_id' => [
+						'description' => __( 'The ID of the post to update the field with.', 'newspack-story-budget' ),
+						'type'        => 'integer',
+					],
+					'value'   => [
+						'description' => __( 'The value to update the field with.', 'newspack-story-budget' ),
+						'type'        => 'mixed',
+					],
+				],
+			]
+		);
+
+		register_rest_route(
+			self::NAMESPACE,
 			'/budgets',
 			[
 				'methods'             => 'GET',
@@ -200,6 +236,49 @@ class API {
 		}
 
 		return rest_ensure_response( $story->to_array() );
+	}
+
+	/**
+	 * Get story fields.
+	 *
+	 * @param \WP_REST_Request $request Request object.
+	 *
+	 * @return \WP_REST_Response
+	 */
+	public static function get_fields( $request ) {
+		$fields_to_get = $request->get_param( 'fields' ) ?? [];
+		$fields = Fields::get_all_fields( true );
+		if ( ! empty( $fields_to_get ) ) {
+			$fields = array_values(
+				array_filter(
+					$fields,
+					function( $field ) use ( $fields_to_get ) {
+						return in_array( $field['slug'], $fields_to_get );
+					}
+				)
+			);
+		}
+		return rest_ensure_response( array_values( $fields ) );
+	}
+
+	/**
+	 * Update a field value.
+	 *
+	 * @param \WP_REST_Request $request Request object.
+	 *
+	 * @return \WP_REST_Response
+	 */
+	public static function update_field( $request ) {
+		$field = Fields::get_field( $request->get_param( 'slug' ) );
+		if ( ! $field ) {
+			return new \WP_Error( 'field_not_found', __( 'Field not found.', 'newspack-story-budget' ), [ 'status' => 404 ] );
+		}
+		if ( ! $field->is_editable() ) {
+			return new \WP_Error( 'field_not_editable', __( 'Field is read-only.', 'newspack-story-budget' ), [ 'status' => 403 ] );
+		}
+
+		$field->update_value( $request->get_param( 'post_id' ), $request->get_param( 'value' ) );
+		return rest_ensure_response( $field->to_array() );
 	}
 
 	/**

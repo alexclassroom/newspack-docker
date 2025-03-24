@@ -14,29 +14,6 @@ use Newspack_Story_Budget\Budgets;
  */
 class Read_Only_Field extends Abstract_Field {
 	/**
-	 * Optional callback used to dynamically calculate the value of the field.
-	 *
-	 * @var callable|null
-	 */
-	protected $get_value_callback = null;
-
-	/**
-	 * Optional hook name to trigger the $save_value_callback. Defaults to save_post_post.
-	 * TODO: This isn't currently implemented. Needs more discussion about how to handle.
-	 *
-	 * @var string
-	 */
-	protected $save_value_hook = 'save_post';
-
-	/**
-	 * Optional callback used to calculate the value of the field on post_save.
-	 * If provided, the value will be calculated stored as post meta on post update.
-	 *
-	 * @var callable|null
-	 */
-	protected $save_value_callback = null;
-
-	/**
 	 * Register the field.
 	 *
 	 * @param array $args {
@@ -49,14 +26,6 @@ class Read_Only_Field extends Abstract_Field {
 	public function __construct( $args ) {
 
 		parent::__construct( $args );
-
-		if ( ! empty( $args['get_value_callback'] ) && is_callable( $args['get_value_callback'] ) ) {
-			$this->get_value_callback = $args['get_value_callback'];
-		}
-
-		if ( ! empty( $args['save_value_callback'] ) && is_callable( $args['save_value_callback'] ) ) {
-			$this->save_value_callback = $args['save_value_callback'];
-		}
 
 		if ( ! empty( $args['save_value_hook'] ) ) {
 			$this->save_value_hook = $args['save_value_hook'];

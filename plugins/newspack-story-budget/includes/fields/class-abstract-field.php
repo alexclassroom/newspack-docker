@@ -54,6 +54,13 @@ abstract class Abstract_Field {
 	protected $is_searchable = false;
 
 	/**
+	 * Whether the field can be used to sort stories.
+	 *
+	 * @var bool
+	 */
+	protected $is_sortable = false;
+
+	/**
 	 * The human-readable name of the field.
 	 *
 	 * @var string
@@ -65,7 +72,7 @@ abstract class Abstract_Field {
 	 *
 	 * @var bool
 	 */
-	protected $show_in_dynamic_table = false;
+	protected $show_in_table = false;
 
 	/**
 	 * Whether the field should be shown in the WP post editor sidebar.
@@ -89,11 +96,34 @@ abstract class Abstract_Field {
 	protected $slug;
 
 	/**
-	 * The type of the field's data. One of: boolean, number, text, date
+	 * The type of the field's data. One of: boolean, number, text, date, datetime
 	 *
 	 * @var string
 	 */
 	protected $type = 'text';
+
+	/**
+	 * Optional callback used to dynamically calculate the value of the field.
+	 *
+	 * @var callable|null
+	 */
+	protected $get_value_callback = null;
+
+	/**
+	 * Optional callback used to calculate the value of the field on post_save.
+	 * If provided, the value will be calculated stored as post meta on post update.
+	 *
+	 * @var callable|null
+	 */
+	protected $save_value_callback = null;
+
+	/**
+	 * Optional hook name to trigger the $save_value_callback. Defaults to save_post_post.
+	 * TODO: This isn't currently implemented. Needs more discussion about how to handle.
+	 *
+	 * @var string
+	 */
+	protected $save_value_hook = 'save_post';
 
 	/**
 	 * Errors that occurred during field initialization.
@@ -112,8 +142,9 @@ abstract class Abstract_Field {
 	 *    @type bool     $is_filterable?          Whether the field can be used to filter stories.
 	 *    @type bool     $is_multiple?            If true, the field's value is an array of values.
 	 *    @type bool     $is_searchable?          Whether the field can be used to search stories.
+	 *    @type bool     $is_sortable?            Whether the field can be used to sort stories.
 	 *    @type string   $name                    The human-readable name of the field.
-	 *    @type string   $show_in_dynamic_table?  Whether the field should be shown in the dynamic Budgets table.
+	 *    @type string   $show_in_table?          Whether the field should be shown in the dynamic Budgets table.
 	 *    @type string   $show_in_editor?         Whether the field should be shown in the WP post editor sidebar.
 	 *    @type string   $show_in_wp_posts_table? Whether the field should be shown in the WP posts table.
 	 *    @type string   $slug?                   The unique slug ID for the field. If not given, will be generated from the name.
@@ -129,7 +160,8 @@ abstract class Abstract_Field {
 		$this->is_filterable          = ! empty( $args['is_filterable'] ) ? true : false;
 		$this->is_multiple            = ! empty( $args['is_multiple'] ) ? true : false;
 		$this->is_searchable          = ! empty( $args['is_searchable'] ) ? true : false;
-		$this->show_in_dynamic_table  = ! empty( $args['show_in_dynamic_table'] ) ? true : false;
+		$this->is_sortable            = ! empty( $args['is_sortable'] ) ? true : false;
+		$this->show_in_table          = ! empty( $args['show_in_table'] ) ? true : false;
 		$this->show_in_editor         = ! empty( $args['show_in_editor'] ) ? true : false;
 		$this->show_in_wp_posts_table = ! empty( $args['show_in_wp_posts_table'] ) ? true : false;
 
@@ -149,6 +181,14 @@ abstract class Abstract_Field {
 					$this->slug
 				)
 			);
+		}
+
+		if ( ! empty( $args['get_value_callback'] ) && is_callable( $args['get_value_callback'] ) ) {
+			$this->get_value_callback = $args['get_value_callback'];
+		}
+
+		if ( ! empty( $args['save_value_callback'] ) && is_callable( $args['save_value_callback'] ) ) {
+			$this->save_value_callback = $args['save_value_callback'];
 		}
 	}
 
@@ -190,7 +230,7 @@ abstract class Abstract_Field {
 		 *
 		 * @param string[] $allowed_types The allowed data types.
 		 */
-		$allowed_types = apply_filters( 'newspack_story_budget_field_data_types', [ 'boolean', 'number', 'text', 'date' ] );
+		$allowed_types = apply_filters( 'newspack_story_budget_field_data_types', [ 'boolean', 'number', 'text', 'longtext', 'date', 'datetime' ] );
 		if ( ! in_array( $type, $allowed_types, true ) ) {
 			return new \WP_Error(
 				'newspack_story_budget_invalid_field_configuration',
@@ -240,6 +280,26 @@ abstract class Abstract_Field {
 	 */
 	public function is_editable() {
 		return $this->is_editable;
+	}
+
+	/**
+	 * Get an array representation of the field.
+	 */
+	public function to_array() {
+		return [
+			'slug'                   => $this->slug,
+			'name'                   => $this->name,
+			'description'            => $this->description,
+			'type'                   => $this->type,
+			'is_editable'            => $this->is_editable,
+			'is_multiple'            => $this->is_multiple,
+			'is_filterable'          => $this->is_filterable,
+			'is_searchable'          => $this->is_searchable,
+			'is_sortable'            => $this->is_sortable,
+			'show_in_table'          => $this->show_in_table,
+			'show_in_editor'         => $this->show_in_editor,
+			'show_in_wp_posts_table' => $this->show_in_wp_posts_table,
+		];
 	}
 
 	/**

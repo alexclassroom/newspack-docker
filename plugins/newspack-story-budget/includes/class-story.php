@@ -7,6 +7,8 @@
 
 namespace Newspack_Story_Budget;
 
+use Newspack_Story_Budget\Fields;
+
 /**
  * Story Class.
  */
@@ -79,29 +81,52 @@ class Story {
 	}
 
 	/**
+	 * Get budget IDs assigned to this story.
+	 *
+	 * @return int[]
+	 */
+	public function get_budgets() {
+		return \wp_get_post_terms( $this->id, Budgets::TAXONOMY, [ 'fields' => 'ids' ] );
+	}
+
+	/**
+	 * Update budget IDs assigned to this story.
+	 *
+	 * @param int[] $budget_ids Budget IDs to assign to this story.
+	 * @param bool  $append     Whether to append the new budget IDs to the existing ones or replace all existing IDs.
+	 *
+	 * @return bool True if updated successfully, otherwise false.
+	 */
+	public function update_budgets( $budget_ids = [], $append = false ) {
+		return \wp_set_post_terms(
+			$this->id,
+			$budget_ids,
+			\Newspack_Story_Budget\Budgets::TAXONOMY,
+			$append
+		);
+	}
+
+	/**
 	 * Get story in array format.
 	 *
 	 * @return array
 	 */
 	public function to_array() {
-		// phpcs:disable WordPress.Arrays.MultipleStatementAlignment.DoubleArrowNotAligned
-		return [
-			'id'          => $this->id,
-			'title'       => get_the_title( $this->post ),
-			'slug'        => get_post_field( 'post_name', $this->post ),
-			'preview_url' => add_query_arg( 'newspack-story-preview', true, get_permalink( $this->id ) ),
-			'budgets'     => wp_get_post_terms( $this->id, Budgets::TAXONOMY, [ 'fields' => 'ids' ] ),
-			// @TODO Implement Fields.
-			'image_count'            => wp_rand( 1, 10 ),
-			'word_count'             => wp_rand( 500, 800 ),
-			'length_in'              => wp_rand( 5, 15 ),
-			'status'                 => self::get_random_status(),
-			'print_rank'             => self::get_random_value(),
-			'print_publication_date' => self::get_random_date(),
-			'publication'            => self::get_random_value(),
-			'print_page'             => self::get_random_value(),
-			'locked'                 => (bool) wp_rand( 0, 1 ),
+		$all_fields = Fields::get_all_fields();
+		$values    = [
+			// `id` and `metadata are protected keys.
+			'id'       => $this->id,
+
+			// Static post info that doesn't need to be presented as fields.
+			'metadata' => [
+				'slug'        => \get_post_field( 'post_name', $this->post ),
+				'preview_url' => \add_query_arg( 'newspack-story-preview', true, get_permalink( $this->id ) ),
+			],
 		];
-		// phpcs:enable
+
+		foreach ( $all_fields as $field ) {
+			$values[ $field->get_slug() ] = $field->get_value( $this->id );
+		}
+		return $values;
 	}
 }

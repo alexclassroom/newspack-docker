@@ -11,10 +11,10 @@ const getDisplayValue = ( field, value ) => {
 		value = field.options.find( o => o.value === value )?.label || value;
 	}
 	if ( field.type === 'date' ) {
-		return new Date( value ).toLocaleDateString();
+		return new Date( value * 1000 ).toLocaleDateString( undefined, { dateStyle: 'medium' } );
 	}
 	if ( field.type === 'datetime' ) {
-		return new Date( value ).toLocaleString();
+		return new Date( value * 1000 ).toLocaleString( undefined, { dateStyle: 'medium', timeStyle: 'short' } );
 	}
 	if ( Array.isArray( value ) ) {
 		return value.join( ', ' );
