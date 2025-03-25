@@ -20,5 +20,6 @@ class Initializer {
 		Search::init();
 		API::init();
 		Admin::init();
+		CLI::init();
 	}
 }

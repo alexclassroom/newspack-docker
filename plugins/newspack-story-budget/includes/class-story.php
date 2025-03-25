@@ -48,7 +48,7 @@ class Story {
 	 * @return bool
 	 */
 	public function is_valid() {
-		return ! empty( $this->id ) && ! empty( $this->post ) && ! is_wp_error( $this->post );
+		return ! empty( $this->id ) && ! empty( $this->post ) && ! is_wp_error( $this->post ) && in_array( \get_post_type( $this->id ), Budgets::get_post_types(), true );
 	}
 
 	/**
@@ -69,12 +69,26 @@ class Story {
 	 * @return bool True if updated successfully, otherwise false.
 	 */
 	public function update_budgets( $budget_ids = [], $append = false ) {
-		return \wp_set_post_terms(
+		return \wp_set_object_terms(
 			$this->id,
 			$budget_ids,
 			\Newspack_Story_Budget\Budgets::TAXONOMY,
 			$append
 		);
+	}
+
+	/**
+	 * Remove budget IDs from this story.
+	 *
+	 * @param int[] $budget_ids Budget IDs to remove from this story.
+	 *
+	 * @return bool True if removed successfully, otherwise false.
+	 */
+	public function remove_budgets( $budget_ids = [] ) {
+		if ( empty( $budget_ids ) ) {
+			return false;
+		}
+		return \wp_remove_object_terms( $this->id, $budget_ids, \Newspack_Story_Budget\Budgets::TAXONOMY );
 	}
 
 	/**

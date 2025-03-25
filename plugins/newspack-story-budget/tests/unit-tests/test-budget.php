@@ -68,9 +68,10 @@ class Test_Budget extends \WP_UnitTestCase {
 		$budget = new Budget( $budget_id );
 		$this->assertEquals(
 			[
-				'id'   => $budget_id,
-				'name' => get_term( $budget_id, Budgets::TAXONOMY )->name,
-				'slug' => get_term( $budget_id, Budgets::TAXONOMY )->slug,
+				'id'          => $budget_id,
+				'name'        => get_term( $budget_id, Budgets::TAXONOMY )->name,
+				'slug'        => get_term( $budget_id, Budgets::TAXONOMY )->slug,
+				'description' => get_term( $budget_id, Budgets::TAXONOMY )->description,
 			],
 			$budget->to_array()
 		);

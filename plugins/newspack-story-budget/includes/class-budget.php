@@ -88,21 +88,91 @@ class Budget {
 	/**
 	 * Archive a budget.
 	 *
-	 * @return void
+	 * @return bool
 	 */
 	public function archive() {
 		$this->archived = true;
-		update_term_meta( $this->id, 'archived', true );
+		return \update_term_meta( $this->id, 'archived', true );
 	}
 
 	/**
 	 * Unarchive a budget.
 	 *
-	 * @return void
+	 * @return bool
 	 */
 	public function unarchive() {
 		$this->archived = false;
-		delete_term_meta( $this->id, 'archived' );
+		return \delete_term_meta( $this->id, 'archived' );
+	}
+
+	/**
+	 * Add one or more stories to this budget.
+	 *
+	 * @param int[] $post_ids Post IDs to add to this budget.
+	 *
+	 * @return int The number of stories successfully added.
+	 */
+	public function add_stories( $post_ids = [] ) {
+		$results = 0;
+		if ( empty( $post_ids ) ) {
+			return $results;
+		}
+		foreach ( $post_ids as $post_id ) {
+			$story = new Story( $post_id );
+			if ( ! $story->is_valid() ) {
+				Logger::error(
+					sprintf(
+						// Translators: post ID.
+						__( 'Invalid story ID "%d".', 'newspack-story-budget' ),
+						$post_id
+					)
+				);
+				continue;
+			}
+
+			$result = $story->update_budgets( [ $this->term->term_id ], true );
+			if ( \is_wp_error( $result ) ) {
+				Logger::error( $result );
+			} else {
+				$results++;
+			}
+		}
+		return $results;
+	}
+
+	/**
+	 * Remove one or more stories from this budget.
+	 *
+	 * @param int[] $post_ids Post IDs to remove from this budget.
+	 *
+	 * @return int The number of stories successfully removed.
+	 */
+	public function remove_stories( $post_ids = [] ) {
+		$results = 0;
+		if ( empty( $post_ids ) ) {
+			return $results;
+		}
+		foreach ( $post_ids as $post_id ) {
+			$story = new Story( $post_id );
+			if ( ! $story->is_valid() ) {
+				Logger::error(
+					sprintf(
+						// Translators: post ID.
+						__( 'Invalid story ID "%d".', 'newspack-story-budget' ),
+						$post_id
+					)
+				);
+				continue;
+			}
+
+			$result = $story->remove_budgets( [ $this->term->term_id ] );
+			if ( \is_wp_error( $result ) ) {
+				Logger::error( $result );
+			} else {
+				$results++;
+			}
+		}
+		return $results;
 	}
 
 	/**
@@ -112,9 +182,10 @@ class Budget {
 	 */
 	public function to_array() {
 		return [
-			'id'   => $this->id,
-			'name' => $this->term->name,
-			'slug' => $this->term->slug,
+			'id'          => $this->id,
+			'name'        => $this->term->name,
+			'description' => $this->term->description,
+			'slug'        => $this->term->slug,
 		];
 	}
 

@@ -28,6 +28,7 @@ class Fields {
 	 */
 	public static function init() {
 		\add_action( 'init', [ __CLASS__, 'register_fields' ] );
+		\add_action( 'set_object_terms', [ __CLASS__, 'on_post_budget_update' ], 10, 2 );
 		\add_action( 'save_post', [ __CLASS__, 'on_post_update' ] );
 
 		// Add custom columns for fields that should be displayed in the admin list table.
@@ -328,12 +329,37 @@ class Fields {
 	}
 
 	/**
+	 * When a story gets added to a budget term, update the story's stored field values.
+	 *
+	 * @param int   $post_id The post ID being updated.
+	 * @param int[] $term_ids The term IDs being added to the post.
+	 */
+	public static function on_post_budget_update( $post_id, $term_ids ) {
+		$story = new Story( $post_id );
+		if ( ! $story->is_valid() ) {
+			return;
+		}
+		$should_update_fields = false;
+		foreach ( $term_ids as $term_id ) {
+			$budget = new Budget( $term_id );
+			if ( $budget->is_valid() ) {
+				$should_update_fields = true;
+				break;
+			}
+		}
+		if ( $should_update_fields ) {
+			self::on_post_update( $post_id );
+		}
+	}
+
+	/**
 	 * Update stored field value of read-only fields when post is updated.
 	 *
 	 * @param int $post_id The post ID being updated.
 	 */
 	public static function on_post_update( $post_id ) {
-		if ( ! in_array( \get_post_type( $post_id ), Budgets::get_post_types(), true ) ) {
+		$story = new Story( $post_id );
+		if ( ! $story->is_valid() ) {
 			return;
 		}
 		$fields = self::get_all_fields();
@@ -389,11 +415,10 @@ class Fields {
 		if ( ! $post_id ) {
 			return $default_budgets;
 		}
-		$post = \get_post( $post_id );
-		if ( ! $post || ! in_array( $post->post_type, Budgets::get_post_types(), true ) ) {
+		$story = new Story( $post_id );
+		if ( ! $story->is_valid() ) {
 			return $default_budgets;
 		}
-		$story = new Story( $post );
 		$budgets = $story->get_budgets();
 		return $multiple_budgets_enabled ? $budgets : $budgets[0];
 	}
@@ -408,11 +433,10 @@ class Fields {
 		if ( ! $post_id ) {
 			return;
 		}
-		$post = \get_post( $post_id );
-		if ( ! $post || ! in_array( $post->post_type, Budgets::get_post_types(), true ) ) {
+		$story = new Story( $post_id );
+		if ( ! $story->is_valid() ) {
 			return;
 		}
-		$story = new Story( $post );
 		return $story->update_budgets( $budget_ids );
 	}
 
@@ -461,11 +485,11 @@ class Fields {
 		if ( ! $post_id ) {
 			$post_id = \get_the_ID();
 		}
-		$post = \get_post( $post_id );
-		if ( ! $post || ! in_array( $post->post_type, Budgets::get_post_types(), true ) ) {
+		$story = new Story( $post_id );
+		if ( ! $story->is_valid() ) {
 			return 0;
 		}
-		return str_word_count( trim( \wp_strip_all_tags( $post->post_content ) ) );
+		return str_word_count( trim( \wp_strip_all_tags( \get_post_field( 'post_content', $post_id ) ) ) );
 	}
 
 	/**
@@ -481,11 +505,11 @@ class Fields {
 		if ( ! $post_id ) {
 			$post_id = \get_the_ID();
 		}
-		$post = \get_post( $post_id );
-		if ( ! $post || ! in_array( $post->post_type, Budgets::get_post_types(), true ) ) {
+		$story = new Story( $post_id );
+		if ( ! $story->is_valid() ) {
 			return 0;
 		}
-		$rendered_post_content = \apply_filters( 'the_content', $post->post_content );
+		$rendered_post_content = \apply_filters( 'the_content', \get_post_field( 'post_content', $post_id ) );
 		return substr_count( $rendered_post_content, '<img ' );
 	}
 
@@ -500,11 +524,11 @@ class Fields {
 		if ( ! $post_id ) {
 			$post_id = \get_the_ID();
 		}
-		$post = \get_post( $post_id );
-		if ( ! $post || ! in_array( $post->post_type, Budgets::get_post_types(), true ) ) {
+		$story = new Story( $post_id );
+		if ( ! $story->is_valid() ) {
 			return '';
 		}
-		return \get_post_modified_time( 'U', true, $post );
+		return \get_post_modified_time( 'U', true, $post_id );
 	}
 
 	/**
@@ -518,16 +542,16 @@ class Fields {
 		if ( ! $post_id ) {
 			$post_id = \get_the_ID();
 		}
-		$post = \get_post( $post_id );
-		if ( ! $post || ! in_array( $post->post_type, Budgets::get_post_types(), true ) ) {
+		$story = new Story( $post_id );
+		if ( ! $story->is_valid() ) {
 			return '';
 		}
 
 		// Only if published.
-		if ( 'publish' !== $post->post_status ) {
+		if ( 'publish' !== \get_post_status( $post_id ) ) {
 			return '';
 		}
-		return \get_post_time( 'U', true, $post );
+		return \get_post_time( 'U', true, $post_id );
 	}
 
 	/**
@@ -541,14 +565,14 @@ class Fields {
 		if ( ! $post_id ) {
 			$post_id = \get_the_ID();
 		}
-		$post = \get_post( $post_id );
-		if ( ! $post || ! in_array( $post->post_type, Budgets::get_post_types(), true ) ) {
+		$story = new Story( $post_id );
+		if ( ! $story->is_valid() ) {
 			return '';
 		}
 		$field                 = self::get_field( 'published_by' );
 		$current_field_value   = $field->get_value( $post_id );
 		$previous_post_status = filter_input( INPUT_POST, 'original_post_status', FILTER_SANITIZE_SPECIAL_CHARS );
-		$current_post_status  = $post->post_status;
+		$current_post_status  = \get_post_status( $post_id );
 		$published_statuses   = [ 'publish', 'future' ];
 
 		// Don't change the value if not updating the post status.
@@ -582,11 +606,11 @@ class Fields {
 		if ( ! $post_id ) {
 			$post_id = \get_the_ID();
 		}
-		$post = \get_post( $post_id );
-		if ( ! $post || ! in_array( $post->post_type, Budgets::get_post_types(), true ) ) {
+		$story = new Story( $post_id );
+		if ( ! $story->is_valid() ) {
 			return [];
 		}
-		$authors = [ get_the_author_meta( 'display_name', $post->post_author ) ];
+		$authors = [ get_the_author_meta( 'display_name', \get_post_field( 'post_author', $post_id ) ) ];
 		if ( function_exists( 'get_coauthors' ) ) {
 			$authors = array_map(
 				function( $author ) {
@@ -612,8 +636,8 @@ class Fields {
 		if ( ! $post_id ) {
 			$post_id = \get_the_ID();
 		}
-		$post = \get_post( $post_id );
-		if ( ! $post || ! in_array( $post->post_type, Budgets::get_post_types(), true ) ) {
+		$story = new Story( $post_id );
+		if ( ! $story->is_valid() ) {
 			return [];
 		}
 		$categories = array_map(
@@ -639,8 +663,8 @@ class Fields {
 		if ( ! $post_id ) {
 			$post_id = \get_the_ID();
 		}
-		$post = \get_post( $post_id );
-		if ( ! $post || ! in_array( $post->post_type, Budgets::get_post_types(), true ) ) {
+		$story = new Story( $post_id );
+		if ( ! $story->is_valid() ) {
 			return false;
 		}
 		if ( ! function_exists( 'wp_check_post_lock' ) ) {
