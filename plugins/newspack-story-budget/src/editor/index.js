@@ -1,0 +1,78 @@
+/* eslint @wordpress/no-unsafe-wp-apis: 0 */
+/**
+ * WordPress dependencies.
+ */
+import { __ } from '@wordpress/i18n';
+import { registerPlugin } from '@wordpress/plugins';
+import { PluginPostStatusInfo } from '@wordpress/editor';
+import { useSelect, useDispatch } from '@wordpress/data';
+import { useState, useEffect } from '@wordpress/element';
+
+/**
+ * Internal dependencies.
+ */
+import { NAMESPACE as storeNamespace } from '../store/constants';
+import StoryFieldPanel from '../components/story-field-panel';
+import '../style.scss';
+
+const StoryBudgetPanel = () => {
+	const [ editedStory, setEditedStory ] = useState( {} );
+
+	const postId = useSelect( select =>
+		select( 'core/editor' ).getCurrentPostId()
+	);
+
+	const { fields, story, isSavingPost } = useSelect( select => ( {
+		fields: postId ? select( storeNamespace ).getFields() : [],
+		story: postId ? select( storeNamespace ).getStory( postId ) : null,
+		isSavingPost: select( 'core/editor' ).isSavingPost(),
+	} ) );
+
+	const editableFields = fields.filter( field => field.show_in_editor );
+
+	const { saveStory } = useDispatch( storeNamespace );
+
+	useEffect( () => {
+		setEditedStory( story );
+	}, [ story ] );
+
+	useEffect( () => {
+		if ( isSavingPost ) {
+			// Save only the edited fields.
+			const filteredStory = editableFields.reduce(
+				( acc, field ) => {
+					acc[ field.slug ] = editedStory[ field.slug ];
+					return acc;
+				},
+				{ id: editedStory.id }
+			);
+			saveStory( postId, filteredStory );
+		}
+	}, [ isSavingPost ] );
+
+	return (
+		<PluginPostStatusInfo className="newspack-story-budget__post-status-info">
+			{ postId && fields?.length && editedStory?.id ? (
+				<StoryFieldPanel
+					fields={ editableFields.map( field => {
+						// Change the field name to distinguish from WordPress post status
+						if ( field.slug === 'status' ) {
+							field.name = __(
+								'Story Status',
+								'newspack-story-budget'
+							);
+						}
+						return field;
+					} ) }
+					story={ editedStory }
+					onChange={ setEditedStory }
+					rowAnchor="panel"
+				/>
+			) : null }
+		</PluginPostStatusInfo>
+	);
+};
+
+registerPlugin( 'newspack-story-budget-editor', {
+	render: () => <StoryBudgetPanel />,
+} );

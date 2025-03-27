@@ -94,15 +94,16 @@ class Fields {
 	public static function get_default_fields_config() {
 		return [
 			[
-				'default_value' => [ __CLASS__, 'get_default_story_name' ],
-				'description'   => __( 'An internal name for the story.', 'newspack-story-budget' ),
-				'is_editable'   => true,
-				'is_searchable' => true,
-				'is_sortable'   => true,
-				'name'          => __( 'Story Name', 'newspack-story-budget' ),
-				'show_in_table' => true,
-				'slug'          => 'name',
-				'type'          => 'text',
+				'default_value'  => [ __CLASS__, 'get_default_story_name' ],
+				'description'    => __( 'An internal name for the story.', 'newspack-story-budget' ),
+				'is_editable'    => true,
+				'is_searchable'  => true,
+				'is_sortable'    => true,
+				'name'           => __( 'Story Name', 'newspack-story-budget' ),
+				'show_in_table'  => true,
+				'show_in_editor' => true,
+				'slug'           => 'name',
+				'type'           => 'text',
 			],
 			[
 				'description'        => __( 'The post title.', 'newspack-story-budget' ),
@@ -114,16 +115,17 @@ class Fields {
 				'type'               => 'text',
 			],
 			[
-				'description'   => __( 'An internal description for the story.', 'newspack-story-budget' ),
-				'is_editable'   => true,
-				'is_searchable' => true,
-				'is_sortable'   => true,
-				'name'          => __( 'Description', 'newspack-story-budget' ),
-				'slug'          => 'description',
-				'type'          => 'longtext',
+				'description'    => __( 'An internal description for the story.', 'newspack-story-budget' ),
+				'is_editable'    => true,
+				'is_searchable'  => true,
+				'is_sortable'    => true,
+				'name'           => __( 'Description', 'newspack-story-budget' ),
+				'show_in_editor' => true,
+				'slug'           => 'description',
+				'type'           => 'longtext',
 			],
 			[
-				'description'         => __( 'Story budget(s) this story is assigned to.', 'newspack-story-budget' ),
+				'description'         => Budgets::is_multiple_budgets_enabled() ? __( 'Story budgets this story is assigned to.', 'newspack-story-budget' ) : __( 'Story budget this story is assigned to.', 'newspack-story-budget' ),
 				'get_value_callback'  => [ __CLASS__, 'get_budgets' ],
 				'is_editable'         => true,
 				'is_filterable'       => true,
@@ -133,10 +135,11 @@ class Fields {
 				 *
 				 * @param bool $multiple_budgets_enabled Whether a story can be assigned to multiple budgets.
 				 */
-				'is_multiple'         => \apply_filters( 'newspack_story_budget_multiple_budgets_enabled', false ),
-				'name'                => \apply_filters( 'newspack_story_budget_multiple_budgets_enabled', false ) ? __( 'Budgets', 'newspack-story-budget' ) : __( 'Budget', 'newspack-story-budget' ),
+				'is_multiple'         => Budgets::is_multiple_budgets_enabled(),
+				'name'                => Budgets::is_multiple_budgets_enabled() ? __( 'Budgets', 'newspack-story-budget' ) : __( 'Budget', 'newspack-story-budget' ),
 				'save_value_callback' => [ __CLASS__, 'save_budgets' ],
 				'show_in_table'       => true,
+				'show_in_editor'      => true,
 				'slug'                => 'budgets',
 				'type'                => 'number',
 				'options'             => array_map(
@@ -160,6 +163,7 @@ class Fields {
 				'is_sortable'         => false,
 				'name'                => __( 'Status', 'newspack-story-budget' ),
 				'show_in_table'       => true,
+				'show_in_editor'      => true,
 				'slug'                => 'status',
 				'type'                => 'text',
 				'options'             => Statuses::get_statuses_arrays(),
@@ -403,7 +407,7 @@ class Fields {
 	 * @return int|int[]|null Budget ID, array of budget IDs, or null.
 	 */
 	public static function get_budgets( $post_id ) {
-		$multiple_budgets_enabled = \apply_filters( 'newspack_story_budget_multiple_budgets_enabled', false );
+		$multiple_budgets_enabled = Budgets::is_multiple_budgets_enabled();
 		$default_budgets          = $multiple_budgets_enabled ? [] : null;
 		if ( ! $post_id ) {
 			return $default_budgets;

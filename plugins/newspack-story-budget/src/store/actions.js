@@ -2,10 +2,13 @@
 import { __ } from '@wordpress/i18n';
 import { apiFetch } from '@wordpress/data-controls';
 import { resolveSelect } from '@wordpress/data';
+import { NAMESPACE } from './constants';
 
 const { apiNamespace } = newspackStoryBudget;
 
 export function* initializeEntitiesConfig() {
+	yield resolveSelect( NAMESPACE ).getFields();
+	yield resolveSelect( NAMESPACE ).getBudgets();
 	yield resolveSelect( 'core' ).canUser( 'update', {
 		kind: 'postType',
 		name: 'post',

@@ -155,4 +155,16 @@ class Budgets {
 			self::$stories_query->posts
 		);
 	}
+
+	/**
+	 * Whether a story can be assigned to multiple budgets.
+	 *
+	 * @return bool
+	 */
+	public static function is_multiple_budgets_enabled() {
+		/**
+		 * Filters whether a story can be assigned to multiple budgets.
+		 */
+		return apply_filters( 'newspack_story_budget_multiple_budgets_enabled', false );
+	}
 }

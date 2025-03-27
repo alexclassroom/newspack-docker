@@ -22,6 +22,7 @@ class Admin {
 		add_action( 'network_admin_notices', [ __CLASS__, 'remove_admin_notices' ], -PHP_INT_MAX );
 		add_action( 'wp_head', [ __CLASS__, 'story_preview_css' ], 100 );
 		add_filter( 'newspack_popups_should_display_prompt', [ __CLASS__, 'hide_prompts_on_preview' ] );
+		add_action( 'enqueue_block_editor_assets', [ __CLASS__, 'enqueue_editor_assets' ], 9 );
 	}
 
 	/**
@@ -48,28 +49,36 @@ class Admin {
 	 * Enqueue assets.
 	 */
 	public static function enqueue_assets() {
-		if ( ! isset( $_GET['page'] ) || 'newspack-story-budget' !== $_GET['page'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			return;
-		}
-		wp_enqueue_script(
-			'newspack-story-budget',
-			plugin_dir_url( __DIR__ ) . 'dist/story-budget.js',
-			[ 'wp-components', 'wp-data-controls', 'wp-core-data' ],
-			filemtime( NEWSPACK_STORY_BUDGET_PLUGIN_DIR . 'dist/story-budget.js' ),
+		wp_register_script(
+			'newspack-story-budget-data',
+			plugin_dir_url( __DIR__ ) . 'dist/story-budget-data.js',
+			[ 'wp-data-controls', 'wp-core-data' ],
+			filemtime( NEWSPACK_STORY_BUDGET_PLUGIN_DIR . 'dist/story-budget-data.js' ),
 			true
 		);
 		wp_localize_script(
-			'newspack-story-budget',
+			'newspack-story-budget-data',
 			'newspackStoryBudget',
 			[
 				'apiNamespace' => API::NAMESPACE,
 			]
 		);
+
+		if ( ! isset( $_GET['page'] ) || 'newspack-story-budget' !== $_GET['page'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			return;
+		}
+		wp_enqueue_script(
+			'newspack-story-budget-app',
+			plugin_dir_url( __DIR__ ) . 'dist/story-budget-app.js',
+			[ 'newspack-story-budget-data', 'wp-components' ],
+			filemtime( NEWSPACK_STORY_BUDGET_PLUGIN_DIR . 'dist/story-budget-app.js' ),
+			true
+		);
 		wp_enqueue_style(
-			'newspack-story-budget',
-			plugin_dir_url( __DIR__ ) . 'dist/story-budget.css',
+			'newspack-story-budget-app',
+			plugin_dir_url( __DIR__ ) . 'dist/story-budget-app.css',
 			[ 'wp-components' ],
-			filemtime( NEWSPACK_STORY_BUDGET_PLUGIN_DIR . 'dist/story-budget.css' )
+			filemtime( NEWSPACK_STORY_BUDGET_PLUGIN_DIR . 'dist/story-budget-app.css' )
 		);
 	}
 
@@ -140,5 +149,28 @@ class Admin {
 			return false;
 		}
 		return $should_display;
+	}
+
+	/**
+	 * Enqueue editor assets.
+	 */
+	public static function enqueue_editor_assets() {
+		$story = new Story( \get_the_ID() );
+		if ( ! $story->is_valid() ) {
+			return;
+		}
+		wp_enqueue_script(
+			'newspack-story-budget-editor',
+			plugin_dir_url( __DIR__ ) . 'dist/story-budget-editor.js',
+			[ 'newspack-story-budget-data', 'wp-components' ],
+			filemtime( NEWSPACK_STORY_BUDGET_PLUGIN_DIR . 'dist/story-budget-editor.js' ),
+			true
+		);
+		wp_enqueue_style(
+			'newspack-story-budget-editor',
+			plugin_dir_url( __DIR__ ) . 'dist/story-budget-editor.css',
+			[ 'wp-components' ],
+			filemtime( NEWSPACK_STORY_BUDGET_PLUGIN_DIR . 'dist/story-budget-editor.css' )
+		);
 	}
 }

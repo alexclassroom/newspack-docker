@@ -20,12 +20,9 @@ import {
 /**
  * Internal dependencies.
  */
-import { registerStore } from '../store';
 import Stories from '../components/stories';
 import Story from '../components/story';
-import './style.scss';
-
-registerStore();
+import '../style.scss';
 
 const Page = ( { children, name, ...props } ) => {
 	const className = name ? `newspack-story-budget__page__${ name }` : '';

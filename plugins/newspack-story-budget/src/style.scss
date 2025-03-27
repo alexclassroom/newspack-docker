@@ -1,6 +1,6 @@
 @import "@wordpress/dataviews/build-style/style.css";
 
-.toplevel_page_newspack-story-budget {
+body.toplevel_page_newspack-story-budget {
 	background: #fff;
 	--wp-components-color-accent: #003da5;
 	--wp-components-color-accent-darker-10: #00296e;
@@ -111,9 +111,7 @@
 		box-shadow: -1px 0 0 0 rgba(0, 0, 0, 0.133);
 		z-index: 1000;
 	}
-}
-
-// Hides the primary "View" action from the action dropdown.
-[id^=":r"][data-dialog] [role="group"] > :first-child {
-	display: none;
+	&__post-status-info {
+		margin: 0;
+	}
 }

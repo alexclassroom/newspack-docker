@@ -7,10 +7,10 @@
 const getBaseWebpackConfig = require( 'newspack-scripts/config/getWebpackConfig' );
 const path = require( 'path' );
 
-module.exports = getBaseWebpackConfig(
-	{
-		entry: {
-			'story-budget': path.join( __dirname, 'src', 'app' ),
-		},
-	}
-);
+module.exports = getBaseWebpackConfig( {
+	entry: {
+		'story-budget-data': path.join( __dirname, 'src', 'store' ),
+		'story-budget-app': path.join( __dirname, 'src', 'app' ),
+		'story-budget-editor': path.join( __dirname, 'src', 'editor' ),
+	},
+} );

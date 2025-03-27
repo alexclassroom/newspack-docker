@@ -25,7 +25,7 @@ import StoryFieldPanel from './story-field-panel';
 
 export default ( { onCancel = () => {} } ) => {
 	const { id } = useParams();
-	const { story, isLoadingStory, canEdit } = useSelect( select => ( {
+	const { fields, story, isLoadingStory, canEdit } = useSelect( select => ( {
 		fields: select( storeNamespace ).getFields(),
 		story: select( storeNamespace ).getStory( id ),
 		isLoadingStory: select( storeNamespace ).isLoadingStory( id ),
@@ -96,6 +96,7 @@ export default ( { onCancel = () => {} } ) => {
 					} }
 				>
 					<StoryFieldPanel
+						fields={ fields }
 						story={ story }
 						onChange={ setEditedStory }
 					/>

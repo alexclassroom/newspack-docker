@@ -2,54 +2,36 @@
 /**
  * WordPress dependencies.
  */
-import {
-	__experimentalVStack as VStack,
-	__experimentalHStack as HStack,
-	__experimentalText as Text,
-} from '@wordpress/components';
-import { useSelect } from '@wordpress/data';
+import { __experimentalVStack as VStack } from '@wordpress/components';
 import { useState, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies.
  */
-import { NAMESPACE as storeNamespace } from '../store/constants';
-import StoryField from './story-field';
+import StoryFieldPanelRow from './story-field-panel-row';
 
-const StoryFieldPanelRow = ( { field, story, onChange } ) => {
-	const popoverProps = {
-		placement: 'left-start',
-	};
-	return (
-		<HStack
-			key={ field.slug }
-			className="newspack-story-budget__field-row"
-		>
-			<Text>{ field.name }:</Text>
-			<StoryField
-				fieldId={ field.slug }
-				storyId={ story.id }
-				value={ story[ field.slug ] }
-				onChange={ onChange }
-				popoverProps={ popoverProps }
-			/>
-		</HStack>
-	);
-};
-
-export default ( { story, onChange = () => {} } ) => {
-	const fields = useSelect( select => select( storeNamespace ).getFields() );
+export default ( {
+	fields,
+	story,
+	rowAnchor = 'field',
+	onChange = () => {},
+} ) => {
 	const [ editedStory, setEditedStory ] = useState( story );
 
 	useEffect( () => {
 		setEditedStory( story );
 	}, [ story ] );
 
+	if ( ! story ) {
+		return null;
+	}
+
 	return (
-		<VStack>
+		<VStack style={ { width: '100%' } }>
 			{ fields.map( field => (
 				<StoryFieldPanelRow
 					key={ field.slug }
+					anchor={ rowAnchor }
 					field={ field }
 					story={ editedStory }
 					onChange={ value => {

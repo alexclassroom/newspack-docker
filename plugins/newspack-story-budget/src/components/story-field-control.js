@@ -8,6 +8,7 @@ import {
 	__experimentalVStack as VStack,
 	CheckboxControl,
 	RadioControl,
+	SelectControl,
 	DatePicker,
 	DateTimePicker,
 	TextareaControl,
@@ -35,11 +36,27 @@ export default ( { fieldId, value, onChange = () => {} } ) => {
 				val = parseInt( new Date( val ).getTime() / 1000 );
 			}
 			if ( field.type === 'number' ) {
-				val = val * 1;
+				if ( field.is_multiple ) {
+					val = val.map( v => v * 1 );
+				} else {
+					val = val * 1;
+				}
 			}
 			onChange( val );
 		},
 	};
+
+	// The budgets field should always render a select control.
+	if ( field.slug === 'budgets' ) {
+		return (
+			<SelectControl
+				options={ field.options }
+				value={ value }
+				multiple={ field.is_multiple }
+				{ ...controlProps }
+			/>
+		);
+	}
 
 	if ( field.options?.length ) {
 		if ( field.is_multiple ) {
@@ -94,7 +111,7 @@ export default ( { fieldId, value, onChange = () => {} } ) => {
 	}
 
 	if ( field.type === 'longtext' ) {
-		return <TextareaControl value={ value } { ...controlProps } />;
+		return <TextareaControl value={ value || '' } { ...controlProps } />;
 	}
 
 	if ( field.type === 'boolean' ) {
@@ -111,5 +128,5 @@ export default ( { fieldId, value, onChange = () => {} } ) => {
 		controlProps.type = 'number';
 	}
 
-	return <InputControl value={ value } { ...controlProps } />;
+	return <InputControl value={ value || '' } { ...controlProps } />;
 };

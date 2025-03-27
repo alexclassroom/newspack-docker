@@ -16,9 +16,7 @@ const store = createReduxStore( NAMESPACE, {
 	initialState: INITIAL_STATE,
 } );
 
-export const registerStore = () => {
-	register( store );
+register( store );
 
-	// Initialize entities config when store is registered
-	dispatch( NAMESPACE ).initializeEntitiesConfig();
-};
+// Initialize entities config.
+dispatch( NAMESPACE ).initializeEntitiesConfig();

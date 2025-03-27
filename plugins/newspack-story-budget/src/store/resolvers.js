@@ -1,3 +1,5 @@
+import { NAMESPACE } from './constants';
+
 export const getFields =
 	() =>
 	async ( { dispatch } ) => {
@@ -5,9 +7,14 @@ export const getFields =
 	};
 
 export const getField =
-	slug =>
-	async ( { dispatch, select } ) => {
-		if ( select.hasField( slug ) ) {
+	() =>
+	async ( { dispatch, registry } ) => {
+		const { hasStartedResolution, hasFinishedResolution } =
+			registry.select( NAMESPACE );
+		if (
+			hasStartedResolution( 'getFields' ) ||
+			hasFinishedResolution( 'getFields' )
+		) {
 			return;
 		}
 		await dispatch.fetchFields();

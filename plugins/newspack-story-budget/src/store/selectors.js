@@ -9,9 +9,6 @@ export const getProgress = state => state.meta.progress;
 
 export const getFields = state => state.fields;
 
-export const hasField = ( state, slug ) =>
-	state.meta.fields.find( f => f.slug === slug ) ?? false;
-
 export const getField = ( state, slug ) =>
 	state.fields.find( f => f.slug === slug );
 
