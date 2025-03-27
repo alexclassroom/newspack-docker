@@ -372,7 +372,7 @@ class API {
 				__( 'Missing field.', 'newspack-story-budget' )
 			);
 		}
-		if ( null === $value && null !== $request->get_param( $key ) ) {
+		if ( null === $value && null !== $request->get_param( 'value' ) ) {
 			return new \WP_Error(
 				'invalid_value',
 				sprintf(
