@@ -88,7 +88,13 @@ if ( ! function_exists( 'newspack_posted_by' ) ) :
 			return;
 		}
 
-		if ( function_exists( 'coauthors_posts_links' ) && ! empty( get_coauthors() ) ) : // phpcs:ignore PHPCompatibility.LanguageConstructs.NewEmptyNonVariable.Found
+		// Short-circuit function if has newspack_posted_by_overwrite filter.
+		$byline = apply_filters( 'pre_newspack_posted_by', false );
+
+		if ( $byline ) :
+			echo $byline;
+			return;
+		elseif ( function_exists( 'coauthors_posts_links' ) && ! empty( get_coauthors() ) ) : // phpcs:ignore PHPCompatibility.LanguageConstructs.NewEmptyNonVariable.Found
 
 			$authors      = get_coauthors();
 			$author_count = count( $authors );
