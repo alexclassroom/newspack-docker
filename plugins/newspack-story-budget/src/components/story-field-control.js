@@ -2,6 +2,7 @@
 /**
  * WordPress dependencies.
  */
+import { __ } from '@wordpress/i18n';
 import { useSelect } from '@wordpress/data';
 import {
 	__experimentalInputControl as InputControl,
@@ -35,12 +36,16 @@ export default ( { fieldId, value, onChange = () => {} } ) => {
 			if ( field.type === 'date' || field.type === 'datetime' ) {
 				val = parseInt( new Date( val ).getTime() / 1000 );
 			}
-			if ( field.type === 'number' ) {
+			if ( field.type === 'number' && val !== '' ) {
 				if ( field.is_multiple ) {
 					val = val.map( v => v * 1 );
 				} else {
 					val = val * 1;
 				}
+			}
+			// If the value is an empty string, set it to null so it skips type check and clears the field.
+			if ( val === '' ) {
+				val = null;
 			}
 			onChange( val );
 		},
@@ -50,8 +55,14 @@ export default ( { fieldId, value, onChange = () => {} } ) => {
 	if ( field.slug === 'budgets' ) {
 		return (
 			<SelectControl
-				options={ field.options }
-				value={ value }
+				options={ [
+					{
+						value: '',
+						label: __( 'No budget', 'newspack-story-budget' ),
+					},
+					...field.options,
+				] }
+				value={ value || '' }
 				multiple={ field.is_multiple }
 				{ ...controlProps }
 			/>

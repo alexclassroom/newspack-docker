@@ -83,7 +83,7 @@ export default ( {
 
 	const { saveStoryField } = useDispatch( storeNamespace );
 
-	value = value !== null && value !== undefined ? value : story[ fieldId ];
+	value = value !== undefined ? value : story[ fieldId ];
 
 	const [ editedValue, setEditedValue ] = useState( value );
 
