@@ -6,6 +6,7 @@ import fields from './fields';
 import search from './search';
 import meta from './meta';
 import view from './view';
+import errors from './errors';
 
 export default combineReducers( {
 	budgets,
@@ -14,4 +15,5 @@ export default combineReducers( {
 	search,
 	meta,
 	view,
+	errors,
 } );

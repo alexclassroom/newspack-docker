@@ -166,14 +166,15 @@ class Story {
 	 */
 	public function to_array() {
 		$all_fields = Fields::get_all_fields();
-		$values    = [
+		$values = [
 			// `id` and `metadata are protected keys.
 			'id'       => $this->id,
 
 			// Static post info that doesn't need to be presented as fields.
 			'metadata' => [
-				'slug'        => \get_post_field( 'post_name', $this->post ),
+				'edit_url'    => \get_edit_post_link( $this->id, 'edit' ),
 				'preview_url' => \add_query_arg( 'newspack-story-preview', true, get_permalink( $this->id ) ),
+				'slug'        => \get_post_field( 'post_name', $this->post ),
 			],
 		];
 

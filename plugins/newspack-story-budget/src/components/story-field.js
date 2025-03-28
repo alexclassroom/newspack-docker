@@ -8,6 +8,7 @@ import {
 	__experimentalHStack as HStack,
 	Dropdown,
 	Button,
+	Notice,
 	Tooltip,
 } from '@wordpress/components';
 import { __experimentalInspectorPopoverHeader as InspectorPopoverHeader } from '@wordpress/block-editor';
@@ -31,11 +32,12 @@ export default ( {
 	saveInPlace = false,
 	popoverProps,
 } ) => {
-	const { story, field, canEditPost, isLoadingStory } = useSelect(
+	const { story, field, canEditPost, isLoadingStory, fieldError } = useSelect(
 		select => ( {
 			story: select( storeNamespace ).getStory( storyId ),
 			field: select( storeNamespace ).getField( fieldId ),
 			isLoadingStory: select( storeNamespace ).isLoadingStory( storyId ),
+			fieldError: select( storeNamespace ).getFieldError( storyId, fieldId ),
 			canEditPost: select( 'core' ).canUser( 'update', {
 				kind: 'postType',
 				name: 'post',
@@ -44,11 +46,12 @@ export default ( {
 		} )
 	);
 
-	const { saveStoryField } = useDispatch( storeNamespace );
+	const { saveStoryField, clearErrors } = useDispatch( storeNamespace );
 
 	value = value !== undefined ? value : story[ fieldId ];
 
 	const [ editedValue, setEditedValue ] = useState( value );
+	const [ isOpen, setIsOpen ] = useState( saveInPlace && !! fieldError );
 
 	if ( ! field ) {
 		return null;
@@ -89,6 +92,7 @@ export default ( {
 	return (
 		<div className="newspack-story-budget__field">
 			<Dropdown
+				open={ isOpen && ! isLoadingStory }
 				popoverProps={
 					popoverProps || {
 						placement: 'right-start',
@@ -96,7 +100,8 @@ export default ( {
 					}
 				}
 				contentClassName="newspack-story-budget__field__popover"
-				renderToggle={ ( { isOpen, onToggle } ) => (
+				onToggle={ () => setIsOpen( !isOpen ) }
+				renderToggle={ ( { onToggle } ) => (
 					<Button
 						className="newspack-story-budget__field__button"
 						variant="tertiary"
@@ -124,20 +129,35 @@ export default ( {
 							title={ field.name }
 							onClose={ onClose }
 						/>
+						{
+							saveInPlace && fieldError && (
+								<Notice
+									className="newspack-story-budget__error"
+									isDismissible={ false }
+									status="error"
+								>
+									{ fieldError }
+								</Notice>
+							)
+						}
 						{ field.description && field.type !== 'boolean' && (
 							<p>{ field.description }</p>
 						) }
 						<form
-							onSubmit={ e => {
+							onSubmit={ async (e) => {
 								e.preventDefault();
 								if ( saveInPlace ) {
-									saveStoryField(
+									const response = await saveStoryField(
 										storyId,
 										fieldId,
 										editedValue
 									);
+
+									// Reopen the popover if there is an error.
+									if ( response?.payload?.message ) {
+										setIsOpen( true );
+									}
 								}
-								onClose();
 							} }
 						>
 							<VStack spacing={ 4 }>
@@ -158,14 +178,7 @@ export default ( {
 									>
 										<Button
 											variant="primary"
-											onClick={ () => {
-												saveStoryField(
-													storyId,
-													fieldId,
-													editedValue
-												);
-												onClose();
-											} }
+											type="submit"
 										>
 											{ __(
 												'Save',
@@ -191,6 +204,7 @@ export default ( {
 					</>
 				) }
 				onClose={ () => {
+					clearErrors( storyId, fieldId );
 					onCloseEdit( editedValue );
 				} }
 			/>

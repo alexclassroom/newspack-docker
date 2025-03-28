@@ -355,14 +355,12 @@ class API {
 		$field  = $request->get_param( 'slug' ) ? Fields::get_field( $request->get_param( 'slug' ) ) : null;
 		$value = self::sanitize_field_value( $field, $request->get_param( 'value' ) );
 		if ( ! $story->is_valid() ) {
-			return rest_ensure_response(
-				new \WP_Error(
-					'story_not_found',
-					sprintf(
-						// translators: %d is the story ID.
-						__( 'Story with ID "%d" not found.', 'newspack-story-budget' ),
-						$request->get_param( 'id' )
-					)
+			return new \WP_Error(
+				'story_not_found',
+				sprintf(
+					// translators: %d is the story ID.
+					__( 'Story with ID "%d" not found.', 'newspack-story-budget' ),
+					$request->get_param( 'id' )
 				)
 			);
 		}
@@ -408,26 +406,6 @@ class API {
 			);
 		}
 		return rest_ensure_response( array_values( $fields ) );
-	}
-
-	/**
-	 * Update a field value.
-	 *
-	 * @param \WP_REST_Request $request Request object.
-	 *
-	 * @return \WP_REST_Response|\WP_Error
-	 */
-	public static function update_field( $request ) {
-		$field = Fields::get_field( $request->get_param( 'slug' ) );
-		if ( ! $field ) {
-			return new \WP_Error( 'field_not_found', __( 'Field not found.', 'newspack-story-budget' ), [ 'status' => 404 ] );
-		}
-		if ( ! $field->is_editable() ) {
-			return new \WP_Error( 'field_not_editable', __( 'Field is read-only.', 'newspack-story-budget' ), [ 'status' => 403 ] );
-		}
-
-		$field->update_value( $request->get_param( 'post_id' ), $request->get_param( 'value' ) );
-		return rest_ensure_response( $field->to_array() );
 	}
 
 	/**

@@ -54,4 +54,8 @@ export const getStory = ( state, id ) => state.stories[ id ];
 
 export const getView = state => state.view;
 
-export const getErrors = state => state.meta.errors;
+export const getErrors = state => state.errors;
+
+export const getFieldError = ( state, storyId, fieldId ) => state.errors[ `${ storyId }-${ fieldId }` ];
+
+export const getStoryError = ( state, storyId ) => state.errors[ `story-${ storyId }` ];

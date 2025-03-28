@@ -127,29 +127,30 @@ export function* fetchStories() {
 			payload: stories,
 		};
 	} catch ( error ) {
+		const message = error?.message || __( 'Error fetching stories. Please try again.', 'newspack-story-budget' )
 		return {
 			type: 'STORIES_ERROR',
-			payload: error,
+			payload: { message },
 		};
 	}
 }
 
 export function* fetchStory( id ) {
-	yield { type: 'FETCH_STORY_START', payload: id };
+	yield { type: 'FETCH_STORY_START', payload: { id } };
 	try {
 		const result = yield apiFetch( {
 			path: `${ apiNamespace }/stories/${ id }`,
 		} );
-		yield { type: 'FETCH_STORY_SUCCESS', payload: id };
+		yield { type: 'FETCH_STORY_SUCCESS', payload: { id } };
 		return {
 			type: 'STORIES_ADD',
 			payload: result,
 		};
 	} catch ( error ) {
-		yield { type: 'FETCH_STORY_ERROR', payload: id };
+		const message = error?.message || __( 'Error fetching story. Please try again.', 'newspack-story-budget' )
 		return {
-			type: 'STORIES_ERROR',
-			payload: error,
+			type: 'FETCH_STORY_ERROR',
+			payload: { id, message },
 		};
 	}
 }
@@ -189,4 +190,16 @@ export function* saveStoryField( id, slug, value ) {
 		const message = error?.message || __( 'Error saving field.', 'newspack-story-budget' );
 		return { type: 'SAVE_STORY_FIELD_ERROR', payload: { id, slug, value, message } };
 	}
+}
+
+export function clearErrors( storyId = null, fieldId = null ) {
+	if ( ! storyId ) {
+		return {
+			type: 'CLEAR_ALL_ERRORS',
+		};
+	}
+	return {
+		type: fieldId ? 'CLEAR_FIELD_ERROR' : 'CLEAR_STORY_ERROR',
+		payload: { id: storyId, slug: fieldId },
+	};
 }

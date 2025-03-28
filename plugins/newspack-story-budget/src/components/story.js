@@ -12,9 +12,10 @@ import {
 	__experimentalVStack as VStack,
 	Spinner,
 	Button,
+	Notice,
 } from '@wordpress/components';
 import { useSelect, useDispatch } from '@wordpress/data';
-import { useState } from '@wordpress/element';
+import { useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies.
@@ -23,19 +24,25 @@ import { NAMESPACE as storeNamespace } from '../store/constants';
 import StoryFieldPanel from './story-field-panel';
 
 export default ( { storyId, onCancel } ) => {
-	const { fields, story, isLoadingStory, canEdit } = useSelect( select => ( {
+	const { fields, story, isLoadingStory, canEdit, storyError } = useSelect( select => ( {
 		fields: select( storeNamespace ).getFields(),
 		story: select( storeNamespace ).getStory( storyId ),
 		isLoadingStory: select( storeNamespace ).isLoadingStory( storyId ),
+		storyError: select( storeNamespace ).getStoryError( storyId ),
 		canEdit: select( 'core' ).canUser( 'update', {
 			kind: 'postType',
 			name: 'post',
 			id: storyId,
 		} ),
 	} ) );
-	const { saveStory } = useDispatch( storeNamespace );
+	const { saveStory, clearErrors } = useDispatch( storeNamespace );
 	const [ editedStory, setEditedStory ] = useState( story );
 	const [ isIframeLoading, setIsIframeLoading ] = useState( true );
+
+	useEffect( () => {
+		clearErrors( storyId );
+	}, [ storyId ] );
+
 	if ( ! story ) {
 		if ( isLoadingStory ) {
 			return (
@@ -53,6 +60,22 @@ export default ( { storyId, onCancel } ) => {
 		}
 		return null;
 	}
+
+	const handleSave = async () => {
+		clearErrors( storyId );
+		await saveStory( storyId, editedStory );
+	};
+
+	const handleCancel = () => {
+		clearErrors( storyId );
+		onCancel?.();
+	};
+
+	const handleFieldChange = ( newStory ) => {
+		clearErrors( storyId );
+		setEditedStory( newStory );
+	};
+
 	return (
 		<HStack
 			alignment="stretch"
@@ -89,6 +112,15 @@ export default ( { storyId, onCancel } ) => {
 				/>
 			</VStack>
 			<VStack justify="top" className="newspack-story-budget__sidebar">
+				{ ! isIframeLoading && storyError && (
+					<Notice
+						className="newspack-story-budget__error"
+						isDismissible={ false }
+						status="error"
+					>
+						{ storyError }
+					</Notice>
+				) }
 				<div
 					style={ {
 						flexGrow: 1,
@@ -100,7 +132,7 @@ export default ( { storyId, onCancel } ) => {
 					<StoryFieldPanel
 						fields={ fields }
 						story={ story }
-						onChange={ setEditedStory }
+						onChange={ handleFieldChange }
 					/>
 				</div>
 				{ ( canEdit || onCancel ) && (
@@ -114,9 +146,7 @@ export default ( { storyId, onCancel } ) => {
 							<Button
 								variant="primary"
 								disabled={ isLoadingStory }
-								onClick={ () =>
-									saveStory( storyId, editedStory )
-								}
+								onClick={ handleSave }
 							>
 								{ __( 'Save', 'newspack-story-budget' ) }
 							</Button>
@@ -124,7 +154,7 @@ export default ( { storyId, onCancel } ) => {
 						<Button
 							variant="secondary"
 							disabled={ isLoadingStory }
-							onClick={ onCancel }
+							onClick={ handleCancel }
 						>
 							{ canEdit
 								? __( 'Cancel', 'newspack-story-budget' )

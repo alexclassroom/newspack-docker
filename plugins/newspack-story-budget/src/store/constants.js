@@ -5,6 +5,7 @@ export const INITIAL_STATE = {
 	stories: {},
 	search: [],
 	fields: [],
+	errors: {},
 	meta: {
 		loading: false,
 		progress: 0,

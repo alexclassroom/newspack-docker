@@ -7,17 +7,23 @@ import debounce from 'lodash/debounce';
 /**
  * WordPress dependencies.
  */
+import { __ } from '@wordpress/i18n';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { useEffect, useState } from '@wordpress/element';
 import { DataViews } from '@wordpress/dataviews/wp';
 import {
+	__experimentalHStack as HStack,
+	__experimentalVStack as VStack,
 	Icon,
+	Button,
+	Modal,
+	Notice,
 	ProgressBar,
 	Spinner,
 	ToggleControl,
-	__experimentalHStack as HStack,
+	Tooltip,
 } from '@wordpress/components';
-import { seen, update, edit } from '@wordpress/icons';
+import { edit, error, seen, update } from '@wordpress/icons';
 
 /**
  * Internal dependencies.
@@ -26,8 +32,9 @@ import { NAMESPACE as storeNamespace } from '../store/constants';
 import StoryField from './story-field';
 
 const TableRowField = ( { story, field, allowEdit = false } ) => {
-	const { isLoadingStory, view } = useSelect( select => ( {
+	const { isLoadingStory, storyError, view } = useSelect( select => ( {
 		isLoadingStory: select( storeNamespace ).isLoadingStory( story.id ),
+		storyError: select( storeNamespace ).getStoryError( story.id ),
 		view: select( storeNamespace ).getView(),
 	} ) );
 
@@ -49,23 +56,32 @@ const TableRowField = ( { story, field, allowEdit = false } ) => {
 					} }
 				/>
 			) }
+			{ fieldIdx === 0 && ! isLoadingStory && storyError && (
+				<Tooltip text={ storyError }>
+					<span className="newspack-story-budget__table-row-field-error">
+						<Icon icon={ error } />
+					</span>
+				</Tooltip>
+			) }
 		</div>
 	);
 };
 
 export default () => {
-	const { view, stories, fields, isLoading, progress } = useSelect(
+	const { view, stories, fields, isLoading, progress, errors } = useSelect(
 		select => ( {
 			view: select( storeNamespace ).getView(),
 			stories: select( storeNamespace ).getStories(),
 			fields: select( storeNamespace ).getFields(),
 			isLoading: select( storeNamespace ).isLoading(),
 			progress: select( storeNamespace ).getProgress(),
+			errors: select( storeNamespace ).getErrors(),
 		} )
 	);
 	const [ editMode, setEditMode ] = useState( false );
+	const [ modalOpen, setModalOpen ] = useState( false );
 
-	const { setView, setSearching, search, fetchStory } =
+	const { clearErrors, setView, setSearching, search, fetchStories, fetchStory } =
 		useDispatch( storeNamespace );
 
 	const doSearch = debounce( search, 300 );
@@ -127,19 +143,64 @@ export default () => {
 			isPrimary: false,
 			icon: <Icon icon={ update } />,
 			callback: items => {
+				clearErrors( items[ 0 ].id );
 				fetchStory( items[ 0 ].id );
 			},
 		},
 		{
 			id: 'edit',
 			label: 'Edit Post',
+			isEligible: item => !! item.metadata?.edit_url,
 			isPrimary: false,
 			icon: <Icon icon={ edit } />,
-			callback: () => {
-				// @TODO Redirect to the edit post page.
+			callback: ( items ) => {
+				if ( items[ 0 ].metadata?.edit_url ) {
+					window.open( items[ 0 ].metadata.edit_url );
+				}
 			},
 		},
 	];
+
+	if ( errors?.stories ) {
+		return (
+			<Modal
+				isOpen={ modalOpen }
+				onRequestClose={ () => {
+					setModalOpen( false );
+					clearErrors();
+				} }
+				size="small"
+				title={ __( 'Something went wrong', 'newspack-story-budget' ) }
+			>
+				<VStack
+					spacing={ 4 }
+				>
+					<Notice
+						className="newspack-story-budget__error"
+						isDismissible={ false }
+						status="error"
+					>
+						{ errors.stories }
+					</Notice>
+					<HStack
+						expanded
+						spacing={ 2 }
+						justify="end"
+						direction="row-reverse"
+					>
+						<Button
+							variant="primary"
+							onClick={ () => {
+								clearErrors();
+								fetchStories();
+							} }>
+								{ __( 'Refetch stories', 'newspack-story-budget' ) }
+						</Button>
+					</HStack>
+				</VStack>
+			</Modal>
+		);
+	}
 
 	return (
 		<DataViews
@@ -154,7 +215,7 @@ export default () => {
 					: stories.slice(
 							( view.page - 1 ) * view.perPage,
 							( view.page - 1 ) * view.perPage + view.perPage
-					  )
+					)
 			}
 			paginationInfo={ {
 				totalItems: stories.length,

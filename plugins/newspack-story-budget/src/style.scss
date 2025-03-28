@@ -6,6 +6,7 @@ body.toplevel_page_newspack-story-budget {
 	--wp-components-color-accent-darker-10: #00296e;
 	--wp-components-color-accent-darker-20: #001f53;
 	--wp-admin-theme-color: #003da5;
+	--wp-admin-color-alert-red: #cc1818;
 }
 
 .wrap {
@@ -121,7 +122,8 @@ body.toplevel_page_newspack-story-budget {
 	&__table-row-field {
 		margin: 0 -8px;
 		position: relative;
-		> svg {
+		> svg,
+		> span {
 			position: absolute;
 			top: 2px;
 			left: -34px;
@@ -129,6 +131,9 @@ body.toplevel_page_newspack-story-budget {
 		.newspack-story-budget__field__button,
 		.newspack-story-budget__field__value {
 			padding: 4px 8px;
+		}
+		.newspack-story-budget__table-row-field-error {
+			fill: var(--wp-admin-color-alert-red);
 		}
 	}
 	&__story {

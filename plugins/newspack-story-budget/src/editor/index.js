@@ -22,15 +22,29 @@ const StoryBudgetPanel = () => {
 		select( 'core/editor' ).getCurrentPostId()
 	);
 
-	const { fields, story, isSavingPost } = useSelect( select => ( {
+	const { fields, story, isSavingPost, storyError } = useSelect( select => ( {
 		fields: postId ? select( storeNamespace ).getFields() : [],
 		story: postId ? select( storeNamespace ).getStory( postId ) : null,
+		storyError: select( storeNamespace ).getStoryError( postId ),
 		isSavingPost: select( 'core/editor' ).isSavingPost(),
 	} ) );
 
 	const editableFields = fields.filter( field => field.show_in_editor );
 
+	const { createErrorNotice } = useDispatch( 'core/notices' );
 	const { saveStory } = useDispatch( storeNamespace );
+
+	useEffect( () => {
+		if ( storyError ) {
+			createErrorNotice(
+				storyError,
+				{
+					id: 'newspack-story-budget-story-error',
+					isDismissible: true,
+				}
+			);
+		}
+	}, [ storyError ] );
 
 	useEffect( () => {
 		setEditedStory( story );
