@@ -178,7 +178,14 @@ class Story {
 		];
 
 		foreach ( $all_fields as $field ) {
-			$values[ $field->get_slug() ] = $field->get_value( $this->id );
+			$value = $field->get_value( $this->id );
+			if ( is_null( $value ) ) {
+				continue;
+			}
+			if ( in_array( $field->get_type(), [ 'text', 'longtext', 'date', 'datetime' ], true ) && empty( $value ) ) {
+				continue;
+			}
+			$values[ $field->get_slug() ] = $value;
 		}
 		return $values;
 	}

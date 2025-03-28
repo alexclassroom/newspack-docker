@@ -63,17 +63,6 @@ class Read_Only_Field extends Abstract_Field {
 			return null;
 		}
 
-		if ( ! in_array( \get_post_type( $post_id ), Budgets::get_post_types(), true ) ) {
-			return new \WP_Error(
-				'newspack_story_budget_invalid_post_type',
-				sprintf(
-					// Translators: %d is the post ID.
-					__( 'Post ID %d is not a valid post type for story budgets.', 'newspack-story-budget' ),
-					$post_id
-				)
-			);
-		}
-
 		// Dynamically calculate the value.
 		if ( $this->get_value_callback && is_callable( $this->get_value_callback ) ) {
 			return call_user_func( $this->get_value_callback, $post_id );
@@ -81,7 +70,12 @@ class Read_Only_Field extends Abstract_Field {
 
 		// Get the stored value.
 		if ( $this->post_save_callback && is_callable( $this->post_save_callback ) ) {
-			return \get_post_meta( $post_id, $this->get_post_meta_name(), true );
+			$post_meta = \get_post_meta( $post_id, $this->get_post_meta_name(), true );
+			// Post meta will return an empty string if the value is not set.
+			if ( '' === $post_meta ) {
+				return null;
+			}
+			return $post_meta;
 		}
 
 		return null;

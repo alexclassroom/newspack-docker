@@ -112,15 +112,8 @@ class Editable_Field extends Abstract_Field {
 	 * @return mixed The field's value or WP_Error.
 	 */
 	public function get_value( $post_id, $default_value = null ) {
-		if ( ! in_array( \get_post_type( $post_id ), Budgets::get_post_types(), true ) ) {
-			return new \WP_Error(
-				'newspack_story_budget_invalid_post_type',
-				sprintf(
-					// Translators: %d is the post ID.
-					__( 'Post ID %d is not a valid post type for story budgets.', 'newspack-story-budget' ),
-					$post_id
-				)
-			);
+		if ( ! $post_id || ! get_post( $post_id ) ) {
+			return null;
 		}
 
 		$default_value = is_callable( $this->default_value ) ? call_user_func( $this->default_value, $post_id ) : $default_value;

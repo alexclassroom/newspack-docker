@@ -3,7 +3,6 @@
  * WordPress dependencies.
  */
 import { __ } from '@wordpress/i18n';
-import { useSelect } from '@wordpress/data';
 import {
 	__experimentalInputControl as InputControl,
 	__experimentalVStack as VStack,
@@ -15,16 +14,7 @@ import {
 	TextareaControl,
 } from '@wordpress/components';
 
-/**
- * Internal dependencies.
- */
-import { NAMESPACE as storeNamespace } from '../store/constants';
-
-export default ( { fieldId, value, onChange = () => {} } ) => {
-	const { field } = useSelect( select => ( {
-		field: select( storeNamespace ).getField( fieldId ),
-	} ) );
-
+export default ( { field, value, onChange = () => {} } ) => {
 	if ( ! field ) {
 		return null;
 	}
