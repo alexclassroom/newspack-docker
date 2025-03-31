@@ -352,10 +352,12 @@ if ( ! function_exists( 'newspack_post_thumbnail' ) ) :
 			return;
 		}
 
+		$after_first_featured_image = isset( $GLOBALS['newspack_after_first_featured_image'] );
+
 		$default_image_attributes = array(
-			'loading'             => isset( $GLOBALS['newspack_after_first_featured_image'] ) ? 'lazy' : false, // Disable lazy loading for first featured image on the page.
-			'data-hero-candidate' => isset( $GLOBALS['newspack_after_first_featured_image'] ) ? false : true, // Make this image a hero candidate for AMP prerendering.
-			'fetchpriority'       => 'high',
+			'loading'             => $after_first_featured_image ? 'lazy' : false, // Disable lazy loading for first featured image on the page.
+			'data-hero-candidate' => $after_first_featured_image ? false : true, // Make this image a hero candidate for AMP prerendering.
+			'fetchpriority'       => $after_first_featured_image ? 'auto' : 'high',
 		);
 
 		if ( is_singular() ) :
