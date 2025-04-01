@@ -278,6 +278,98 @@ class Fields {
 				'slug'          => 'nne_print_length',
 				'type'          => 'number',
 			],
+			[
+				'description'   => __( 'The websites this story will be published on.', 'newspack-story-budget' ),
+				'is_editable'   => true,
+				'is_sortable'   => false,
+				'is_multiple'   => true,
+				'name'          => __( 'Sites', 'newspack-story-budget' ),
+				'show_in_table' => true,
+				'slug'          => 'nne_sites',
+				'type'          => 'text',
+				'options'       => [
+					[
+						'label' => 'Concord Monitor',
+						'value' => 'concordmonitor.com',
+					],
+					[
+						'label' => 'Daily Hampshire Gazette',
+						'value' => 'gazettenet.com',
+					],
+					[
+						'label' => 'Valley Advocate',
+						'value' => 'valleyadvocate.com',
+					],
+					[
+						'label' => 'Greenfield Recorder',
+						'value' => 'recorder.com',
+					],
+					[
+						'label' => 'Athol Daily News',
+						'value' => 'atholdailynews.com',
+					],
+					[
+						'label' => 'Monadnock Ledget Transcript',
+						'value' => 'ledgertranscript.com',
+					],
+					[
+						'label' => 'Valley News',
+						'value' => 'vnews.com',
+					],
+				],
+			],
+			[
+				'description'   => __( 'The print publications this story will be published on.', 'newspack-story-budget' ),
+				'is_editable'   => true,
+				'is_sortable'   => false,
+				'is_multiple'   => true,
+				'name'          => __( 'Publications', 'newspack-story-budget' ),
+				'show_in_table' => true,
+				'slug'          => 'nne_publications',
+				'type'          => 'text',
+				'options'       => [
+					[
+						'label' => 'Concord Monitor',
+						'value' => 'concordmonitor.com',
+					],
+					[
+						'label' => 'The Concord Insider',
+						'value' => 'concordinsider.com',
+					],
+					[
+						'label' => 'Around Concord',
+						'value' => 'aroundconcord.com',
+					],
+					[
+						'label' => 'Daily Hampshire Gazette',
+						'value' => 'gazettenet.com',
+					],
+					[
+						'label' => 'Amherst Bulletin',
+						'value' => 'amherstbulletin.com',
+					],
+					[
+						'label' => 'Valley Advocate',
+						'value' => 'valleyadvocate.com',
+					],
+					[
+						'label' => 'Greenfield Recorder',
+						'value' => 'recorder.com',
+					],
+					[
+						'label' => 'Athol Daily News',
+						'value' => 'atholdailynews.com',
+					],
+					[
+						'label' => 'Monadnock Ledget Transcript',
+						'value' => 'ledgertranscript.com',
+					],
+					[
+						'label' => 'Valley News',
+						'value' => 'vnews.com',
+					],
+				],
+			],
 		];
 	}
 
