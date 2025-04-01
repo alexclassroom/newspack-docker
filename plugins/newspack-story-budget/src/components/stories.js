@@ -114,7 +114,10 @@ export default () => {
 		isVisible: () => field.show_in_table,
 		type: field.type,
 		enableSorting: field.is_sortable,
-		elements: field.options?.length ? field.options : undefined,
+		elements:
+			field.is_filterable && field.options?.length
+				? field.options
+				: undefined,
 		filterBy: field.is_filterable
 			? {
 					operators: field.is_multiple
