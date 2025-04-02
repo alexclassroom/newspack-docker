@@ -16,6 +16,8 @@ export const getField = ( state, slug ) =>
 
 export const getBudgets = state => state.budgets;
 
+export const getAllStories = state => Object.values( state.stories );
+
 export const getStories = createSelector(
 	state => {
 		const { search, view, fields } = state;

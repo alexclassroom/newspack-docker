@@ -28,6 +28,7 @@ import { edit, error, seen, update } from '@wordpress/icons';
 /**
  * Internal dependencies.
  */
+import utils from '../utils';
 import { NAMESPACE as storeNamespace } from '../store/constants';
 import StoryField from './story-field';
 
@@ -108,21 +109,50 @@ export default () => {
 		);
 	}
 
+	const getFieldElements = field => {
+		if ( ! field.is_filterable ) {
+			return undefined;
+		}
+		if ( field.options?.length ) {
+			return field.options;
+		}
+		if ( field.type === 'boolean' ) {
+			return [
+				{ value: true, label: __( 'Yes', 'newspack-story-budget' ) },
+				{ value: false, label: __( 'No', 'newspack-story-budget' ) },
+			];
+		}
+		// Fallback to unique values.
+		const values = utils.fields.getUniqueValues( field );
+		if ( ! values.length ) {
+			return undefined;
+		}
+		return values.map( value => ( {
+			value,
+			label: value,
+		} ) );
+	};
+
+	const getFilterByOperators = field => {
+		if ( field.is_multiple ) {
+			return [ 'isAny', 'isNone', 'isAll', 'isNotAll' ];
+		}
+		if ( field.type === 'boolean' ) {
+			return [ 'is' ];
+		}
+		return [ 'isAny', 'isNone' ];
+	};
+
 	const dataViewFields = fields.map( field => ( {
 		id: field.slug,
 		label: field.name,
 		isVisible: () => field.show_in_table,
 		type: field.type,
 		enableSorting: field.is_sortable,
-		elements:
-			field.is_filterable && field.options?.length
-				? field.options
-				: undefined,
+		elements: getFieldElements( field ),
 		filterBy: field.is_filterable
 			? {
-					operators: field.is_multiple
-						? [ 'isAny', 'isNone', 'isAll', 'isNotAll' ]
-						: [ 'isAny', 'isNone' ],
+					operators: getFilterByOperators( field ),
 					isPrimary: field.slug === 'budgets',
 			  }
 			: undefined,

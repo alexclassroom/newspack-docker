@@ -2,7 +2,15 @@ export const filter = ( stories, fields, view ) => {
 	for ( const { operator, value, field } of view.filters ) {
 		const fieldObject = fields.find( f => f.slug === field );
 
-		if ( ! fieldObject?.is_filterable || ! value?.length ) {
+		if ( ! fieldObject?.is_filterable ) {
+			continue;
+		}
+
+		if (
+			value === null ||
+			value === undefined ||
+			( Array.isArray( value ) && ! value.length )
+		) {
 			continue;
 		}
 
@@ -72,4 +80,3 @@ export const sort = ( stories, fields, view ) => {
 	}
 	return stories;
 };
-

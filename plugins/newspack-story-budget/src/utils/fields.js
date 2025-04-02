@@ -1,3 +1,6 @@
+import { select } from '@wordpress/data';
+import { NAMESPACE as storeNamespace } from '../store/constants';
+
 export const getDisplayValue = ( field, value ) => {
 	if (
 		value === null ||
@@ -35,4 +38,14 @@ export const getDisplayValue = ( field, value ) => {
 		return value.join( ', ' );
 	}
 	return value;
+};
+
+export const getUniqueValues = field => {
+	const stories = select( storeNamespace ).getAllStories();
+	return stories
+		.map( story => story[ field.slug ] )
+		.flat()
+		.filter(
+			( value, index, self ) => value && self.indexOf( value ) === index
+		);
 };
