@@ -200,6 +200,16 @@ class Story {
 			'preview_url' => \add_query_arg( 'newspack-story-preview', true, get_permalink( $this->id ) ),
 			'edit_url'    => \get_edit_post_link( $this->id, 'edit' ),
 			'can_edit'    => current_user_can( 'edit_post', $this->id ),
+			'can_preview' => $this->can_preview(),
 		];
+	}
+
+	/**
+	 * Whether the story can be previewed by the current user.
+	 *
+	 * @return bool
+	 */
+	public function can_preview() {
+		return current_user_can( 'edit_post', $this->id ) || 'publish' === $this->post->post_status;
 	}
 }

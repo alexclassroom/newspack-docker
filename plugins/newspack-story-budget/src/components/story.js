@@ -1,19 +1,17 @@
 /* eslint @wordpress/no-unsafe-wp-apis: 0 */
 /**
- * External dependencies.
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * WordPress dependencies.
  */
+import { __ } from '@wordpress/i18n';
 import {
 	__experimentalHStack as HStack,
 	__experimentalVStack as VStack,
+	Icon,
 	Spinner,
 	Button,
 	Notice,
 } from '@wordpress/components';
+import { notAllowed } from '@wordpress/icons';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { useEffect, useState } from '@wordpress/element';
 
@@ -80,7 +78,30 @@ export default ( { storyId, onCancel } ) => {
 			className="newspack-story-budget__story"
 		>
 			<VStack style={ { flexGrow: 1, position: 'relative' } }>
-				{ isIframeLoading && (
+				{ ! story.metadata?.can_preview && (
+					<VStack
+						style={ {
+							position: 'absolute',
+							top: 0,
+							left: 0,
+							right: 0,
+							bottom: 0,
+							background: '#fff',
+							zIndex: 2,
+						} }
+						alignment="center"
+						justify="center"
+					>
+						<Icon icon={ notAllowed } size={ 32 } />
+						<p>
+							{ __(
+								'Preview is unavailable',
+								'newspack-story-budget'
+							) }
+						</p>
+					</VStack>
+				) }
+				{ story.metadata?.can_preview && isIframeLoading && (
 					<VStack
 						style={ {
 							position: 'absolute',
@@ -97,18 +118,19 @@ export default ( { storyId, onCancel } ) => {
 						<Spinner />
 					</VStack>
 				) }
-				{ story?.metadata?.preview_url && (
-					<iframe
-						title={ story.title }
-						src={ story.metadata.preview_url }
-						style={ {
-							width: '100%',
-							height: '100%',
-							minHeight: '500px',
-						} }
-						onLoad={ () => setIsIframeLoading( false ) }
-					/>
-				) }
+				{ story.metadata?.can_preview &&
+					story?.metadata?.preview_url && (
+						<iframe
+							title={ story.title }
+							src={ story.metadata.preview_url }
+							style={ {
+								width: '100%',
+								height: '100%',
+								minHeight: '500px',
+							} }
+							onLoad={ () => setIsIframeLoading( false ) }
+						/>
+					) }
 			</VStack>
 			<VStack justify="top" className="newspack-story-budget__sidebar">
 				{ ! isIframeLoading && storyError && (

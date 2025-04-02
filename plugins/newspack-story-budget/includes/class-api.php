@@ -234,23 +234,28 @@ class API {
 	 * @return bool
 	 */
 	public static function stories_permission_callback( $request ) {
-		// Check if the user can edit a single story.
+		if ( current_user_can( 'edit_others_posts' ) ) {
+			return true;
+		}
+
+		if ( ! current_user_can( 'edit_posts' ) ) {
+			return false;
+		}
+
 		$id = $request->get_param( 'id' );
 		if ( $id ) {
+			$post = get_post( $id );
+			if ( (int) $post->post_author !== (int) get_current_user_id() ) {
+				return false;
+			}
+			$method = $request->get_method();
+			if ( 'GET' === $method ) {
+				return current_user_can( 'read_post', $id );
+			}
 			return current_user_can( 'edit_post', $id );
 		}
 
-		// Check if the user can edit the stories in batch requests.
-		$story_ids = $request->get_param( 'story_ids' );
-		if ( $story_ids ) {
-			foreach ( $story_ids as $story_id ) {
-				if ( ! current_user_can( 'edit_post', $story_id ) ) {
-					return false;
-				}
-			}
-		}
-
-		return current_user_can( 'edit_posts' );
+		return true;
 	}
 
 	/**
@@ -311,10 +316,15 @@ class API {
 	public static function get_stories_meta_batch( $request ) {
 		$story_ids = $request->get_param( 'story_ids' );
 
+		$is_editor = current_user_can( 'edit_others_posts' );
+
 		$results = [];
 		foreach ( $story_ids as $story_id ) {
 			$story = new Story( $story_id );
 			if ( ! $story->is_valid() ) {
+				continue;
+			}
+			if ( ! $is_editor && (int) $story->post->post_author !== (int) get_current_user_id() ) {
 				continue;
 			}
 			$results[ $story_id ] = $story->get_metadata();

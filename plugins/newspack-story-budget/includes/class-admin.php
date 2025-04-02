@@ -107,7 +107,11 @@ class Admin {
 	 * Check if the story preview is enabled.
 	 */
 	protected static function is_story_preview() {
-		return current_user_can( 'edit_post', get_the_ID() ) && isset( $_GET['newspack-story-preview'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$story = new Story( \get_the_ID() );
+		if ( ! $story->is_valid() ) {
+			return false;
+		}
+		return $story->can_preview() && isset( $_GET['newspack-story-preview'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	}
 
 	/**
