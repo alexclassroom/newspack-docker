@@ -94,16 +94,17 @@ class Fields {
 	public static function get_default_fields_config() {
 		return [
 			[
-				'default_value'  => [ __CLASS__, 'get_default_story_name' ],
-				'description'    => __( 'An internal name for the story.', 'newspack-story-budget' ),
-				'is_editable'    => true,
-				'is_searchable'  => true,
-				'is_sortable'    => true,
-				'name'           => __( 'Story Name', 'newspack-story-budget' ),
-				'show_in_table'  => true,
-				'show_in_editor' => true,
-				'slug'           => 'name',
-				'type'           => 'text',
+				'default_value'          => [ __CLASS__, 'get_default_story_name' ],
+				'description'            => __( 'An internal name for the story.', 'newspack-story-budget' ),
+				'is_editable'            => true,
+				'is_searchable'          => true,
+				'is_sortable'            => true,
+				'show_in_wp_posts_table' => true,
+				'name'                   => __( 'Story Name', 'newspack-story-budget' ),
+				'show_in_table'          => true,
+				'show_in_editor'         => true,
+				'slug'                   => 'name',
+				'type'                   => 'text',
 			],
 			[
 				'description'        => __( 'The post title.', 'newspack-story-budget' ),
