@@ -89,6 +89,16 @@ export default ( state = INITIAL_STATE.meta, action ) => {
 				...state,
 				storyMetaFetchQueue: {},
 			};
+		case 'SET_IS_CREATING_STORY':
+			return {
+				...state,
+				isCreatingStory: action.payload.isCreating,
+			};
+		case 'SET_IS_CREATING_BUDGET':
+			return {
+				...state,
+				isCreatingBudget: action.payload.isCreating,
+			};
 		default:
 			return state;
 	}

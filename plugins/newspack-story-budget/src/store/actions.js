@@ -151,6 +151,143 @@ export function* fetchBudgets() {
 }
 
 /**
+ * Create a new budget.
+ *
+ * @param {Object} budget      Budget data.
+ * @param {string} budget.name Budget name.
+ * @return {Object} Action object.
+ */
+export function* createBudget( budget ) {
+	if ( ! budget.name || ! budget.name.trim() ) {
+		return {
+			type: 'SET_BUDGET_ERROR',
+			payload: {
+				message: __(
+					'Budget name is required',
+					'newspack-story-budget'
+				),
+			},
+		};
+	}
+
+	yield {
+		type: 'SET_IS_CREATING_BUDGET',
+		payload: { isCreating: true },
+	};
+
+	try {
+		const result = yield apiFetch( {
+			path: `${ apiNamespace }/budgets`,
+			method: 'POST',
+			data: budget,
+		} );
+		yield {
+			type: 'BUDGETS_ADD',
+			payload: { [ result.id ]: result },
+		};
+		return result;
+	} catch ( error ) {
+		const message =
+			error?.message ||
+			__( 'Error creating budget.', 'newspack-story-budget' );
+
+		yield {
+			type: 'SET_BUDGET_ERROR',
+			payload: { message },
+		};
+	} finally {
+		yield {
+			type: 'SET_IS_CREATING_BUDGET',
+			payload: { isCreating: false },
+		};
+	}
+}
+
+/**
+ * Create a new story.
+ *
+ * @param {Object} storyData Story data.
+ * @return {Object} Action object.
+ */
+export function* createStory( storyData ) {
+	if ( ! storyData.title || ! storyData.title.trim() ) {
+		return {
+			type: 'SET_STORY_ERROR',
+			payload: {
+				message: __(
+					'Story title is required',
+					'newspack-story-budget'
+				),
+			},
+		};
+	}
+
+	yield {
+		type: 'SET_IS_CREATING_STORY',
+		payload: { isCreating: true },
+	};
+
+	try {
+		if ( storyData.newBudgetName ) {
+			if ( ! storyData.newBudgetName.trim() ) {
+				return {
+					type: 'SET_BUDGET_ERROR',
+					payload: {
+						message: __(
+							'Budget name is required',
+							'newspack-story-budget'
+						),
+					},
+				};
+			}
+
+			const budgetResult = yield apiFetch( {
+				path: `${ apiNamespace }/budgets`,
+				method: 'POST',
+				data: { name: storyData.newBudgetName.trim() },
+			} );
+
+			yield {
+				type: 'BUDGETS_ADD',
+				payload: { [ budgetResult.id ]: budgetResult },
+			};
+
+			storyData.budgets = [ budgetResult.id ];
+		}
+
+		const storyDataToSend = {
+			title: storyData.title || '',
+			budgets: storyData.budgets || [],
+		};
+
+		const result = yield apiFetch( {
+			path: `${ apiNamespace }/stories`,
+			method: 'POST',
+			data: storyDataToSend,
+		} );
+		yield {
+			type: 'STORIES_APPEND',
+			payload: { [ result.id ]: result },
+		};
+		return result;
+	} catch ( error ) {
+		const message =
+			error?.message ||
+			__( 'Error creating story.', 'newspack-story-budget' );
+
+		yield {
+			type: 'SET_STORY_ERROR',
+			payload: { message },
+		};
+	} finally {
+		yield {
+			type: 'SET_IS_CREATING_STORY',
+			payload: { isCreating: false },
+		};
+	}
+}
+
+/**
  * Fetch all stories from the API.
  *
  * @return {Object} Action object.
@@ -213,8 +350,7 @@ export function* fetchStories() {
 export function* refreshStories( silent = true ) {
 	// If no last refresh timestamp is found, resort to 30 minutes ago.
 	const lastRefresh =
-		select( NAMESPACE ).getLastRefresh() ||
-		Date.now() - 30 * 60 * 1000;
+		select( NAMESPACE ).getLastRefresh() || Date.now() - 30 * 60 * 1000;
 
 	yield { type: 'REFRESH_START', payload: { silent } };
 	try {
@@ -389,6 +525,13 @@ export function* saveStoryField( id, slug, value ) {
 	}
 }
 
+/**
+ * Clears all errors or specific errors
+ *
+ * @param {string|null} storyId The story ID to clear errors for, or null for all
+ * @param {string|null} fieldId The field ID to clear errors for, or null for all
+ * @return {Object} Action object
+ */
 export function clearErrors( storyId = null, fieldId = null ) {
 	if ( ! storyId ) {
 		return {

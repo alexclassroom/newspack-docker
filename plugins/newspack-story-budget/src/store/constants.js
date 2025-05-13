@@ -14,6 +14,8 @@ export const INITIAL_STATE = {
 		stories: {
 			can_edit: false,
 		},
+		isCreatingStory: false,
+		isCreatingBudget: false,
 	},
 	view: {
 		type: 'table',

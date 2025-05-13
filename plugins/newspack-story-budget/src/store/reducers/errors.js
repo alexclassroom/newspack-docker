@@ -6,12 +6,13 @@ export default ( state = INITIAL_STATE.errors, action ) => {
 		case 'STORIES_ERROR':
 			return {
 				...state,
-				'stories': action.payload.message,
+				stories: action.payload.message,
 			};
 		case 'SAVE_STORY_FIELD_ERROR':
 			return {
 				...state,
-				[ `${ action.payload.id }-${ action.payload.slug }` ]: action.payload.message,
+				[ `${ action.payload.id }-${ action.payload.slug }` ]:
+					action.payload.message,
 			};
 		case 'FETCH_STORY_ERROR':
 		case 'SAVE_STORY_ERROR':
@@ -19,9 +20,21 @@ export default ( state = INITIAL_STATE.errors, action ) => {
 				...state,
 				[ `story-${ action.payload.id }` ]: action.payload.message,
 			};
+		case 'SET_STORY_ERROR':
+			return {
+				...state,
+				storyError: action.payload,
+			};
+		case 'SET_BUDGET_ERROR':
+			return {
+				...state,
+				budgetError: action.payload,
+			};
 		case 'CLEAR_FIELD_ERROR': {
 			const newState = { ...state };
-			delete newState[ `${ action.payload.id }-${ action.payload.slug }` ];
+			delete newState[
+				`${ action.payload.id }-${ action.payload.slug }`
+			];
 			return newState;
 		}
 		case 'CLEAR_STORY_ERROR': {

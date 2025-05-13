@@ -74,6 +74,29 @@ class API {
 
 		register_rest_route(
 			self::NAMESPACE,
+			'/stories',
+			[
+				'methods'             => 'POST',
+				'callback'            => [ __CLASS__, 'create_story' ],
+				'permission_callback' => [ __CLASS__, 'stories_permission_callback' ],
+				'args'                => [
+					'title'   => [
+						'required'          => true,
+						'sanitize_callback' => 'sanitize_text_field',
+					],
+					'budgets' => [
+						'type'    => 'array',
+						'items'   => [
+							'type' => 'integer',
+						],
+						'default' => [],
+					],
+				],
+			]
+		);
+
+		register_rest_route(
+			self::NAMESPACE,
 			'/stories/meta',
 			[
 				'methods'             => 'GET',
@@ -202,6 +225,22 @@ class API {
 					'offset' => [
 						'description' => __( 'Offset.', 'newspack-story-budget' ),
 						'type'        => 'integer',
+					],
+				],
+			]
+		);
+
+		register_rest_route(
+			self::NAMESPACE,
+			'/budgets',
+			[ 
+				'methods'             => 'POST',
+				'callback'            => [ __CLASS__, 'create_budget' ],
+				'permission_callback' => [ __CLASS__, 'permission_callback' ],
+				'args'                => [ 
+					'name' => [ 
+						'description' => __( 'Name of the budget.', 'newspack-story-budget' ),
+						'type'        => 'string',
 					],
 				],
 			]
@@ -336,6 +375,65 @@ class API {
 				'total'   => Budgets::$stories_query->found_posts,
 			]
 		);
+	}
+
+	/**
+	 * Callback for creating a story.
+	 *
+	 * @param \WP_REST_Request $request Request object.
+	 * @return \WP_REST_Response|\WP_Error Rest response or error.
+	 */
+	public static function create_story( $request ) {
+		$title      = $request->get_param( 'title' );
+		$budget_ids = $request->get_param( 'budgets' );
+
+		if ( empty( $title ) ) {
+			return new \WP_Error(
+				'invalid_story_title',
+				__( 'Story title cannot be empty.', 'newspack-story-budget' ),
+				array( 'status' => 400 )
+			);
+		}
+
+		if ( empty( $budget_ids ) || ! is_array( $budget_ids ) ) {
+			return new \WP_Error(
+				'invalid_story_budget',
+				__( 'At least one budget must be selected.', 'newspack-story-budget' ),
+				array( 'status' => 400 )
+			);
+		}
+
+		$post_data = array(
+			'post_title'    => $title,
+			'post_status'   => 'draft',
+			'post_type'     => 'post',
+			'post_date'     => current_time( 'mysql' ),
+			'post_date_gmt' => current_time( 'mysql', true ),
+		);
+
+		$post_id = wp_insert_post( $post_data );
+
+		if ( is_wp_error( $post_id ) ) {
+			return $post_id;
+		}
+
+		$story = new Story( $post_id );
+		$set_fields = $story->update(
+			[ 
+				'name'   => $title,
+				'status' => 'writing',
+			]
+		);
+	
+		if ( is_wp_error( $set_fields ) ) {
+			return $set_fields;
+		}
+
+		if ( ! empty( $budget_ids ) && is_array( $budget_ids ) ) {
+			$story->update_budgets( $budget_ids );
+		}
+
+		return rest_ensure_response( $story->to_array() );
 	}
 
 	/**
@@ -626,6 +724,34 @@ class API {
 				'total'   => $total,
 			]
 		);
+	}
+
+	/**
+	 * Callback for creating a budget.
+	 *
+	 * @param WP_REST_Request $request Request object.
+	 * @return \WP_REST_Response|\WP_Error Rest response or error.
+	 */
+	public static function create_budget( $request ) {
+		$name = $request->get_param( 'name' );
+
+		if ( empty( $name ) ) {
+			return new \WP_Error(
+				'invalid_budget_name',
+				__( 'Budget name cannot be empty.', 'newspack-story-budget' ),
+				array( 'status' => 400 )
+			);
+		}
+
+		$term = wp_insert_term( $name, 'newspack_story_budget' );
+
+		if ( is_wp_error( $term ) ) {
+			return $term;
+		}
+
+		$budget = new Budget( $term['term_id'] );
+
+		return rest_ensure_response( $budget->to_array() );
 	}
 
 	/**

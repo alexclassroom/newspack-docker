@@ -16,7 +16,14 @@ import {
  * WordPress dependencies.
  */
 import { __ } from '@wordpress/i18n';
-import { Modal, Button, SlotFillProvider } from '@wordpress/components';
+import {
+	Modal,
+	Button,
+	SlotFillProvider,
+	DropdownMenu,
+	Icon,
+} from '@wordpress/components';
+import { plus } from '@wordpress/icons';
 
 /**
  * Internal dependencies.
@@ -25,6 +32,7 @@ import AppHeader, { AppHeaderActions } from '../components/app-header';
 import { TabbedNavigation } from 'newspack-components';
 import Stories from '../components/stories';
 import Story from '../components/story';
+import CreateNewStory from '../components/create-new-story';
 import '../style.scss';
 
 const ModalPage = ( { children, name, closeHref, ...props } ) => {
@@ -84,19 +92,65 @@ const StoryBudget = () => {
 					<Switch>
 						<Route path="/stories">
 							<AppHeaderActions>
-								<Button variant="primary" href="#/stories/new">
-									{ __(
+								<DropdownMenu
+									label={ __(
 										'Add New Story',
 										'newspack-story-budget'
 									) }
-								</Button>
+									toggleProps={ {
+										variant: 'primary',
+										children: __(
+											'Add New Story',
+											'newspack-story-budget'
+										),
+									} }
+									controls={ [
+										{
+											title: __(
+												'Create New Story',
+												'newspack-story-budget'
+											),
+											onClick: () =>
+												( window.location.href =
+													'#/stories/new' ),
+										},
+										{
+											title: __(
+												'Add Existing Story(ies)',
+												'newspack-story-budget'
+											),
+											onClick: () =>
+												( window.location.href =
+													'#/stories/existing' ),
+										},
+									] }
+									icon={ <Icon icon={ plus } /> }
+									iconPosition="right"
+								/>
 							</AppHeaderActions>
 							<Stories />
 							<Switch>
 								<Route path="/stories/new" exact>
 									<ModalPage
 										title={ __(
-											'Add New Story',
+											'Add New Story / Create New Story',
+											'newspack-story-budget'
+										) }
+										closeHref="#/stories"
+										name={ 'create-new-story' }
+									>
+										<CreateNewStory
+											onClose={ () =>
+												( window.location.href =
+													'#/stories' )
+											}
+										/>
+									</ModalPage>
+								</Route>
+								<Route path="/stories/existing" exact>
+									<ModalPage
+										title={ __(
+											'Add Existing Story(ies)',
 											'newspack-story-budget'
 										) }
 										closeHref="#/stories"

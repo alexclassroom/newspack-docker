@@ -8,6 +8,9 @@ export const isRefreshing = state => state.meta.refreshing;
 export const isLoadingStory = ( state, id ) =>
 	state.meta.loadingStory?.[ id ] ?? false;
 
+export const isCreatingStory = state => state.meta.isCreatingStory ?? false;
+export const isCreatingBudget = state => state.meta.isCreatingBudget ?? false;
+
 export const getProgress = state => state.meta.progress;
 
 export const getFields = state => state.fields;
