@@ -84,6 +84,27 @@ class Budgets {
 			$terms
 		);
 
+		// Sort budgets by the `order` term meta.
+		usort(
+			$budgets,
+			function( $a, $b ) {
+				// If both have no order, maintain original order.
+				if ( empty( $a->order ) && empty( $b->order ) ) {
+					return 0;
+				}
+
+				// If one has no order, it goes to the bottom.
+				if ( empty( $a->order ) ) {
+					return 1;
+				}
+				if ( empty( $b->order ) ) {
+					return -1;
+				}
+
+				return absint( $a->order ) - absint( $b->order );
+			}
+		);
+
 		if ( ! $include_archived ) {
 			$budgets = array_filter(
 				$budgets,
@@ -166,5 +187,20 @@ class Budgets {
 		 * Filters whether a story can be assigned to multiple budgets.
 		 */
 		return apply_filters( 'newspack_story_budget_multiple_budgets_enabled', false );
+	}
+
+	/**
+	 * Update the order of active budgets.
+	 *
+	 * @param int[] $budget_ids Ordered list of budget IDs.
+	 */
+	public static function update_budgets_order( $budget_ids ) {
+		foreach ( $budget_ids as $index => $budget_id ) {
+			$order = $index + 1;
+			update_term_meta( $budget_id, Budget::ORDER_META_KEY, $order );
+
+			$budget        = new Budget( $budget_id );
+			$budget->order = $order;
+		}
 	}
 }

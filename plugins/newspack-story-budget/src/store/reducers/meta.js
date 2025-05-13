@@ -89,6 +89,16 @@ export default ( state = INITIAL_STATE.meta, action ) => {
 				...state,
 				storyMetaFetchQueue: {},
 			};
+		case 'FETCH_BUDGETS_START':
+			return {
+				...state,
+				loadingBudgets: true,
+			};
+		case 'FETCH_BUDGETS_END':
+			return {
+				...state,
+				loadingBudgets: false,
+			};
 		case 'SET_IS_CREATING_STORY':
 			return {
 				...state,

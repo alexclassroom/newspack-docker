@@ -40,6 +40,32 @@ class Budget {
 	public $stories_query;
 
 	/**
+	 * Stories count.
+	 *
+	 * @var int
+	 */
+	public $story_count;
+
+	/**
+	 * Order of the budget.
+	 *
+	 * @var int
+	 */
+	public $order;
+
+	/**
+	 * Meta key for archived status.
+	 *
+	 * @var string
+	 */
+	const ARCHIVE_META_KEY = 'archived';
+
+	/**
+	 * Meta Key for active budgets order.
+	 */
+	const ORDER_META_KEY = 'order';
+
+	/**
 	 * Constructor.
 	 *
 	 * @param int|\WP_Term $term Budget ID or term object.
@@ -53,7 +79,9 @@ class Budget {
 			$this->term = get_term( $term, Budgets::TAXONOMY );
 		}
 
-		$this->archived = (bool) get_term_meta( $this->id, 'archived', true );
+		$this->archived    = (bool) get_term_meta( $this->id, self::ARCHIVE_META_KEY, true );
+		$this->order       = (int) get_term_meta( $this->id, self::ORDER_META_KEY, true );
+		$this->story_count = $this->get_stories_count();
 	}
 
 	/**
@@ -92,7 +120,9 @@ class Budget {
 	 */
 	public function archive() {
 		$this->archived = true;
-		return \update_term_meta( $this->id, 'archived', true );
+		$this->order    = 0;
+		delete_term_meta( $this->id, self::ORDER_META_KEY );
+		return \update_term_meta( $this->id, self::ARCHIVE_META_KEY, true );
 	}
 
 	/**
@@ -102,7 +132,9 @@ class Budget {
 	 */
 	public function unarchive() {
 		$this->archived = false;
-		return \delete_term_meta( $this->id, 'archived' );
+		$this->order    = 0;
+		update_term_meta( $this->id, self::ORDER_META_KEY, 0 );
+		return \delete_term_meta( $this->id, self::ARCHIVE_META_KEY );
 	}
 
 	/**
@@ -186,6 +218,9 @@ class Budget {
 			'name'        => $this->term->name,
 			'description' => $this->term->description,
 			'slug'        => $this->term->slug,
+			'archived'    => $this->archived,
+			'story_count' => $this->story_count,
+			'order'       => $this->order,
 		];
 	}
 
@@ -198,5 +233,15 @@ class Budget {
 	 */
 	public function get_stories( $query_args = [] ) {
 		return Budgets::get_stories( $query_args, $this->id );
+	}
+
+	/**
+	 * Get budget stories count.
+	 * TODO: Implement a performance-optimized way to get the count.
+	 *
+	 * @return int
+	 */
+	public function get_stories_count() {
+		return 0;
 	}
 }

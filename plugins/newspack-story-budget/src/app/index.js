@@ -32,6 +32,7 @@ import AppHeader, { AppHeaderActions } from '../components/app-header';
 import { TabbedNavigation } from 'newspack-components';
 import Stories from '../components/stories';
 import Story from '../components/story';
+import Budgets from '../components/budgets';
 import CreateNewStory from '../components/create-new-story';
 import '../style.scss';
 
@@ -170,6 +171,7 @@ const StoryBudget = () => {
 									) }
 								</Button>
 							</AppHeaderActions>
+							<Budgets />
 							<Switch>
 								<Route path="/budgets/new">
 									<ModalPage

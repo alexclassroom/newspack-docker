@@ -8,6 +8,11 @@ export default ( state = INITIAL_STATE.errors, action ) => {
 				...state,
 				stories: action.payload.message,
 			};
+		case 'BUDGETS_ERROR':
+			return {
+				...state,
+				'budgets': action.payload.message,
+			};
 		case 'SAVE_STORY_FIELD_ERROR':
 			return {
 				...state,
@@ -19,6 +24,11 @@ export default ( state = INITIAL_STATE.errors, action ) => {
 			return {
 				...state,
 				[ `story-${ action.payload.id }` ]: action.payload.message,
+			};
+		case 'UPDATE_BUDGET_ERROR':
+			return {
+				...state,
+				[ `budget-${ action.payload.id }` ]: action.payload.message,
 			};
 		case 'SET_STORY_ERROR':
 			return {

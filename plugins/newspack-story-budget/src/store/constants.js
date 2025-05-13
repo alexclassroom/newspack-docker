@@ -3,7 +3,10 @@ export const NAMESPACE = 'newspack-story-budget';
 export const INITIAL_STATE = {
 	budgets: [],
 	stories: {},
-	search: [],
+	search: {
+		stories: [],
+		budgets: []
+	},
 	fields: [],
 	errors: {},
 	meta: {
@@ -31,5 +34,11 @@ export const INITIAL_STATE = {
 		layout: {
 			density: 'compact',
 		},
+	},
+	budgetsView: {
+		search: '',
+		page: 1,
+		perPage: 10,
+		filters: [],
 	},
 };

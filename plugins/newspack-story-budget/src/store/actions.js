@@ -65,6 +65,13 @@ function refreshAbortController( controller ) {
 let searchAbortController = refreshAbortController();
 
 export function* search( str ) {
+	if ( ! str ) {
+		return {
+			type: 'SEARCH_CLEAR',
+			payload: { type: 'stories' }
+		};
+	}
+
 	yield { type: 'SEARCH_START' };
 	searchAbortController = refreshAbortController( searchAbortController );
 	try {
@@ -77,6 +84,7 @@ export function* search( str ) {
 		return {
 			type: 'SEARCH_SUCCESS',
 			payload: {
+				type: 'stories',
 				ids: result.story_ids,
 			},
 		};
@@ -129,6 +137,7 @@ export function* fetchFields() {
 }
 
 export function* fetchBudgets() {
+	yield { type: 'FETCH_BUDGETS_START' };
 	try {
 		const result = yield apiFetch( { path: `${ apiNamespace }/budgets` } );
 		const { budgets, total } = result;
@@ -147,6 +156,8 @@ export function* fetchBudgets() {
 			type: 'BUDGETS_ERROR',
 			payload: error,
 		};
+	} finally {
+		yield { type: 'FETCH_BUDGETS_END' };
 	}
 }
 
@@ -542,4 +553,82 @@ export function clearErrors( storyId = null, fieldId = null ) {
 		type: fieldId ? 'CLEAR_FIELD_ERROR' : 'CLEAR_STORY_ERROR',
 		payload: { id: storyId, slug: fieldId },
 	};
+}
+
+export function setBudgetsView( args ) {
+	return {
+		type: 'BUDGETS_VIEW_SET',
+		payload: args,
+	};
+}
+
+export function* searchBudgets( str ) {
+	if ( ! str ) {
+		return {
+			type: 'SEARCH_CLEAR',
+			payload: { type: 'budgets' }
+		};
+	}
+
+	yield { type: 'SEARCH_START' };
+	searchAbortController = refreshAbortController( searchAbortController );
+	try {
+		const result = yield apiFetch( {
+			path: `${ apiNamespace }/budgets/search`,
+			data: { s: str },
+			method: 'POST',
+			signal: searchAbortController?.signal,
+		} );
+		return {
+			type: 'SEARCH_SUCCESS',
+			payload: {
+				type: 'budgets',
+				ids: result.budget_ids,
+			},
+		};
+	} catch ( error ) {
+		if ( error.name === 'AbortError' ) {
+			return;
+		}
+		return {
+			type: 'SEARCH_ERROR',
+			payload: error,
+		};
+	}
+}
+
+export function* updateBudget( budgetId = null , budget = null ) {
+	try {
+		const result = yield apiFetch( {
+			path: `${ apiNamespace }/budgets/${ budgetId }`,
+			method: 'PUT',
+			data: budget,
+		} );
+		return {
+			type: 'BUDGET_UPDATE',
+			payload: result,
+		};
+	}
+	catch ( error ) {
+		return {
+			type: 'UPDATE_BUDGET_ERROR',
+			payload: { id:budgetId, message:error.message },
+		};
+	}
+}
+
+export function* saveActiveBudgetOrder( budgetIds = [] ) {
+	try {
+		yield apiFetch( {
+			path: `${ apiNamespace }/budgets/order`,
+			method: 'POST',
+			data: { ids: budgetIds }
+		} );
+		return {
+			type: 'BUDGETS_ORDER',
+			payload: budgetIds
+		};
+	} catch ( error ) {
+		console.error( error ); // eslint-disable-line no-console
+	}
 }

@@ -6,6 +6,7 @@ import fields from './fields';
 import search from './search';
 import meta from './meta';
 import view from './view';
+import budgetsView from './budgets-view';
 import errors from './errors';
 
 import { STORAGE_KEYS, setCache } from '../cache';
@@ -18,6 +19,7 @@ const appReducer = combineReducers( {
 	search,
 	meta,
 	view,
+	budgetsView,
 	errors,
 } );
 

@@ -18,7 +18,45 @@ export const getFields = state => state.fields;
 export const getField = ( state, slug ) =>
 	state.fields.find( f => f.slug === slug );
 
-export const getBudgets = state => state.budgets;
+export const isBudgetsLoading = state => state.meta.loadingBudgets || state.meta.searching;
+
+export const getBudgets = createSelector(
+	state => {
+		const { search, budgetsView } = state;
+
+		let budgets;
+
+		if ( budgetsView.search ) {
+			budgets = search.budgets.map( id =>
+				state.budgets.find( budget => id === budget.id )
+			);
+		} else {
+			budgets = Object.values( state.budgets );
+		}
+
+		if ( budgetsView.filters?.length ) {
+			budgets = utils.budgets.filter( budgets, budgetsView );
+		}
+
+		return budgets;
+	},
+	state => [
+		state.search.budgets,
+		state.budgets,
+		state.budgetsView.search,
+		state.budgetsView.filters,
+	]
+);
+
+export const getBudgetsCount = state => {
+	return getBudgets( state ).length;
+};
+
+export const getTotalBudgetsCount = state => {
+	return state.budgets.length;
+}
+
+export const getBudgetsView = state => state.budgetsView;
 
 export const getLastRefresh = state => state.meta.lastRefresh;
 
@@ -31,7 +69,7 @@ export const getStories = createSelector(
 		let stories;
 
 		if ( view.search ) {
-			stories = search.map( id =>
+			stories = search.stories.map( id =>
 				state.stories[ id ] ? state.stories[ id ] : { id }
 			);
 		} else {
@@ -48,7 +86,7 @@ export const getStories = createSelector(
 		return stories;
 	},
 	state => [
-		state.search,
+		state.search.stories,
 		state.stories,
 		state.view.search,
 		state.view.filters,

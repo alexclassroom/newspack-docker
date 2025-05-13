@@ -72,6 +72,9 @@ class Test_Budget extends \WP_UnitTestCase {
 				'name'        => get_term( $budget_id, Budgets::TAXONOMY )->name,
 				'slug'        => get_term( $budget_id, Budgets::TAXONOMY )->slug,
 				'description' => get_term( $budget_id, Budgets::TAXONOMY )->description,
+				'archived'    => false,
+				'story_count' => 0,
+				'order'       => 0,
 			],
 			$budget->to_array()
 		);

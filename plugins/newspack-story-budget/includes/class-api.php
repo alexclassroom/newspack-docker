@@ -210,21 +210,27 @@ class API {
 			]
 		);
 
+		// @TODO Add more routes for budget CRUD.
+
 		register_rest_route(
 			self::NAMESPACE,
-			'/budgets',
+			'/budgets/(?P<id>\d+)',
 			[
-				'methods'             => 'GET',
-				'callback'            => [ __CLASS__, 'get_budgets' ],
+				'methods'             => 'PUT',
+				'callback'            => [ __CLASS__, 'update_budget' ],
 				'permission_callback' => [ __CLASS__, 'permission_callback' ],
 				'args'                => [
-					'limit'  => [
-						'description' => __( 'Number of budgets to return.', 'newspack-story-budget' ),
+					'id'       => [
+						'description' => __( 'The ID of the budget to update.', 'newspack-story-budget' ),
 						'type'        => 'integer',
 					],
-					'offset' => [
-						'description' => __( 'Offset.', 'newspack-story-budget' ),
-						'type'        => 'integer',
+					'name'     => [
+						'description' => __( 'The name of the budget.', 'newspack-story-budget' ),
+						'type'        => 'string',
+					],
+					'archived' => [
+						'description' => __( 'Whether the budget is archived.', 'newspack-story-budget' ),
+						'type'        => 'boolean',
 					],
 				],
 			]
@@ -233,12 +239,74 @@ class API {
 		register_rest_route(
 			self::NAMESPACE,
 			'/budgets',
-			[ 
+			[
+				'methods'             => 'GET',
+				'callback'            => [ __CLASS__, 'get_budgets' ],
+				'permission_callback' => [ __CLASS__, 'permission_callback' ],
+				'args'                => [
+					'limit'            => [
+						'description' => __( 'Number of budgets to return.', 'newspack-story-budget' ),
+						'type'        => 'integer',
+						'default'     => self::DEFAULT_LIMIT,
+					],
+					'offset'           => [
+						'description' => __( 'Offset.', 'newspack-story-budget' ),
+						'type'        => 'integer',
+						'default'     => 0,
+					],
+					'include_archived' => [
+						'description' => __( 'Whether to include archived budgets.', 'newspack-story-budget' ),
+						'type'        => 'boolean',
+						'default'     => true,
+					],
+				],
+			]
+		);
+
+		register_rest_route(
+			self::NAMESPACE,
+			'/budgets/search',
+			[
+				'methods'             => 'POST',
+				'callback'            => [ __CLASS__, 'get_budgets_search' ],
+				'permission_callback' => [ __CLASS__, 'permission_callback' ],
+				'args'                => [
+					's' => [
+						'description' => __( 'Search query.', 'newspack-story-budget' ),
+						'type'        => 'string',
+					],
+				],
+			]
+		);
+
+		register_rest_route(
+			self::NAMESPACE,
+			'/budgets/order',
+			[
+				'methods'             => 'POST',
+				'callback'            => [ __CLASS__, 'set_active_budget_order' ],
+				'permission_callback' => [ __CLASS__, 'permission_callback' ],
+				'args'                => [
+					'ids' => [
+						'description' => __( 'Array of budget IDs to set as active.', 'newspack-story-budget' ),
+						'type'        => 'array',
+						'items'       => [
+							'type' => 'integer',
+						],
+					],
+				],
+			]
+		);
+
+		register_rest_route(
+			self::NAMESPACE,
+			'/budgets',
+			[
 				'methods'             => 'POST',
 				'callback'            => [ __CLASS__, 'create_budget' ],
 				'permission_callback' => [ __CLASS__, 'permission_callback' ],
-				'args'                => [ 
-					'name' => [ 
+				'args'                => [
+					'name' => [
 						'description' => __( 'Name of the budget.', 'newspack-story-budget' ),
 						'type'        => 'string',
 					],
@@ -419,12 +487,12 @@ class API {
 
 		$story = new Story( $post_id );
 		$set_fields = $story->update(
-			[ 
+			[
 				'name'   => $title,
 				'status' => 'writing',
 			]
 		);
-	
+
 		if ( is_wp_error( $set_fields ) ) {
 			return $set_fields;
 		}
@@ -695,21 +763,22 @@ class API {
 	}
 
 	/**
-	 * Get budgets.
+	 * Get budgets search.
 	 *
 	 * @param \WP_REST_Request $request Request object.
 	 *
-	 * @return \WP_REST_Response
+	 * @return \WP_REST_Response|\WP_Error
 	 */
 	public static function get_budgets( $request ) {
-		$limit  = $request->get_param( 'limit' ) ?? self::DEFAULT_LIMIT;
-		$offset = $request->get_param( 'offset' ) ?? 0;
+		$limit            = $request->get_param( 'limit' ) ?? self::DEFAULT_LIMIT;
+		$offset           = $request->get_param( 'offset' ) ?? 0;
+		$include_archived = $request->get_param( 'include_archived' ) ?? true;
 
 		$budgets = array_map(
 			function( $budget ) {
 				return $budget->to_array();
 			},
-			Budgets::get_budgets()
+			Budgets::get_budgets( $include_archived )
 		);
 		$total   = count( $budgets );
 
@@ -820,5 +889,102 @@ class API {
 				'total'     => Budgets::$stories_query->found_posts,
 			]
 		);
+	}
+
+	/**
+	 * Get budgets search.
+	 *
+	 * @param \WP_REST_Request $request Request object.
+	 *
+	 * @return \WP_REST_Response|\WP_Error
+	 */
+	public static function get_budgets_search( $request ) {
+		$query_args = [
+			'fields'     => 'ids',
+			'search'     => $request->get_param( 's' ) ?? '',
+			'taxonomy'   => Budgets::TAXONOMY,
+			'hide_empty' => false,
+		];
+
+		$search_results = get_terms( $query_args );
+
+		return rest_ensure_response(
+			[
+				'budget_ids' => $search_results,
+			]
+		);
+	}
+
+	/**
+	 * Update a budget.
+	 *
+	 * @param \WP_REST_Request $request Request object.
+	 *
+	 * @return \WP_REST_Response|\WP_Error
+	 */
+	public static function update_budget( $request ) {
+		$budget = new Budget( $request->get_param( 'id' ) );
+		if ( ! $budget->is_valid() ) {
+			return new \WP_Error(
+				'budget_not_found',
+				sprintf(
+					// translators: %d is the budget ID.
+					__( 'Budget with ID "%d" not found.', 'newspack-story-budget' ),
+					$request->get_param( 'id' )
+				),
+				[ 'status' => 404 ]
+			);
+		}
+
+		$params = $request->get_params();
+		foreach ( $params as $key => $value ) {
+			if ( 'name' === $key && ! empty( $value ) && $value !== $budget->term->name ) {
+				$updated_name = sanitize_text_field( $value );
+				$updated_slug = sanitize_title( $updated_name );
+
+				$existing_term = term_exists( 'slug', $updated_slug, Budgets::TAXONOMY );
+				if ( $existing_term && $existing_term->term_id !== $budget->term->term_id ) {
+					$updated_slug = wp_unique_term_slug( $updated_slug, $budget->term );
+				}
+
+				wp_update_term(
+					$budget->term->term_id,
+					Budgets::TAXONOMY,
+					[
+						'name' => $updated_name,
+						'slug' => $updated_slug,
+					]
+				);
+				$budget->term->name = $updated_name;
+				$budget->term->slug = $updated_slug;
+			}
+			if ( 'archived' === $key && $value !== $budget->archived ) {
+				if ( $value ) {
+					$budget->archive();
+				} else {
+					$budget->unarchive();
+				}
+			}
+		}
+
+		return rest_ensure_response(
+			$budget->to_array()
+		);
+	}
+
+	/**
+	 * Set active budgets.
+	 *
+	 * @param \WP_REST_Request $request Request object.
+	 *
+	 * @return \WP_REST_Response
+	 */
+	public static function set_active_budget_order( $request ) {
+		$budget_ids = $request->get_param( 'ids' );
+
+		// Loop through the corresponding budgets and set their order.
+		Budgets::update_budgets_order( $budget_ids );
+
+		return rest_ensure_response( [ 'active_budget_order' => $budget_ids ] );
 	}
 }
