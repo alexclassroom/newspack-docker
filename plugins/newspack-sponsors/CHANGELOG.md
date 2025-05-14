@@ -1,3 +1,10 @@
+## [2.0.2](https://github.com/Automattic/newspack-sponsors/compare/v2.0.1...v2.0.2) (2025-05-14)
+
+
+### Bug Fixes
+
+* force alpha build ([8079741](https://github.com/Automattic/newspack-sponsors/commit/8079741128e2f295a4cf2709c507ee7e2dfbeafb))
+
 ## [2.0.1](https://github.com/Automattic/newspack-sponsors/compare/v2.0.0...v2.0.1) (2025-01-20)
 
 
