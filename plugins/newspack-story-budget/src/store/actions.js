@@ -194,7 +194,7 @@ export function* createBudget( budget ) {
 		} );
 		yield {
 			type: 'BUDGETS_ADD',
-			payload: { [ result.id ]: result },
+			payload: result,
 		};
 		return result;
 	} catch ( error ) {

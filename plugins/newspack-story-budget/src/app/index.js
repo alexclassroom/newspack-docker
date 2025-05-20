@@ -34,6 +34,7 @@ import Stories from '../components/stories';
 import Story from '../components/story';
 import Budgets from '../components/budgets';
 import CreateNewStory from '../components/create-new-story';
+import CreateBudgetModal from '../components/create-budget-modal';
 import '../style.scss';
 
 const ModalPage = ( { children, name, closeHref, ...props } ) => {
@@ -180,7 +181,12 @@ const StoryBudget = () => {
 											'newspack-story-budget'
 										) }
 										closeHref="#/budgets"
-									/>
+										name={ 'create-budget' }
+									>
+										<CreateBudgetModal
+											onClose={ () => ( window.location.href = "#/budgets" ) }
+										/>
+									</ModalPage>
 								</Route>
 							</Switch>
 						</Route>
