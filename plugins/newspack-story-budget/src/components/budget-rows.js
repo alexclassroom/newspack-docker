@@ -252,6 +252,9 @@ const BudgetRows = ( { allowEdit, budgetStatus, isSearching } ) => {
 											label={ __( 'Actions', 'newspack-story-budget' ) }
 											controls={ getBudgetControls( budget ) }
 											className="newspack-story-budget__budget-actions"
+											popoverProps={ {
+												placement: 'bottom-end',
+											} }
 										/>
 									)
 								}
