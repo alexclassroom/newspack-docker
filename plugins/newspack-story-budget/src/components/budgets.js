@@ -96,8 +96,8 @@ export default () => {
 	 * Calculate total pages based on budget status.
 	 */
 	const totalPages = useMemo( () => {
-		if ( ! totalBudgets || budgetStatus === BUDGET_STATUS.OPEN ) { return 1 };
-		return Math.ceil( 8 / view.perPage );
+		if ( ! totalBudgets.archived || budgetStatus === BUDGET_STATUS.OPEN ) { return 1 };
+		return Math.ceil( totalBudgets.archived / view.perPage );
 	}, [ totalBudgets, budgetStatus ] );
 
 	return (

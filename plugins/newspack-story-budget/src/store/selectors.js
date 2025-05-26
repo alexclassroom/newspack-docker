@@ -49,7 +49,10 @@ export const getBudgets = createSelector(
 );
 
 export const getBudgetsCount = state => {
-	return getBudgets( state ).length;
+	return {
+		active: state.budgets.filter( budget => ! budget.archived ).length,
+		archived: state.budgets.filter( budget => budget.archived ).length,
+	}
 };
 
 export const getTotalBudgetsCount = state => {
