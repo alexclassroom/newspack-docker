@@ -69,8 +69,8 @@ const TableRowField = ( { story, field, allowEdit = false } ) => {
 };
 
 export default () => {
-	const { view, stories, fields, isLoading, isRefreshing, progress, errors } = useSelect(
-		select => ( {
+	const { view, stories, fields, isLoading, isRefreshing, progress, errors } =
+		useSelect( select => ( {
 			view: select( storeNamespace ).getView(),
 			stories: select( storeNamespace ).getStories(),
 			fields: select( storeNamespace ).getFields(),
@@ -78,10 +78,10 @@ export default () => {
 			isRefreshing: select( storeNamespace ).isRefreshing(),
 			progress: select( storeNamespace ).getProgress(),
 			errors: select( storeNamespace ).getErrors(),
-		} )
-	);
+		} ) );
 	const [ editMode, setEditMode ] = useState( false );
-	const [ modalOpen, setModalOpen ] = useState( false );
+	const [ isReconnectingRemoteSite, setIsReconnectingRemoteSite ] =
+		useState( false );
 	const currentStories = stories.slice(
 		( view.page - 1 ) * view.perPage,
 		( view.page - 1 ) * view.perPage + view.perPage
@@ -157,12 +157,13 @@ export default () => {
 		enableHiding: ! field.always_visible_in_table,
 		enableSorting: field.is_sortable,
 		elements: getFieldElements( field ),
-		filterBy: field.is_filterable && field.is_filterable !== 'no'
-			? {
-					operators: getFilterByOperators( field ),
-					isPrimary: field.is_filterable === 'always',
-			  }
-			: undefined,
+		filterBy:
+			field.is_filterable && field.is_filterable !== 'no'
+				? {
+						operators: getFilterByOperators( field ),
+						isPrimary: field.is_filterable === 'always',
+				  }
+				: undefined,
 		render: value => (
 			<TableRowField
 				story={ value.item }
@@ -183,7 +184,7 @@ export default () => {
 			id: 'view',
 			label: 'View',
 			isPrimary: true,
-			icon: <Icon icon={ seen } />,
+			icon: seen,
 			callback: items => {
 				fetchStory( items[ 0 ].id );
 				window.location.hash = '#/stories/' + items[ 0 ].id;
@@ -193,7 +194,7 @@ export default () => {
 			id: 'refresh',
 			label: 'Refresh',
 			isPrimary: false,
-			icon: <Icon icon={ update } />,
+			icon: update,
 			callback: items => {
 				clearErrors( items[ 0 ].id );
 				fetchStory( items[ 0 ].id );
@@ -204,7 +205,7 @@ export default () => {
 			label: 'Edit Post',
 			isEligible: item => !! item.metadata?.edit_url,
 			isPrimary: false,
-			icon: <Icon icon={ edit } />,
+			icon: edit,
 			callback: items => {
 				if ( items[ 0 ].metadata?.edit_url ) {
 					window.open( items[ 0 ].metadata.edit_url );
@@ -216,11 +217,8 @@ export default () => {
 	if ( errors?.stories ) {
 		return (
 			<Modal
-				isOpen={ modalOpen }
-				onRequestClose={ () => {
-					setModalOpen( false );
-					clearErrors();
-				} }
+				isOpen
+				isDismissible={ false }
 				size="small"
 				title={ __( 'Something went wrong', 'newspack-story-budget' ) }
 			>
@@ -238,12 +236,42 @@ export default () => {
 						justify="end"
 						direction="row-reverse"
 					>
-						<Button
-							variant="primary"
-							onClick={ refresh }
-						>
-							{ __( 'Refetch stories', 'newspack-story-budget' ) }
-						</Button>
+						{ utils.sites.isRemoteSite() ? (
+							<>
+								<Button
+									variant="primary"
+									onClick={ () => {
+										utils.sites.connect();
+										setIsReconnectingRemoteSite( true );
+									} }
+									isBusy={ isReconnectingRemoteSite }
+									disabled={ isReconnectingRemoteSite }
+								>
+									{ __(
+										'Reconnect',
+										'newspack-story-budget'
+									) }
+								</Button>
+								<Button
+									variant="secondary"
+									href={ utils.sites.getLeaveSiteUrl() }
+								>
+									{ __(
+										'Leave remote site',
+										'newspack-story-budget'
+									) }
+								</Button>
+							</>
+						) : (
+							<Button
+								variant="primary"
+								onClick={ () => {
+									window.location.reload();
+								} }
+							>
+								{ __( 'Reload page', 'newspack-story-budget' ) }
+							</Button>
+						) }
 					</HStack>
 				</VStack>
 			</Modal>
@@ -268,16 +296,31 @@ export default () => {
 				},
 			} }
 			header={
-				<HStack spacing={ 4 } style={ { marginLeft: '12px' } }>
+				<HStack style={ { marginLeft: '8px' } }>
 					<Button
-						className={ isLoading || isRefreshing ? 'newspack-story-budget__refresh-button-is-busy' : 'newspack-story-budget__refresh-button' }
-						icon={ <Icon icon={ update } /> }
+						className={
+							isLoading || isRefreshing
+								? 'newspack-story-budget__refresh-button-is-busy'
+								: 'newspack-story-budget__refresh-button'
+						}
+						icon={ update }
 						disabled={ isLoading || isRefreshing }
-						label={ isLoading || isRefreshing ? __( 'Loading stories…', 'newspack-story-budget' ) : __( 'Refresh all stories', 'newspack-story-budget' ) }
+						label={
+							isLoading || isRefreshing
+								? __(
+										'Loading stories…',
+										'newspack-story-budget'
+								  )
+								: __(
+										'Refresh all stories',
+										'newspack-story-budget'
+								  )
+						}
+						size="compact"
 						onClick={ refresh }
 					/>
 					<ToggleControl
-						label="Edit mode"
+						label={ __( 'Edit mode', 'newspack-story-budget' ) }
 						checked={ editMode }
 						onChange={ setEditMode }
 						__nextHasNoMarginBottom

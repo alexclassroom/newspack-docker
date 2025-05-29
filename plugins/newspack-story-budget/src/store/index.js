@@ -1,5 +1,5 @@
 import { createReduxStore, register, dispatch } from '@wordpress/data';
-import { controls } from '@wordpress/data-controls';
+import { controls } from './controls';
 
 import { NAMESPACE, INITIAL_STATE } from './constants';
 import reducer from './reducers';

@@ -1,6 +1,5 @@
-/* globals newspackStoryBudget */
 import { __ } from '@wordpress/i18n';
-import { apiFetch } from '@wordpress/data-controls';
+import { apiFetch } from './controls';
 import { resolveSelect, select, dispatch } from '@wordpress/data';
 import { addQueryArgs } from '@wordpress/url';
 
@@ -9,8 +8,6 @@ import { addQueryArgs } from '@wordpress/url';
  */
 import { STORAGE_KEYS, getCache, canUseCache } from './cache';
 import { NAMESPACE } from './constants';
-
-const { apiNamespace } = newspackStoryBudget;
 
 export function* initializeEntitiesConfig() {
 	// Hydrate state from cache if available.
@@ -80,7 +77,7 @@ export function* search( str ) {
 	searchAbortController = refreshAbortController( searchAbortController );
 	try {
 		const result = yield apiFetch( {
-			path: `${ apiNamespace }/stories/search`,
+			path: '/stories/search',
 			data: { s: str },
 			method: 'POST',
 			signal: searchAbortController?.signal,
@@ -127,7 +124,7 @@ export function setView( args ) {
 
 export function* fetchFields() {
 	try {
-		const result = yield apiFetch( { path: `${ apiNamespace }/fields` } );
+		const result = yield apiFetch( { path: '/fields' } );
 		return {
 			type: 'FIELDS_SET',
 			payload: result,
@@ -143,11 +140,11 @@ export function* fetchFields() {
 export function* fetchBudgets() {
 	yield { type: 'FETCH_BUDGETS_START' };
 	try {
-		const result = yield apiFetch( { path: `${ apiNamespace }/budgets` } );
+		const result = yield apiFetch( { path: '/budgets' } );
 		const { budgets, total } = result;
 		while ( budgets.length < total ) {
 			const next = yield apiFetch( {
-				path: `${ apiNamespace }/budgets?offset=${ budgets.length }`,
+				path: `/budgets?offset=${ budgets.length }`,
 			} );
 			budgets.push( ...next.budgets );
 		}
@@ -192,7 +189,7 @@ export function* createBudget( budget ) {
 
 	try {
 		const result = yield apiFetch( {
-			path: `${ apiNamespace }/budgets`,
+			path: '/budgets',
 			method: 'POST',
 			data: budget,
 		} );
@@ -257,7 +254,7 @@ export function* createStory( storyData ) {
 			}
 
 			const budgetResult = yield apiFetch( {
-				path: `${ apiNamespace }/budgets`,
+				path: '/budgets',
 				method: 'POST',
 				data: { name: storyData.newBudgetName.trim() },
 			} );
@@ -276,7 +273,7 @@ export function* createStory( storyData ) {
 		};
 
 		const result = yield apiFetch( {
-			path: `${ apiNamespace }/stories`,
+			path: '/stories',
 			method: 'POST',
 			data: storyDataToSend,
 		} );
@@ -314,7 +311,7 @@ export function* fetchStories() {
 	};
 	yield { type: 'FETCH_START' };
 	try {
-		const result = yield apiFetch( { path: `${ apiNamespace }/stories` } );
+		const result = yield apiFetch( { path: '/stories' } );
 		const { stories, total } = result;
 		yield {
 			type: 'FETCH_PROGRESS',
@@ -322,7 +319,7 @@ export function* fetchStories() {
 		};
 		while ( stories.length < total ) {
 			const next = yield apiFetch( {
-				path: addQueryArgs( `${ apiNamespace }/stories`, {
+				path: addQueryArgs( '/stories', {
 					offset: stories.length,
 				} ),
 			} );
@@ -374,13 +371,13 @@ export function* refreshStories( silent = true ) {
 			params.since = Math.floor( lastRefresh / 1000 ); // UNIX timestamp in seconds.
 		}
 		const result = yield apiFetch( {
-			path: addQueryArgs( `${ apiNamespace }/stories`, params ),
+			path: addQueryArgs( '/stories', params ),
 		} );
 		const { stories, total } = result;
 		while ( stories.length < total ) {
 			params.offset = stories.length;
 			const next = yield apiFetch( {
-				path: addQueryArgs( `${ apiNamespace }/stories`, params ),
+				path: addQueryArgs( '/stories', params ),
 			} );
 			stories.push( ...next.stories );
 		}
@@ -414,21 +411,28 @@ export function* refreshStories( silent = true ) {
 }
 
 export function* fetchStoriesMeta() {
-	const result = yield apiFetch( {
-		path: `${ apiNamespace }/stories/meta`,
-		method: 'GET',
-	} );
-	return {
-		type: 'STORIES_META_SET',
-		payload: result,
-	};
+	try {
+		const result = yield apiFetch( {
+			path: '/stories/meta',
+			method: 'GET',
+		} );
+		return {
+			type: 'STORIES_META_SET',
+			payload: result,
+		};
+	} catch ( error ) {
+		return {
+			type: 'STORIES_META_ERROR',
+			payload: error,
+		};
+	}
 }
 
 export function* fetchStory( id ) {
 	yield { type: 'FETCH_STORY_START', payload: { id } };
 	try {
 		const result = yield apiFetch( {
-			path: `${ apiNamespace }/stories/${ id }`,
+			path: `/stories/${ id }`,
 		} );
 		yield { type: 'FETCH_STORY_SUCCESS', payload: { id } };
 		return {
@@ -450,27 +454,41 @@ export function* fetchStory( id ) {
 }
 
 export function* fetchStoryMeta( id ) {
-	const result = yield apiFetch( {
-		path: `${ apiNamespace }/stories/${ id }/meta`,
-		method: 'GET',
-	} );
-	return {
-		type: 'STORY_META_SET',
-		payload: { id, result },
-	};
+	try {
+		const result = yield apiFetch( {
+			path: `/stories/${ id }/meta`,
+			method: 'GET',
+		} );
+		return {
+			type: 'STORY_META_SET',
+			payload: { id, result },
+		};
+	} catch ( error ) {
+		return {
+			type: 'STORY_META_ERROR',
+			payload: error,
+		};
+	}
 }
 
 export function* fetchStoryMetaBatch( storyIds ) {
 	yield { type: 'STORY_META_BATCH_START' };
-	const result = yield apiFetch( {
-		path: `${ apiNamespace }/stories/meta/batch`,
-		method: 'POST',
-		data: { ids: storyIds },
-	} );
-	return {
-		type: 'STORY_META_BATCH_SET',
-		payload: result,
-	};
+	try {
+		const result = yield apiFetch( {
+			path: '/stories/meta/batch',
+			method: 'POST',
+			data: { ids: storyIds },
+		} );
+		return {
+			type: 'STORY_META_BATCH_SET',
+			payload: result,
+		};
+	} catch ( error ) {
+		return {
+			type: 'STORY_META_BATCH_ERROR',
+			payload: error,
+		};
+	}
 }
 
 let storyMetaFetchTimeout;
@@ -499,7 +517,7 @@ export function* saveStory( id, story ) {
 	yield { type: 'SAVE_STORY_START', payload: { id, story } };
 	try {
 		const result = yield apiFetch( {
-			path: `${ apiNamespace }/stories/${ id }`,
+			path: `/stories/${ id }`,
 			method: 'POST',
 			data: story,
 		} );
@@ -520,7 +538,7 @@ export function* saveStoryField( id, slug, value ) {
 	yield { type: 'SAVE_STORY_FIELD_START', payload: { id, slug, value } };
 	try {
 		const result = yield apiFetch( {
-			path: `${ apiNamespace }/stories/${ id }/${ slug }`,
+			path: `/stories/${ id }/${ slug }`,
 			method: 'POST',
 			data: { value },
 		} );
@@ -578,7 +596,7 @@ export function* searchBudgets( str ) {
 	searchAbortController = refreshAbortController( searchAbortController );
 	try {
 		const result = yield apiFetch( {
-			path: `${ apiNamespace }/budgets/search`,
+			path: '/budgets/search',
 			data: { s: str },
 			method: 'POST',
 			signal: searchAbortController?.signal,
@@ -604,7 +622,7 @@ export function* searchBudgets( str ) {
 export function* updateBudget( budgetId = null, budget = null ) {
 	try {
 		const result = yield apiFetch( {
-			path: `${ apiNamespace }/budgets/${ budgetId }`,
+			path: `/budgets/${ budgetId }`,
 			method: 'PUT',
 			data: budget,
 		} );
@@ -623,7 +641,7 @@ export function* updateBudget( budgetId = null, budget = null ) {
 export function* saveActiveBudgetOrder( budgetIds = [] ) {
 	try {
 		yield apiFetch( {
-			path: `${ apiNamespace }/budgets/order`,
+			path: '/budgets/order',
 			method: 'POST',
 			data: { ids: budgetIds },
 		} );

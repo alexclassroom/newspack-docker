@@ -1,4 +1,5 @@
 import { minify, restore } from './minifier';
+import { isRemoteSite } from '../../utils/sites';
 
 /**
  * Helper functions for caching data in session storage.
@@ -120,6 +121,11 @@ export function deleteCache( key ) {
  * @return {boolean} True if cache can be used, false otherwise.
  */
 export function canUseCache() {
+	// Don't use cache if we're on a remote site.
+	if ( isRemoteSite() ) {
+		return false;
+	}
+
 	// Don't use cache if sessionStorage is not available.
 	if ( 'undefined' === typeof sessionStorage ) {
 		return false;

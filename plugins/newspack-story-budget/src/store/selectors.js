@@ -18,7 +18,8 @@ export const getFields = state => state.fields;
 export const getField = ( state, slug ) =>
 	state.fields.find( f => f.slug === slug );
 
-export const isBudgetsLoading = state => state.meta.loadingBudgets || state.meta.searching;
+export const isBudgetsLoading = state =>
+	state.meta.loadingBudgets || state.meta.searching;
 
 export const getBudgets = createSelector(
 	state => {
@@ -52,12 +53,12 @@ export const getBudgetsCount = state => {
 	return {
 		active: state.budgets.filter( budget => ! budget.archived ).length,
 		archived: state.budgets.filter( budget => budget.archived ).length,
-	}
+	};
 };
 
 export const getTotalBudgetsCount = state => {
 	return state.budgets.length;
-}
+};
 
 export const getBudgetsView = state => state.budgetsView;
 

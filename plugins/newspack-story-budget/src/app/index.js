@@ -31,17 +31,30 @@ import { useSelect } from '@wordpress/data';
 /**
  * Internal dependencies.
  */
-import AppHeader, { AppHeaderActions } from '../components/app-header';
 import { TabbedNavigation } from 'newspack-components';
+
+import AppHeader, { AppHeaderActions } from '../components/app-header';
 import Stories from '../components/stories';
 import Story from '../components/story';
 import Budgets from '../components/budgets';
 import CreateNewStory from '../components/create-new-story';
 import CreateBudgetModal from '../components/create-budget-modal';
+import Sites from '../components/sites';
+import AuthorizingSite from '../components/authorizing-site';
+import SitesNav from '../components/sites-nav';
+
 import { NOTICE_CONTEXT } from '../store/constants';
+import { isAuthorizingSite, getCurrentSiteName } from '../utils/sites';
+
 import '../style.scss';
 
-const ModalPage = ( { children, name, closeHref, ...props } ) => {
+const ModalPage = ( {
+	children,
+	name,
+	closeHref,
+	size = 'large',
+	...props
+} ) => {
 	const className = name
 		? `newspack-story-budget__modal-page__${ name }`
 		: '';
@@ -52,7 +65,7 @@ const ModalPage = ( { children, name, closeHref, ...props } ) => {
 					? ( window.location.href = closeHref )
 					: window.history.back()
 			}
-			size="large"
+			size={ size }
 			className={ `newspack-story-budget__modal-page ${ className }` }
 			{ ...props }
 		>
@@ -76,7 +89,9 @@ const StoryPage = () => {
 const StoryBudget = () => {
 	const location = useLocation();
 
-	const notices = useSelect( ( select ) => select( noticesStore ).getNotices( NOTICE_CONTEXT ) );
+	const notices = useSelect( select =>
+		select( noticesStore ).getNotices( NOTICE_CONTEXT )
+	);
 
 	const navigationItems = [
 		{ label: __( 'Stories', 'newspack-story-budget' ), path: '/stories' },
@@ -87,14 +102,29 @@ const StoryBudget = () => {
 		item => location.pathname.indexOf( item.path ) === 0
 	);
 
-	const headerText = `${ __( 'Story Budget', 'newspack-story-budget' ) } / ${
-		currentNavItem?.label
-	}`;
+	const getHeaderText = () => {
+		const parts = [ __( 'Story Budget', 'newspack-story-budget' ) ];
+
+		const siteName = getCurrentSiteName();
+		if ( siteName ) {
+			parts.push( siteName );
+		}
+
+		if ( currentNavItem ) {
+			parts.push( currentNavItem.label );
+		}
+
+		return parts.join( ' / ' );
+	};
+
+	if ( isAuthorizingSite() ) {
+		return <AuthorizingSite />;
+	}
 
 	return (
 		<SlotFillProvider>
 			<div className="wrap">
-				<AppHeader headerText={ headerText } />
+				<AppHeader headerText={ getHeaderText() } />
 				<TabbedNavigation items={ navigationItems } />
 				<div className="newspack-story-budget__content">
 					<Switch>
@@ -135,9 +165,23 @@ const StoryBudget = () => {
 									icon={ <Icon icon={ plus } /> }
 									iconPosition="right"
 								/>
+								<SitesNav />
 							</AppHeaderActions>
 							<Stories />
 							<Switch>
+								<Route path="/stories/sites" exact>
+									<ModalPage
+										title={ __(
+											'Connect to remote site',
+											'newspack-story-budget'
+										) }
+										closeHref="#/stories"
+										name={ 'sites' }
+										size="medium"
+									>
+										<Sites />
+									</ModalPage>
+								</Route>
 								<Route path="/stories/new" exact>
 									<ModalPage
 										title={ __(
@@ -177,6 +221,7 @@ const StoryBudget = () => {
 										'newspack-story-budget'
 									) }
 								</Button>
+								<SitesNav />
 							</AppHeaderActions>
 							<Budgets />
 							<Switch>
@@ -190,7 +235,10 @@ const StoryBudget = () => {
 										name={ 'create-budget' }
 									>
 										<CreateBudgetModal
-											onClose={ () => ( window.location.href = "#/budgets" ) }
+											onClose={ () =>
+												( window.location.href =
+													'#/budgets' )
+											}
 										/>
 									</ModalPage>
 								</Route>
@@ -200,7 +248,7 @@ const StoryBudget = () => {
 					</Switch>
 				</div>
 				<div className="newspack-story-budget__notices">
-					{ notices.map( ( notice ) => (
+					{ notices.map( notice => (
 						<Snackbar
 							key={ notice.id }
 							onDismiss={ notice.onDismiss }
