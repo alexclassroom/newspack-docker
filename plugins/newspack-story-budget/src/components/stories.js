@@ -184,7 +184,7 @@ export default () => {
 			id: 'view',
 			label: 'View',
 			isPrimary: true,
-			icon: seen,
+			icon: <Icon icon={ seen } />,
 			callback: items => {
 				fetchStory( items[ 0 ].id );
 				window.location.hash = '#/stories/' + items[ 0 ].id;
@@ -194,7 +194,7 @@ export default () => {
 			id: 'refresh',
 			label: 'Refresh',
 			isPrimary: false,
-			icon: update,
+			icon: <Icon icon={ update } />,
 			callback: items => {
 				clearErrors( items[ 0 ].id );
 				fetchStory( items[ 0 ].id );
@@ -205,7 +205,7 @@ export default () => {
 			label: 'Edit Post',
 			isEligible: item => !! item.metadata?.edit_url,
 			isPrimary: false,
-			icon: edit,
+			icon: <Icon icon={ edit } />,
 			callback: items => {
 				if ( items[ 0 ].metadata?.edit_url ) {
 					window.open( items[ 0 ].metadata.edit_url );
