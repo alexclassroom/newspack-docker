@@ -300,6 +300,7 @@ class Newspack_SVG_Icons {
 		),
 		'threads'     => array(
 			'threads.net',
+			'threads.com',
 		),
 		'twitch'      => array(
 			'twitch.tv',
