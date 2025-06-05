@@ -276,6 +276,7 @@ class Newspack_SVG_Icons {
 			'infosec.exchange',
 			'mas.to',
 			'newsie.social',
+			'oldbytes.space',
 			'pawoo.net',
 		),
 		'phone'       => array(
