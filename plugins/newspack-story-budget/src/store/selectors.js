@@ -1,12 +1,17 @@
 import { createSelector } from '@wordpress/data';
 
 import utils from '../utils';
+import { canUseCache } from './cache';
 
 export const isLoading = state => state.meta.loading || state.meta.searching;
 export const isRefreshing = state => state.meta.refreshing;
 
 export const isLoadingStory = ( state, id ) =>
 	state.meta.loadingStory?.[ id ] ?? false;
+
+export const isLoadingStories = state =>
+	state.meta.loadingStory &&
+	Object.values( state.meta.loadingStory ).some( Boolean );
 
 export const isCreatingStory = state => state.meta.isCreatingStory ?? false;
 export const isCreatingBudget = state => state.meta.isCreatingBudget ?? false;
@@ -102,8 +107,11 @@ export const getStory = ( state, id ) => state.stories[ id ];
 
 export const getView = state => state.view;
 
+export const canManage = () => ! utils.sites.isRemoteSite();
+
 export const canEditStory = ( state, id ) =>
-	state.meta.stories.can_edit || state.stories[ id ]?.metadata?.can_edit;
+	canManage() &&
+	( state.meta.stories.can_edit || state.stories[ id ]?.metadata?.can_edit );
 
 export const getStoriesMeta = state => state.meta.stories;
 
@@ -126,3 +134,5 @@ export const getBudgetStoryMeta = ( state ) => {
 	const budgetId = Object.values(state.stories)[0]?.budgets;
 	return state.budgets.find( b => b.id === budgetId );
 }
+
+export const canRefreshStories = () => canUseCache();

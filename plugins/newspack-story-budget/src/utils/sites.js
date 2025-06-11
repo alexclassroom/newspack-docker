@@ -1,9 +1,12 @@
-/* global newspackStoryBudget */
+/**
+ * WordPress dependencies.
+ */
+import { applyFilters } from '@wordpress/hooks';
 
 const APP_NAME = 'Newspack Story Budget';
 
 export function getSites() {
-	return newspackStoryBudget.sites;
+	return applyFilters( 'newspack-story-budget.sites', [] );
 }
 
 /**

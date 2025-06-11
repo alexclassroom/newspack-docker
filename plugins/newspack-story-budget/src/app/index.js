@@ -43,7 +43,10 @@ import Sites from '../components/sites';
 import AuthorizingSite from '../components/authorizing-site';
 import SitesNav from '../components/sites-nav';
 
-import { NOTICE_CONTEXT, NAMESPACE as storeNamespace } from '../store/constants';
+import {
+	NOTICE_CONTEXT,
+	NAMESPACE as storeNamespace,
+} from '../store/constants';
 import { isAuthorizingSite, getCurrentSiteName } from '../utils/sites';
 import { isBudgetStories } from '../utils/budgets';
 
@@ -95,10 +98,20 @@ const StoryBudget = () => {
 		budgetStoryMeta: select( storeNamespace ).getBudgetStoryMeta(),
 	} ) );
 
+	const canManage = useSelect( select =>
+		select( storeNamespace ).canManage()
+	);
+
 	const navigationItems = [
 		{ label: __( 'Stories', 'newspack-story-budget' ), path: '/stories' },
-		{ label: __( 'Budgets', 'newspack-story-budget' ), path: '/budgets' },
 	];
+
+	if ( canManage ) {
+		navigationItems.push( {
+			label: __( 'Budgets', 'newspack-story-budget' ),
+			path: '/budgets',
+		} );
+	}
 
 	const currentNavItem = navigationItems.find(
 		item => location.pathname.indexOf( item.path ) === 0

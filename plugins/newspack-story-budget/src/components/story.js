@@ -21,11 +21,11 @@ import { useEffect, useState } from '@wordpress/element';
  */
 import { NAMESPACE as storeNamespace } from '../store/constants';
 import StoryFieldPanel from './story-field-panel';
+import { useFields } from '../hooks';
 
 export default ( { storyId, onCancel } ) => {
-	const { fields, story, isLoadingStory, canEditStory, storyError } =
+	const { story, isLoadingStory, canEditStory, storyError } =
 		useSelect( select => ( {
-			fields: select( storeNamespace ).getFields(),
 			story: select( storeNamespace ).getStory( storyId ),
 			isLoadingStory: select( storeNamespace ).isLoadingStory( storyId ),
 			canEditStory: select( storeNamespace ).canEditStory( storyId ),
@@ -34,6 +34,8 @@ export default ( { storyId, onCancel } ) => {
 	const { saveStory, clearErrors } = useDispatch( storeNamespace );
 	const [ editedStory, setEditedStory ] = useState( story );
 	const [ isIframeLoading, setIsIframeLoading ] = useState( true );
+
+	const fields = useFields();
 
 	useEffect( () => {
 		clearErrors( storyId );

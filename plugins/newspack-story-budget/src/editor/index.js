@@ -13,6 +13,7 @@ import { useState, useEffect } from '@wordpress/element';
  */
 import { NAMESPACE as storeNamespace } from '../store/constants';
 import StoryFieldPanel from '../components/story-field-panel';
+import { useFields } from '../hooks';
 import '../style.scss';
 
 const StoryBudgetPanel = () => {
@@ -22,12 +23,13 @@ const StoryBudgetPanel = () => {
 		select( 'core/editor' ).getCurrentPostId()
 	);
 
-	const { fields, story, isSavingPost, storyError } = useSelect( select => ( {
-		fields: postId ? select( storeNamespace ).getFields() : [],
+	const { story, isSavingPost, storyError } = useSelect( select => ( {
 		story: postId ? select( storeNamespace ).getStory( postId ) : null,
 		storyError: select( storeNamespace ).getStoryError( postId ),
 		isSavingPost: select( 'core/editor' ).isSavingPost(),
 	} ) );
+
+	const fields = useFields();
 
 	const editableFields = fields.filter( field => field.show_in_editor );
 
@@ -36,13 +38,10 @@ const StoryBudgetPanel = () => {
 
 	useEffect( () => {
 		if ( storyError ) {
-			createErrorNotice(
-				storyError,
-				{
-					id: 'newspack-story-budget-story-error',
-					isDismissible: true,
-				}
-			);
+			createErrorNotice( storyError, {
+				id: 'newspack-story-budget-story-error',
+				isDismissible: true,
+			} );
 		}
 	}, [ storyError ] );
 

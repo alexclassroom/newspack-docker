@@ -11,7 +11,7 @@ export default ( state = INITIAL_STATE.errors, action ) => {
 		case 'BUDGETS_ERROR':
 			return {
 				...state,
-				'budgets': action.payload.message,
+				budgets: action.payload.message,
 			};
 		case 'SAVE_STORY_FIELD_ERROR':
 			return {
@@ -21,6 +21,7 @@ export default ( state = INITIAL_STATE.errors, action ) => {
 			};
 		case 'FETCH_STORY_ERROR':
 		case 'SAVE_STORY_ERROR':
+		case 'PULL_STORY_ERROR':
 			return {
 				...state,
 				[ `story-${ action.payload.id }` ]: action.payload.message,

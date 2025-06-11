@@ -57,28 +57,12 @@ class Admin {
 			true
 		);
 
-		/**
-		 * Filters the remote sites that are available to the Story Budget app.
-		 *
-		 * E.g.:
-		 *
-		 * [
-		 *  'url'  => 'https://example.com',
-		 *  'name' => 'Example',
-		 * ]
-		 *
-		 * TODO: Move this somewhere else.
-		 *
-		 * @param array $sites Array of remote sites.
-		 */
-		$sites = apply_filters( 'newspack_story_budget_remote_sites', [] );
-
 		wp_localize_script(
 			'newspack-story-budget-data',
 			'newspackStoryBudget',
 			[
 				'apiNamespace' => API::NAMESPACE,
-				'sites'        => $sites,
+				'siteUrl'      => get_site_url(),
 			]
 		);
 

@@ -9,14 +9,16 @@ import triggerFetch from '@wordpress/api-fetch';
  */
 import { getCurrentSite, getCredentials } from '../utils/sites';
 
-const { apiNamespace } = newspackStoryBudget;
+const { apiNamespace, siteUrl } = newspackStoryBudget;
 
 const remoteSite = getCurrentSite();
 
 triggerFetch.use( ( options, next ) => {
-	if ( ! options.newspackStoryBudget ) {
+	if ( ! options.isStoryBudget ) {
 		return next( options );
 	}
+
+	options.path = options.fullPath || apiNamespace + options.path;
 
 	if ( remoteSite ) {
 		const { path, data, method } = options;
@@ -28,7 +30,7 @@ triggerFetch.use( ( options, next ) => {
 			} );
 		}
 
-		const route = encodeURIComponent( apiNamespace + path );
+		const route = encodeURIComponent( path );
 		const url = `${ remoteSite }/?rest_route=/${ route }`;
 		return next( {
 			method,
@@ -36,11 +38,11 @@ triggerFetch.use( ( options, next ) => {
 			url,
 			headers: {
 				Authorization: `Basic ${ authorization }`,
+				'X-Network-Site-Url': siteUrl,
 			},
 		} );
 	}
 
-	options.path = apiNamespace + options.path;
 	return next( options );
 } );
 
@@ -53,7 +55,7 @@ export function apiFetch( request ) {
 
 export const controls = {
 	STORY_BUDGET_FETCH( { request } ) {
-		request.newspackStoryBudget = true;
+		request.isStoryBudget = true;
 		return triggerFetch( request );
 	},
 };

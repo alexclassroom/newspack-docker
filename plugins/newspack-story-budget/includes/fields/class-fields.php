@@ -326,48 +326,6 @@ class Fields {
 				'default_order' => 17,
 			],
 			[
-				'description'   => __( 'The websites this story will be published on.', 'newspack-story-budget' ),
-				'is_editable'   => true,
-				'is_sortable'   => false,
-				'is_multiple'   => true,
-				'is_filterable' => 'always',
-				'name'          => __( 'Sites', 'newspack-story-budget' ),
-				'show_in_table' => true,
-				'slug'          => 'nne_sites',
-				'type'          => 'text',
-				'options'       => [
-					[
-						'label' => 'Concord Monitor',
-						'value' => 'concordmonitor.com',
-					],
-					[
-						'label' => 'Daily Hampshire Gazette',
-						'value' => 'gazettenet.com',
-					],
-					[
-						'label' => 'Valley Advocate',
-						'value' => 'valleyadvocate.com',
-					],
-					[
-						'label' => 'Greenfield Recorder',
-						'value' => 'recorder.com',
-					],
-					[
-						'label' => 'Athol Daily News',
-						'value' => 'atholdailynews.com',
-					],
-					[
-						'label' => 'Monadnock Ledger Transcript',
-						'value' => 'ledgertranscript.com',
-					],
-					[
-						'label' => 'Valley News',
-						'value' => 'vnews.com',
-					],
-				],
-				'default_order' => 18,
-			],
-			[
 				'description'           => __( 'The print publications this story will be published on.', 'newspack-story-budget' ),
 				'is_editable'           => true,
 				'is_sortable'           => false,

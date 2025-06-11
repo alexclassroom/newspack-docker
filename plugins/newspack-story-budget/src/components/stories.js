@@ -14,71 +14,41 @@ import { DataViews } from '@wordpress/dataviews/wp';
 import {
 	__experimentalHStack as HStack,
 	__experimentalVStack as VStack,
-	Icon,
 	Button,
 	Modal,
 	Notice,
 	ProgressBar,
-	Spinner,
 	ToggleControl,
-	Tooltip,
 } from '@wordpress/components';
-import { edit, error, seen, update } from '@wordpress/icons';
+import { update } from '@wordpress/icons';
 
 /**
  * Internal dependencies.
  */
 import utils from '../utils';
 import { NAMESPACE as storeNamespace } from '../store/constants';
-import StoryField from './story-field';
-
-const TableRowField = ( { story, field, allowEdit = false } ) => {
-	const { isLoadingStory, storyError, view } = useSelect( select => ( {
-		isLoadingStory: select( storeNamespace ).isLoadingStory( story.id ),
-		storyError: select( storeNamespace ).getStoryError( story.id ),
-		view: select( storeNamespace ).getView(),
-	} ) );
-
-	const fieldIdx = view.fields.findIndex( f => f === field.slug );
-
-	return (
-		<div className="newspack-story-budget__table-row-field">
-			<StoryField
-				fieldId={ field.slug }
-				storyId={ story.id }
-				allowEdit={ allowEdit }
-				saveInPlace
-			/>
-			{ fieldIdx === 0 && isLoadingStory && (
-				<Spinner
-					style={ {
-						width: '13px',
-						height: '13px',
-					} }
-				/>
-			) }
-			{ fieldIdx === 0 && ! isLoadingStory && storyError && (
-				<Tooltip text={ storyError }>
-					<span className="newspack-story-budget__table-row-field-error">
-						<Icon icon={ error } />
-					</span>
-				</Tooltip>
-			) }
-		</div>
-	);
-};
+import { useStoryFields, useStoryActions } from '../hooks';
 
 export default () => {
-	const { view, stories, fields, isLoading, isRefreshing, progress, errors } =
-		useSelect( select => ( {
-			view: select( storeNamespace ).getView(),
-			stories: select( storeNamespace ).getStories(),
-			fields: select( storeNamespace ).getFields(),
-			isLoading: select( storeNamespace ).isLoading(),
-			isRefreshing: select( storeNamespace ).isRefreshing(),
-			progress: select( storeNamespace ).getProgress(),
-			errors: select( storeNamespace ).getErrors(),
-		} ) );
+	const {
+		view,
+		stories,
+		isLoading,
+		isRefreshing,
+		progress,
+		errors,
+		canManage,
+		canRefreshStories,
+	} = useSelect( select => ( {
+		view: select( storeNamespace ).getView(),
+		stories: select( storeNamespace ).getStories(),
+		isLoading: select( storeNamespace ).isLoading(),
+		isRefreshing: select( storeNamespace ).isRefreshing(),
+		progress: select( storeNamespace ).getProgress(),
+		errors: select( storeNamespace ).getErrors(),
+		canManage: select( storeNamespace ).canManage(),
+		canRefreshStories: select( storeNamespace ).canRefreshStories(),
+	} ) );
 	const [ editMode, setEditMode ] = useState( false );
 	const [ isReconnectingRemoteSite, setIsReconnectingRemoteSite ] =
 		useState( false );
@@ -93,7 +63,6 @@ export default () => {
 		setSearching,
 		search,
 		fetchFields,
-		fetchStory,
 		refreshStories,
 	} = useDispatch( storeNamespace );
 
@@ -114,6 +83,12 @@ export default () => {
 		};
 	}, [] );
 
+	const dataViewFields = useStoryFields( {
+		allowEdit: editMode && ! isRefreshing,
+	} );
+
+	const actions = useStoryActions();
+
 	if ( isLoading && undefined !== progress && progress < 1 ) {
 		return (
 			<div className="newspack-story-budget__loading">
@@ -123,112 +98,11 @@ export default () => {
 		);
 	}
 
-	const getFieldElements = field => {
-		if ( ! field.is_filterable || 'no' === field.is_filterable ) {
-			return undefined;
-		}
-		if ( field.options?.length ) {
-			return field.options;
-		}
-		if ( field.type === 'boolean' ) {
-			return [
-				{ value: true, label: __( 'Yes', 'newspack-story-budget' ) },
-				{ value: false, label: __( 'No', 'newspack-story-budget' ) },
-			];
-		}
-		// Fallback to unique values.
-		const values = utils.fields.getUniqueValues( field );
-		if ( ! values.length ) {
-			return undefined;
-		}
-		return values.map( value => ( {
-			value,
-			label: value,
-		} ) );
-	};
-
-	const getFilterByOperators = field => {
-		if ( field.is_multiple ) {
-			return [ 'isAny', 'isNone', 'isAll', 'isNotAll' ];
-		}
-		if ( field.type === 'boolean' ) {
-			return [ 'is' ];
-		}
-		return [ 'isAny', 'isNone' ];
-	};
-
-	const dataViewFields = fields
-		.filter( field => {
-			// Skip the budgets field if we're viewing a budget's stories.
-			if ( 'budgets' === field.slug && utils.budgets.isBudgetStories() ) {
-				return false;
-			}
-			return true;
-		} )
-		.map( field => ( {
-			id: field.slug,
-			label: field.name,
-			isVisible: () => field.show_in_table || field.always_visible_in_table,
-			type: field.type,
-			enableHiding: ! field.always_visible_in_table,
-			enableSorting: field.is_sortable,
-			elements: getFieldElements( field ),
-			filterBy:
-				field.is_filterable && field.is_filterable !== 'no'
-					? {
-							operators: getFilterByOperators( field ),
-							isPrimary: field.is_filterable === 'always',
-					}
-					: undefined,
-			render: value => (
-				<TableRowField
-					story={ value.item }
-					field={ field }
-					allowEdit={ editMode && ! isRefreshing }
-				/>
-			),
-		} ) );
-
 	const refresh = () => {
 		clearErrors();
 		fetchFields();
 		refreshStories( false );
 	};
-
-	const actions = [
-		{
-			id: 'view',
-			label: 'View',
-			isPrimary: true,
-			icon: <Icon icon={ seen } />,
-			callback: items => {
-				fetchStory( items[ 0 ].id );
-				window.location.hash = '#/stories/' + items[ 0 ].id;
-			},
-		},
-		{
-			id: 'refresh',
-			label: 'Refresh',
-			isPrimary: false,
-			icon: <Icon icon={ update } />,
-			callback: items => {
-				clearErrors( items[ 0 ].id );
-				fetchStory( items[ 0 ].id );
-			},
-		},
-		{
-			id: 'edit',
-			label: 'Edit Post',
-			isEligible: item => !! item.metadata?.edit_url,
-			isPrimary: false,
-			icon: <Icon icon={ edit } />,
-			callback: items => {
-				if ( items[ 0 ].metadata?.edit_url ) {
-					window.open( items[ 0 ].metadata.edit_url );
-				}
-			},
-		},
-	];
 
 	if ( errors?.stories ) {
 		return (
@@ -313,34 +187,38 @@ export default () => {
 			} }
 			header={
 				<HStack style={ { marginLeft: '8px' } }>
-					<Button
-						className={
-							isLoading || isRefreshing
-								? 'newspack-story-budget__refresh-button-is-busy'
-								: 'newspack-story-budget__refresh-button'
-						}
-						icon={ update }
-						disabled={ isLoading || isRefreshing }
-						label={
-							isLoading || isRefreshing
-								? __(
-										'Loading stories…',
-										'newspack-story-budget'
-								  )
-								: __(
-										'Refresh all stories',
-										'newspack-story-budget'
-								  )
-						}
-						size="compact"
-						onClick={ refresh }
-					/>
-					<ToggleControl
-						label={ __( 'Edit mode', 'newspack-story-budget' ) }
-						checked={ editMode }
-						onChange={ setEditMode }
-						__nextHasNoMarginBottom
-					/>
+					{ canRefreshStories && (
+						<Button
+							className={
+								isLoading || isRefreshing
+									? 'newspack-story-budget__refresh-button-is-busy'
+									: 'newspack-story-budget__refresh-button'
+							}
+							icon={ update }
+							disabled={ isLoading || isRefreshing }
+							label={
+								isLoading || isRefreshing
+									? __(
+											'Loading stories…',
+											'newspack-story-budget'
+									  )
+									: __(
+											'Refresh all stories',
+											'newspack-story-budget'
+									  )
+							}
+							size="compact"
+							onClick={ refresh }
+						/>
+					) }
+					{ canManage && (
+						<ToggleControl
+							label={ __( 'Edit mode', 'newspack-story-budget' ) }
+							checked={ editMode }
+							onChange={ setEditMode }
+							__nextHasNoMarginBottom
+						/>
+					) }
 				</HStack>
 			}
 		/>

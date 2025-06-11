@@ -195,13 +195,30 @@ class Story {
 	 * @return array
 	 */
 	public function get_metadata() {
-		return [
-			'slug'        => \get_post_field( 'post_name', $this->post ),
-			'preview_url' => \add_query_arg( 'newspack-story-preview', true, get_permalink( $this->id ) ),
-			'edit_url'    => \get_edit_post_link( $this->id, 'edit' ),
-			'can_edit'    => current_user_can( 'edit_post', $this->id ),
-			'can_preview' => $this->can_preview(),
+		$metadata = [
+			'slug'         => \get_post_field( 'post_name', $this->post ),
+			'preview_url'  => \add_query_arg( 'newspack-story-preview', true, get_permalink( $this->id ) ),
+			'edit_url'     => \get_edit_post_link( $this->id, 'edit' ),
+			'can_edit'     => current_user_can( 'edit_post', $this->id ),
+			'can_preview'  => $this->can_preview(),
+			/**
+			 * Filters the fields properties for the story.
+			 *
+			 * Field properties are metadata specific to a field in a story.
+			 *
+			 * @param array $fields_props The fields properties, each key is a field slug and the value is the field properties.
+			 * @param int   $story_id     The story ID.
+			 */
+			'fields_props' => apply_filters( 'newspack_story_budget_fields_props', [], $this->id ),
 		];
+
+		/**
+		 * Filters the story metadata.
+		 *
+		 * @param array $metadata The story metadata.
+		 * @param int   $story_id The story ID.
+		 */
+		return apply_filters( 'newspack_story_budget_story_metadata', $metadata, $this->id );
 	}
 
 	/**
