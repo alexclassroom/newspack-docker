@@ -241,6 +241,15 @@ abstract class Abstract_Field {
 	}
 
 	/**
+	 * Get the field's post_save_callback.
+	 *
+	 * @return callable? The field's callback.
+	 */
+	public function get_post_save_callback() {
+		return $this->post_save_callback;
+	}
+
+	/**
 	 * Whether the field encountered any errors while being initialized.
 	 *
 	 * @return bool

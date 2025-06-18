@@ -43,15 +43,6 @@ class Read_Only_Field extends Abstract_Field {
 	}
 
 	/**
-	 * Get the field's post_save_callback.
-	 *
-	 * @return callable? The field's callback.
-	 */
-	public function get_post_save_callback() {
-		return $this->post_save_callback;
-	}
-
-	/**
 	 * Get the field's value.
 	 *
 	 * @param int $post_id The post ID to get the value for. If not passed, return the default value, if any.
