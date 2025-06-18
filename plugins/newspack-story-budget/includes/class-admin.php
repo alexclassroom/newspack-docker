@@ -23,6 +23,15 @@ class Admin {
 		add_action( 'wp_head', [ __CLASS__, 'story_preview_css' ], 100 );
 		add_filter( 'newspack_popups_should_display_prompt', [ __CLASS__, 'hide_prompts_on_preview' ] );
 		add_action( 'enqueue_block_editor_assets', [ __CLASS__, 'enqueue_editor_assets' ], 9 );
+
+		// Add Quick Edit and Bulk Edit support for Budgets taxonomy.
+		add_action( 'quick_edit_custom_box', [ __CLASS__, 'render_budgets_quick_edit' ], 10, 2 );
+		add_action( 'bulk_edit_custom_box', [ __CLASS__, 'render_budgets_bulk_edit' ], 10, 2 );
+		add_action( 'save_post', [ __CLASS__, 'save_budgets_quick_bulk_edit' ], 10, 2 );
+		add_action( 'bulk_edit_posts', [ __CLASS__, 'save_budgets_bulk_edit' ], 10, 2 );
+
+		add_filter( 'manage_post_posts_columns', [ __CLASS__, 'add_budgets_column' ] );
+		add_action( 'manage_post_posts_custom_column', [ __CLASS__, 'render_budgets_column' ], 10, 2 );
 	}
 
 	/**
@@ -65,6 +74,21 @@ class Admin {
 				'siteUrl'      => get_site_url(),
 			]
 		);
+
+		global $pagenow;
+
+		if ( 'post' === get_post_type() && 'edit.php' === $pagenow ) {
+
+			$quick_edit_meta = require NEWSPACK_STORY_BUDGET_PLUGIN_DIR . 'dist/story-budget-quick-edit.asset.php';
+
+			wp_enqueue_script(
+				'newspack-story-budget-quick-edit',
+				plugin_dir_url( __DIR__ ) . 'dist/story-budget-quick-edit.js',
+				$quick_edit_meta['dependencies'],
+				$quick_edit_meta['version'],
+				true
+			);
+		}
 
 		if ( ! isset( $_GET['page'] ) || 'newspack-story-budget' !== $_GET['page'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			return;
@@ -178,5 +202,141 @@ class Admin {
 			[ 'wp-components' ],
 			filemtime( NEWSPACK_STORY_BUDGET_PLUGIN_DIR . 'dist/story-budget-editor.css' )
 		);
+	}
+
+	/**
+	 * Render Budgets field in Quick Edit form.
+	 *
+	 * @param string $column_name The name of the column to edit.
+	 * @param string $post_type   The post type.
+	 */
+	public static function render_budgets_quick_edit( $column_name, $post_type ) {
+		if ( $column_name !== '_np_story_budget_budgets' ) {
+			return;
+		}
+		$budgets = Budgets::get_budgets();
+		?>
+		<fieldset class="inline-edit-col-right">
+			<div class="inline-edit-col">
+				<span class="title"><?php esc_html_e( 'Budget', 'newspack-story-budget' ); ?></span>
+				<select name="newspack_story_budget_budgets[]" style="width: 100%;">
+					<option value=""><?php esc_html_e( 'No budget', 'newspack-story-budget' ); ?></option>
+					<?php foreach ( $budgets as $budget ) : ?>
+						<option value="<?php echo esc_attr( $budget->id ); ?>"><?php echo esc_html( $budget->term->name ); ?></option>
+					<?php endforeach; ?>
+				</select>
+			</div>
+		</fieldset>
+		<?php
+	}
+
+	/**
+	 * Render Budgets field in Bulk Edit form.
+	 *
+	 * @param string $column_name The name of the column to edit.
+	 * @param string $post_type   The post type.
+	 */
+	public static function render_budgets_bulk_edit( $column_name, $post_type ) {
+		if ( $column_name !== '_np_story_budget_budgets' ) {
+			return;
+		}
+		$budgets = Budgets::get_budgets();
+		?>
+		<fieldset class="inline-edit-col-left">
+			<div class="inline-edit-col">
+				<span class="title"><?php esc_html_e( 'Budget', 'newspack-story-budget' ); ?></span>
+				<select name="newspack_story_budget_budget[]" style="width: 100%;">
+					<option value=""><?php esc_html_e( 'No change', 'newspack-story-budget' ); ?></option>
+					<option value="-1"><?php esc_html_e( 'Clear budget', 'newspack-story-budget' ); ?></option>
+					<?php foreach ( $budgets as $budget ) : ?>
+						<option value="<?php echo esc_attr( $budget->id ); ?>"><?php echo esc_html( $budget->term->name ); ?></option>
+					<?php endforeach; ?>
+				</select>
+			</div>
+		</fieldset>
+		<?php
+	}
+
+	/**
+	 * Save Budgets from Quick Edit and Bulk Edit.
+	 *
+	 * @param int   $post_id The post ID.
+	 * @param mixed $post    The post object.
+	 */
+	public static function save_budgets_quick_bulk_edit( $post_id, $post ) {
+
+		if ( ! isset( $_POST['newspack_story_budget_budgets'] ) ) {
+			return;
+		}
+
+		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+			return;
+		}
+		if ( ! current_user_can( 'edit_post', $post_id ) ) {
+			return;
+		}
+
+		check_ajax_referer( 'inlineeditnonce', '_inline_edit' );
+
+		$budgets = array_map( 'intval', (array) $_POST['newspack_story_budget_budgets'] );
+		wp_set_object_terms( $post_id, $budgets, Budgets::TAXONOMY );
+	}
+
+	/**
+	 * Add Budgets column to the posts list table.
+	 *
+	 * @param array $columns The existing columns.
+	 * @return array Modified columns.
+	 */
+	public static function add_budgets_column( $columns ) {
+		$columns['_np_story_budget_budgets'] = __( 'Budget', 'newspack-story-budget' );
+		return $columns;
+	}
+
+	/**
+	 * Render Budgets column content.
+	 *
+	 * @param string $column_name The column name.
+	 * @param int    $post_id     The post ID.
+	 */
+	public static function render_budgets_column( $column_name, $post_id ) {
+		if ( $column_name !== '_np_story_budget_budgets' ) {
+			return;
+		}
+		$budgets = wp_get_object_terms( $post_id, Budgets::TAXONOMY );
+		if ( is_wp_error( $budgets ) || empty( $budgets ) ) {
+			echo '<span class="np-story-budget-budgets" data-budgets=""></span>&mdash;';
+			return;
+		}
+		$ids = wp_list_pluck( $budgets, 'term_id' );
+		$names = wp_list_pluck( $budgets, 'name' );
+		echo '<span class="np-story-budget-budgets" data-budgets="' . esc_attr( implode( ',', $ids ) ) . '">' . esc_html( implode( ', ', $names ) ) . '</span>';
+	}
+
+	/**
+	 * Save Budgets from Bulk Edit.
+	 *
+	 * @param array $updated An array of updated post IDs.
+	 * @param array $shared_post_data Associative array containing the post data.
+	 */
+	public static function save_budgets_bulk_edit( $updated, $shared_post_data ) {
+
+		if ( empty( $shared_post_data['newspack_story_budget_budget'] ) ) {
+			return;
+		}
+
+		$budget_id = $shared_post_data['newspack_story_budget_budget'][0];
+
+		if ( empty( $budget_id ) ) {
+			return;
+		}
+
+		foreach ( $updated as $post_id ) {
+			if ( '-1' === $budget_id ) {
+				wp_delete_object_term_relationships( $post_id, Budgets::TAXONOMY );
+			} else {
+				wp_set_object_terms( $post_id, (int) $budget_id, Budgets::TAXONOMY );
+			}
+		}
 	}
 }

@@ -523,7 +523,7 @@ class Fields {
 	 */
 	public static function wp_posts_columns_values( $column_name, $post_id ) {
 		$field = self::get_field_by_post_meta_name( $column_name );
-		if ( ! $field ) {
+		if ( ! $field || ! $field->show_in_wp_posts_table() ) {
 			return;
 		}
 		$value = $field->get_value( $post_id );

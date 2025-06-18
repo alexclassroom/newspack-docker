@@ -12,5 +12,6 @@ module.exports = getBaseWebpackConfig( {
 		'story-budget-data': path.join( __dirname, 'src', 'store' ),
 		'story-budget-app': path.join( __dirname, 'src', 'app' ),
 		'story-budget-editor': path.join( __dirname, 'src', 'editor' ),
+		'story-budget-quick-edit': path.join( __dirname, 'src', 'quick-edit' ),
 	},
 } );
