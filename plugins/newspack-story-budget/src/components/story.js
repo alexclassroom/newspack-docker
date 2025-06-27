@@ -14,32 +14,52 @@ import {
 } from '@wordpress/components';
 import { notAllowed } from '@wordpress/icons';
 import { useSelect, useDispatch } from '@wordpress/data';
-import { useEffect, useState } from '@wordpress/element';
+import { useEffect, useState, useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies.
  */
 import { NAMESPACE as storeNamespace } from '../store/constants';
 import StoryFieldPanel from './story-field-panel';
-import { useFields } from '../hooks';
+import { useFields, useStory } from '../hooks';
 
 export default ( { storyId, onCancel } ) => {
-	const { story, isLoadingStory, canEditStory, storyError } =
-		useSelect( select => ( {
-			story: select( storeNamespace ).getStory( storyId ),
+	const { isLoadingStory, canEditStory, storyError } = useSelect(
+		select => ( {
 			isLoadingStory: select( storeNamespace ).isLoadingStory( storyId ),
 			canEditStory: select( storeNamespace ).canEditStory( storyId ),
 			storyError: select( storeNamespace ).getStoryError( storyId ),
-		} ) );
-	const { saveStory, clearErrors } = useDispatch( storeNamespace );
+		} )
+	);
+	const story = useStory( storyId );
+	const fields = useFields();
+
 	const [ editedStory, setEditedStory ] = useState( story );
 	const [ isIframeLoading, setIsIframeLoading ] = useState( true );
 
-	const fields = useFields();
+	const { saveStory, clearErrors } = useDispatch( storeNamespace );
 
 	useEffect( () => {
 		clearErrors( storyId );
 	}, [ storyId ] );
+
+	const handleSave = useCallback( async () => {
+		clearErrors( storyId );
+		await saveStory( storyId, editedStory );
+	}, [ clearErrors, storyId, editedStory, saveStory ] );
+
+	const handleCancel = useCallback( () => {
+		clearErrors( storyId );
+		onCancel?.();
+	}, [ clearErrors, storyId, onCancel ] );
+
+	const handleFieldChange = useCallback(
+		newStory => {
+			clearErrors( storyId );
+			setEditedStory( newStory );
+		},
+		[ clearErrors, storyId ]
+	);
 
 	if ( ! story ) {
 		if ( isLoadingStory ) {
@@ -58,21 +78,6 @@ export default ( { storyId, onCancel } ) => {
 		}
 		return null;
 	}
-
-	const handleSave = async () => {
-		clearErrors( storyId );
-		await saveStory( storyId, editedStory );
-	};
-
-	const handleCancel = () => {
-		clearErrors( storyId );
-		onCancel?.();
-	};
-
-	const handleFieldChange = newStory => {
-		clearErrors( storyId );
-		setEditedStory( newStory );
-	};
 
 	return (
 		<HStack

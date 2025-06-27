@@ -163,3 +163,22 @@ export const useStoryActions = () => {
 		[ canManage ]
 	);
 };
+
+/**
+ * Hook to get the DataViews view.
+ *
+ * @return {Object} The view.
+ */
+export const useView = () => {
+	return useSelect( select => select( NAMESPACE ).getView(), [] );
+};
+
+/**
+ * Hook to get the story.
+ */
+export const useStory = storyId => {
+	return useSelect(
+		select => select( NAMESPACE ).getStory( storyId ),
+		[ storyId ]
+	);
+};

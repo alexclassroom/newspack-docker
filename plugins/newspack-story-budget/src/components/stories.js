@@ -8,8 +8,9 @@ import debounce from 'lodash/debounce';
  * WordPress dependencies.
  */
 import { __ } from '@wordpress/i18n';
+import { applyFilters } from '@wordpress/hooks';
 import { useSelect, useDispatch } from '@wordpress/data';
-import { useEffect, useState } from '@wordpress/element';
+import { useEffect, useState, useMemo, useCallback } from '@wordpress/element';
 import { DataViews } from '@wordpress/dataviews/wp';
 import {
 	__experimentalHStack as HStack,
@@ -27,11 +28,10 @@ import { update } from '@wordpress/icons';
  */
 import utils from '../utils';
 import { NAMESPACE as storeNamespace } from '../store/constants';
-import { useStoryFields, useStoryActions } from '../hooks';
+import { useStoryFields, useStoryActions, useView } from '../hooks';
 
 export default () => {
 	const {
-		view,
 		stories,
 		isLoading,
 		isRefreshing,
@@ -40,7 +40,6 @@ export default () => {
 		canManage,
 		canRefreshStories,
 	} = useSelect( select => ( {
-		view: select( storeNamespace ).getView(),
 		stories: select( storeNamespace ).getStories(),
 		isLoading: select( storeNamespace ).isLoading(),
 		isRefreshing: select( storeNamespace ).isRefreshing(),
@@ -50,12 +49,28 @@ export default () => {
 		canRefreshStories: select( storeNamespace ).canRefreshStories(),
 	} ) );
 	const [ editMode, setEditMode ] = useState( false );
+
+	useEffect( () => {
+		setEditMode(
+			applyFilters( 'newspack-story-budget.defaultEditMode', false )
+		);
+	}, [] );
+
 	const [ isReconnectingRemoteSite, setIsReconnectingRemoteSite ] =
 		useState( false );
-	const currentStories = stories.slice(
-		( view.page - 1 ) * view.perPage,
-		( view.page - 1 ) * view.perPage + view.perPage
-	);
+
+	const view = useView();
+	const currentStories = useMemo( () => {
+		return stories.slice(
+			( view.page - 1 ) * view.perPage,
+			( view.page - 1 ) * view.perPage + view.perPage
+		);
+	}, [ stories, view.page, view.perPage ] );
+
+	// Scroll to top when changing page.
+	useEffect( () => {
+		window.scrollTo( 0, 0 );
+	}, [ view.page ] );
 
 	const {
 		clearErrors,
@@ -66,7 +81,7 @@ export default () => {
 		refreshStories,
 	} = useDispatch( storeNamespace );
 
-	const doSearch = debounce( search, 300 );
+	const doSearch = useMemo( () => debounce( search, 300 ), [ search ] );
 
 	useEffect( () => {
 		if ( view.search ) {
@@ -89,6 +104,29 @@ export default () => {
 
 	const actions = useStoryActions();
 
+	const refresh = useCallback( () => {
+		clearErrors();
+		fetchFields();
+		refreshStories( false );
+	}, [ clearErrors, fetchFields, refreshStories ] );
+
+	const paginationInfo = useMemo(
+		() => ( {
+			totalItems: stories.length,
+			totalPages: Math.ceil( stories.length / view.perPage ),
+		} ),
+		[ stories.length, view.perPage ]
+	);
+
+	const defaultLayouts = useMemo(
+		() => ( {
+			table: {
+				showMedia: false,
+			},
+		} ),
+		[]
+	);
+
 	if ( isLoading && undefined !== progress && progress < 1 ) {
 		return (
 			<div className="newspack-story-budget__loading">
@@ -97,12 +135,6 @@ export default () => {
 			</div>
 		);
 	}
-
-	const refresh = () => {
-		clearErrors();
-		fetchFields();
-		refreshStories( false );
-	};
 
 	if ( errors?.stories ) {
 		return (
@@ -176,15 +208,8 @@ export default () => {
 			onChangeView={ setView }
 			actions={ actions }
 			data={ isLoading ? [] : currentStories }
-			paginationInfo={ {
-				totalItems: stories.length,
-				totalPages: Math.ceil( stories.length / view.perPage ),
-			} }
-			defaultLayouts={ {
-				table: {
-					showMedia: false,
-				},
-			} }
+			paginationInfo={ paginationInfo }
+			defaultLayouts={ defaultLayouts }
 			header={
 				<HStack style={ { marginLeft: '8px' } }>
 					{ canRefreshStories && (

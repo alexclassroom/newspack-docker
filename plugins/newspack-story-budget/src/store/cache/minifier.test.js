@@ -25,6 +25,30 @@ describe( 'minifier', () => {
 	} );
 
 	describe( 'minify and restore', () => {
+		it( 'should minify using 36 base', () => {
+			const minified = minify( [
+				{
+					'key-0': 'value-0',
+					'key-1': 'value-1',
+					'key-2': 'value-2',
+					'key-3': 'value-3',
+					'key-4': 'value-4',
+					'key-5': 'value-5',
+					'key-6': 'value-6',
+					'key-7': 'value-7',
+					'key-8': 'value-8',
+					'key-9': 'value-9',
+					'key-10': 'value-10',
+					'key-11': 'value-11',
+				},
+			] );
+			expect( minified.data[ 0 ][ 0 ] ).toEqual( 'value-0' );
+			expect( minified.data[ 0 ].a ).toEqual( 'value-10' );
+			expect( minified.data[ 0 ].b ).toEqual( 'value-11' );
+			expect( minified.keyMap[ 'key-10' ] ).toEqual( 'a' );
+			expect( minified.keyMap[ 'key-11' ] ).toEqual( 'b' );
+		} );
+
 		it( 'should minify and restore a large array of objects', () => {
 			const largeArray = Array.from( { length: 10000 }, ( _, i ) => ( {
 				id: i,
@@ -96,6 +120,18 @@ describe( 'minifier', () => {
 			const restored = restore( minified.data, minified.keyMap );
 			expect( restored ).toEqual( arrayWithNested );
 		} );
+	} );
+
+	it( 'should not minify arrays', () => {
+		const data = { obj: { foo: 1, bar: 2 }, arr: [ 1, 2, 3 ] };
+		const minified = minify( data );
+		expect( minified.data.arr ).toEqual( [ 1, 2, 3 ] );
+		expect( minified.keyMap ).toEqual( {
+			foo: '0',
+			bar: '1',
+		} );
+		const restored = restore( minified.data, minified.keyMap );
+		expect( restored ).toEqual( data );
 	} );
 
 	describe( 'edge cases', () => {

@@ -1,4 +1,5 @@
 import { createSelector } from '@wordpress/data';
+import { applyFilters } from '@wordpress/hooks';
 
 import utils from '../utils';
 import { canUseCache } from './cache';
@@ -105,7 +106,27 @@ export const getStories = createSelector(
 
 export const getStory = ( state, id ) => state.stories[ id ];
 
-export const getView = state => state.view;
+export const getView = createSelector(
+	state => ( {
+		...applyFilters( 'newspack-story-budget.defaultView', {
+			type: 'table',
+			search: '',
+			page: 1,
+			perPage: 10,
+			fields: [],
+			filters: [],
+			sort: {
+				field: 'last_modified',
+				direction: 'desc',
+			},
+			layout: {
+				density: 'compact',
+			},
+		} ),
+		...state.view,
+	} ),
+	state => [ state.view ]
+);
 
 export const canManage = () => ! utils.sites.isRemoteSite();
 
@@ -130,9 +151,9 @@ export const getStoryError = ( state, storyId ) =>
 
 export const getStoryMetaFetchQueue = state => state.meta.storyMetaFetchQueue;
 
-export const getBudgetStoryMeta = ( state ) => {
-	const budgetId = Object.values(state.stories)[0]?.budgets;
+export const getBudgetStoryMeta = state => {
+	const budgetId = Object.values( state.stories )[ 0 ]?.budgets;
 	return state.budgets.find( b => b.id === budgetId );
-}
+};
 
 export const canRefreshStories = () => canUseCache();

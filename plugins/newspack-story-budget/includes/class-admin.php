@@ -58,54 +58,53 @@ class Admin {
 	 * Enqueue assets.
 	 */
 	public static function enqueue_assets() {
+		$data_asset = require NEWSPACK_STORY_BUDGET_PLUGIN_DIR . 'dist/story-budget-data.asset.php';
 		wp_register_script(
 			'newspack-story-budget-data',
 			plugin_dir_url( __DIR__ ) . 'dist/story-budget-data.js',
-			[ 'wp-data-controls', 'wp-core-data' ],
-			filemtime( NEWSPACK_STORY_BUDGET_PLUGIN_DIR . 'dist/story-budget-data.js' ),
+			$data_asset['dependencies'],
+			$data_asset['version'],
 			true
 		);
-
 		wp_localize_script(
 			'newspack-story-budget-data',
 			'newspackStoryBudget',
 			[
 				'apiNamespace' => API::NAMESPACE,
 				'siteUrl'      => get_site_url(),
+				'refreshCache' => isset( $_GET['page'] ) && 'newspack-story-budget' === $_GET['page'], // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			]
 		);
 
 		global $pagenow;
 
 		if ( 'post' === get_post_type() && 'edit.php' === $pagenow ) {
-
-			$quick_edit_meta = require NEWSPACK_STORY_BUDGET_PLUGIN_DIR . 'dist/story-budget-quick-edit.asset.php';
-
+			$quick_edit_asset = require NEWSPACK_STORY_BUDGET_PLUGIN_DIR . 'dist/story-budget-quick-edit.asset.php';
 			wp_enqueue_script(
 				'newspack-story-budget-quick-edit',
 				plugin_dir_url( __DIR__ ) . 'dist/story-budget-quick-edit.js',
-				$quick_edit_meta['dependencies'],
-				$quick_edit_meta['version'],
+				$quick_edit_asset['dependencies'],
+				$quick_edit_asset['version'],
 				true
 			);
 		}
 
-		if ( ! isset( $_GET['page'] ) || 'newspack-story-budget' !== $_GET['page'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			return;
+		if ( isset( $_GET['page'] ) && 'newspack-story-budget' === $_GET['page'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$app_asset = require NEWSPACK_STORY_BUDGET_PLUGIN_DIR . 'dist/story-budget-app.asset.php';
+			wp_enqueue_script(
+				'newspack-story-budget-app',
+				plugin_dir_url( __DIR__ ) . 'dist/story-budget-app.js',
+				array_merge( $app_asset['dependencies'], [ 'newspack-story-budget-data' ] ),
+				$app_asset['version'],
+				true
+			);
+			wp_enqueue_style(
+				'newspack-story-budget-app',
+				plugin_dir_url( __DIR__ ) . 'dist/story-budget-app.css',
+				[ 'wp-components' ],
+				$app_asset['version']
+			);
 		}
-		wp_enqueue_script(
-			'newspack-story-budget-app',
-			plugin_dir_url( __DIR__ ) . 'dist/story-budget-app.js',
-			[ 'newspack-story-budget-data', 'wp-components' ],
-			filemtime( NEWSPACK_STORY_BUDGET_PLUGIN_DIR . 'dist/story-budget-app.js' ),
-			true
-		);
-		wp_enqueue_style(
-			'newspack-story-budget-app',
-			plugin_dir_url( __DIR__ ) . 'dist/story-budget-app.css',
-			[ 'wp-components' ],
-			filemtime( NEWSPACK_STORY_BUDGET_PLUGIN_DIR . 'dist/story-budget-app.css' )
-		);
 	}
 
 	/**
@@ -189,18 +188,19 @@ class Admin {
 		if ( ! $story->is_valid() ) {
 			return;
 		}
+		$editor_asset = require NEWSPACK_STORY_BUDGET_PLUGIN_DIR . 'dist/story-budget-editor.asset.php';
 		wp_enqueue_script(
 			'newspack-story-budget-editor',
 			plugin_dir_url( __DIR__ ) . 'dist/story-budget-editor.js',
-			[ 'newspack-story-budget-data', 'wp-components' ],
-			filemtime( NEWSPACK_STORY_BUDGET_PLUGIN_DIR . 'dist/story-budget-editor.js' ),
+			array_merge( $editor_asset['dependencies'], [ 'newspack-story-budget-data' ] ),
+			$editor_asset['version'],
 			true
 		);
 		wp_enqueue_style(
 			'newspack-story-budget-editor',
 			plugin_dir_url( __DIR__ ) . 'dist/story-budget-editor.css',
 			[ 'wp-components' ],
-			filemtime( NEWSPACK_STORY_BUDGET_PLUGIN_DIR . 'dist/story-budget-editor.css' )
+			$editor_asset['version']
 		);
 	}
 

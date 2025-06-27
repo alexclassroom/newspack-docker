@@ -1,11 +1,9 @@
-import { INITIAL_STATE } from '../constants';
-
 export const actions = {
 	VIEW_SET: 'VIEW_SET',
 	FIELDS_SET: 'FIELDS_SET',
 };
 
-export default ( state = INITIAL_STATE.view, action ) => {
+export default ( state = {}, action ) => {
 	switch ( action.type ) {
 		case actions.VIEW_SET:
 			return action.payload;

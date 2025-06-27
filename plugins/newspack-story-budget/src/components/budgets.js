@@ -4,6 +4,7 @@
  * WordPress dependencies.
  */
 import { __ } from '@wordpress/i18n';
+import { applyFilters } from '@wordpress/hooks';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { useState, useMemo, useEffect } from '@wordpress/element';
 import {
@@ -54,23 +55,28 @@ const LoadingSpinner = () => (
 );
 
 export default () => {
-	const { view, totalBudgets, isLoading } = useSelect(
-		select => ( {
-			view: select( storeNamespace ).getBudgetsView(),
-			totalBudgets: select( storeNamespace ).getBudgetsCount(),
-			isLoading: select( storeNamespace ).isBudgetsLoading(),
-		} )
-	);
+	const { view, totalBudgets, isLoading } = useSelect( select => ( {
+		view: select( storeNamespace ).getBudgetsView(),
+		totalBudgets: select( storeNamespace ).getBudgetsCount(),
+		isLoading: select( storeNamespace ).isBudgetsLoading(),
+	} ) );
 
-	const {
-		setBudgetsView,
-		setSearching,
-		searchBudgets
-	} = useDispatch( storeNamespace );
+	const { setBudgetsView, setSearching, searchBudgets } =
+		useDispatch( storeNamespace );
 
 	const [ editMode, setEditMode ] = useState( false );
+
+	useEffect( () => {
+		setEditMode(
+			applyFilters( 'newspack-story-budget.defaultEditMode', false )
+		);
+	}, [] );
+
 	const [ searchTerm, setSearchTerm ] = useState( view.search );
-	const [ budgetStatus, setBudgetStatus ] = useState( view.filters?.find( filter => filter.field === 'status' )?.value ?? BUDGET_STATUS.ACTIVE );
+	const [ budgetStatus, setBudgetStatus ] = useState(
+		view.filters?.find( filter => filter.field === 'status' )?.value ??
+			BUDGET_STATUS.ACTIVE
+	);
 	const [ page, setPage ] = useState( view.page );
 
 	const doSearch = debounce( searchBudgets, 300 );
@@ -95,7 +101,9 @@ export default () => {
 	 * Calculate total pages based on budget status.
 	 */
 	const totalPages = useMemo( () => {
-		if ( ! totalBudgets.archived || budgetStatus === BUDGET_STATUS.OPEN ) { return 1 };
+		if ( ! totalBudgets.archived || budgetStatus === BUDGET_STATUS.OPEN ) {
+			return 1;
+		}
 		return Math.ceil( totalBudgets.archived / view.perPage );
 	}, [ totalBudgets, budgetStatus ] );
 
@@ -118,7 +126,7 @@ export default () => {
 						value={ searchTerm }
 						onChange={ setSearchTerm }
 						size="compact"
-						placeholder={ __( 'Search', 'newspack-story-budget') }
+						placeholder={ __( 'Search', 'newspack-story-budget' ) }
 						__nextHasNoMarginBottom
 					/>
 					<Divider
@@ -132,8 +140,17 @@ export default () => {
 						label={ __( 'Budget Status', 'newspack-story-budget' ) }
 						labelPosition="side"
 						options={ [
-							{ label: __( 'Active', 'newspack-story-budget' ), value: BUDGET_STATUS.ACTIVE },
-							{ label: __( 'Archived', 'newspack-story-budget' ), value: BUDGET_STATUS.ARCHIVED },
+							{
+								label: __( 'Active', 'newspack-story-budget' ),
+								value: BUDGET_STATUS.ACTIVE,
+							},
+							{
+								label: __(
+									'Archived',
+									'newspack-story-budget'
+								),
+								value: BUDGET_STATUS.ARCHIVED,
+							},
 						] }
 						onChange={ setBudgetStatus }
 						__nextHasNoMarginBottom
@@ -161,13 +178,14 @@ export default () => {
 						budgetStatus={ budgetStatus }
 						isSearching={ searchTerm.length > 0 }
 					/>
-					{ BUDGET_STATUS.ARCHIVED === budgetStatus && 0 === searchTerm.length &&(
-						<Pagination
-							currentPage={ page }
-							totalPages={ totalPages }
-							onPageChange={ setPage }
-						/>
-					) }
+					{ BUDGET_STATUS.ARCHIVED === budgetStatus &&
+						0 === searchTerm.length && (
+							<Pagination
+								currentPage={ page }
+								totalPages={ totalPages }
+								onPageChange={ setPage }
+							/>
+						) }
 				</VStack>
 			) }
 		</div>

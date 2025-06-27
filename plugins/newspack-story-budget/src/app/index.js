@@ -138,115 +138,109 @@ const StoryBudget = () => {
 	}
 
 	return (
-		<SlotFillProvider>
-			<div className="wrap">
-				<AppHeader headerText={ getHeaderText() } />
-				<TabbedNavigation items={ navigationItems } />
-				<div className="newspack-story-budget__content">
-					<Switch>
-						<Route path="/stories">
-							<AppHeaderActions>
-								{ canManage && (
-									<Button
-										variant="primary"
-										href="#/stories/new"
-									>
-										{ __(
-											'Add New Story',
-											'newspack-story-budget'
-										) }
-									</Button>
-								) }
-								<SitesNav />
-							</AppHeaderActions>
-							<Stories />
-							<Switch>
-								<Route path="/stories/sites" exact>
-									<ModalPage
-										title={ __(
-											'Connect to remote site',
-											'newspack-story-budget'
-										) }
-										closeHref="#/stories"
-										name={ 'sites' }
-										size="medium"
-									>
-										<Sites />
-									</ModalPage>
-								</Route>
-								<Route path="/stories/new" exact>
-									<ModalPage
-										title={ __(
-											'Add New Story',
-											'newspack-story-budget'
-										) }
-										closeHref="#/stories"
-										name={ 'create-new-story' }
-									>
-										<CreateNewStory
-											onClose={ () =>
-												( window.location.href =
-													'#/stories' )
-											}
-										/>
-									</ModalPage>
-								</Route>
-								<Route path="/stories/:id">
-									<StoryPage />
-								</Route>
-							</Switch>
-						</Route>
-						<Route path="/budgets">
-							<AppHeaderActions>
-								<Button variant="primary" href="#/budgets/new">
+		<div className="wrap">
+			<AppHeader headerText={ getHeaderText() } />
+			<TabbedNavigation items={ navigationItems } />
+			<div className="newspack-story-budget__content">
+				<Switch>
+					<Route path="/stories">
+						<AppHeaderActions>
+							{ canManage && (
+								<Button variant="primary" href="#/stories/new">
 									{ __(
-										'Add New Budget',
+										'Add New Story',
 										'newspack-story-budget'
 									) }
 								</Button>
-								<SitesNav />
-							</AppHeaderActions>
-							<Budgets />
-							<Switch>
-								<Route path="/budgets/new">
-									<ModalPage
-										title={ __(
-											'Add New Budget',
-											'newspack-story-budget'
-										) }
-										closeHref="#/budgets"
-										name={ 'create-budget' }
-									>
-										<CreateBudgetModal
-											onClose={ () =>
-												( window.location.href =
-													'#/budgets' )
-											}
-										/>
-									</ModalPage>
-								</Route>
-							</Switch>
-						</Route>
-						<Redirect to="/stories" />
-					</Switch>
-				</div>
-				<div className="newspack-story-budget__notices">
-					{ notices.map( notice => (
-						<Snackbar
-							key={ notice.id }
-							onDismiss={ notice.onDismiss }
-						>
-							{ notice.content }
-						</Snackbar>
-					) ) }
-				</div>
+							) }
+							<SitesNav />
+						</AppHeaderActions>
+						<Stories />
+						<Switch>
+							<Route path="/stories/sites" exact>
+								<ModalPage
+									title={ __(
+										'Connect to remote site',
+										'newspack-story-budget'
+									) }
+									closeHref="#/stories"
+									name={ 'sites' }
+									size="medium"
+								>
+									<Sites />
+								</ModalPage>
+							</Route>
+							<Route path="/stories/new" exact>
+								<ModalPage
+									title={ __(
+										'Add New Story',
+										'newspack-story-budget'
+									) }
+									closeHref="#/stories"
+									name={ 'create-new-story' }
+								>
+									<CreateNewStory
+										onClose={ () =>
+											( window.location.href =
+												'#/stories' )
+										}
+									/>
+								</ModalPage>
+							</Route>
+							<Route path="/stories/:id">
+								<StoryPage />
+							</Route>
+						</Switch>
+					</Route>
+					<Route path="/budgets">
+						<AppHeaderActions>
+							<Button variant="primary" href="#/budgets/new">
+								{ __(
+									'Add New Budget',
+									'newspack-story-budget'
+								) }
+							</Button>
+							<SitesNav />
+						</AppHeaderActions>
+						<Budgets />
+						<Switch>
+							<Route path="/budgets/new">
+								<ModalPage
+									title={ __(
+										'Add New Budget',
+										'newspack-story-budget'
+									) }
+									closeHref="#/budgets"
+									name={ 'create-budget' }
+								>
+									<CreateBudgetModal
+										onClose={ () =>
+											( window.location.href =
+												'#/budgets' )
+										}
+									/>
+								</ModalPage>
+							</Route>
+						</Switch>
+					</Route>
+					<Redirect to="/stories" />
+				</Switch>
 			</div>
-		</SlotFillProvider>
+			<div className="newspack-story-budget__notices">
+				{ notices.map( notice => (
+					<Snackbar key={ notice.id } onDismiss={ notice.onDismiss }>
+						{ notice.content }
+					</Snackbar>
+				) ) }
+			</div>
+		</div>
 	);
 };
 
 createRoot( document.getElementById( 'newspack-story-budget-app' ) ).render(
 	<HashRouter>
-		<StoryBudget />
+		<SlotFillProvider>
+			<StoryBudget />
+		</SlotFillProvider>
 	</HashRouter>
 );

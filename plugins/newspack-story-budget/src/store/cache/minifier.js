@@ -83,6 +83,9 @@ const minify = data => {
 	};
 
 	const minifyEntry = entry => {
+		if ( Array.isArray( entry ) ) {
+			return entry;
+		}
 		const flat = {};
 		flatten( entry, '', ( path, value ) => {
 			const shortKey = getOrAddShortKey( path );
@@ -124,6 +127,9 @@ const restore = ( minified, keyMap ) => {
 	);
 
 	const restoreEntry = minifiedEntry => {
+		if ( Array.isArray( minifiedEntry ) ) {
+			return minifiedEntry;
+		}
 		const entry = {};
 		for ( const [ shortKey, value ] of Object.entries( minifiedEntry ) ) {
 			const path = reverseMap.get( shortKey );

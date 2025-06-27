@@ -5,7 +5,7 @@ export const INITIAL_STATE = {
 	stories: {},
 	search: {
 		stories: [],
-		budgets: []
+		budgets: [],
 	},
 	fields: [],
 	errors: {},
@@ -19,21 +19,6 @@ export const INITIAL_STATE = {
 		},
 		isCreatingStory: false,
 		isCreatingBudget: false,
-	},
-	view: {
-		type: 'table',
-		search: '',
-		page: 1,
-		perPage: 10,
-		fields: [],
-		filters: [],
-		sort: {
-			field: 'last_modified',
-			direction: 'desc',
-		},
-		layout: {
-			density: 'compact',
-		},
 	},
 	budgetsView: {
 		search: '',

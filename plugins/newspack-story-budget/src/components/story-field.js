@@ -13,7 +13,7 @@ import {
 } from '@wordpress/components';
 import { __experimentalInspectorPopoverHeader as InspectorPopoverHeader } from '@wordpress/block-editor';
 import { useSelect, useDispatch } from '@wordpress/data';
-import { useState } from '@wordpress/element';
+import { useState, useMemo } from '@wordpress/element';
 
 /**
  * Internal dependencies.
@@ -21,7 +21,12 @@ import { useState } from '@wordpress/element';
 import { NAMESPACE as storeNamespace } from '../store/constants';
 import StoryFieldControl from './story-field-control';
 import utils from '../utils';
-import { useStoryField } from '../hooks';
+import { useStory, useStoryField } from '../hooks';
+
+const DEFAULT_POPOVER_PROPS = {
+	placement: 'right-start',
+	shift: true,
+};
 
 export default ( {
 	fieldId,
@@ -33,18 +38,19 @@ export default ( {
 	saveInPlace = false,
 	popoverProps,
 } ) => {
-	const { story, canEditStory, isLoadingStory, fieldError } = useSelect(
+	const { canEditStory, isLoadingStory, fieldError } = useSelect(
 		select => ( {
-			story: select( storeNamespace ).getStory( storyId ),
 			isLoadingStory: select( storeNamespace ).isLoadingStory( storyId ),
 			canEditStory: select( storeNamespace ).canEditStory( storyId ),
 			fieldError: select( storeNamespace ).getFieldError(
 				storyId,
 				fieldId
 			),
-		} )
+		} ),
+		[ storyId, fieldId ]
 	);
 
+	const story = useStory( storyId );
 	const field = useStoryField( storyId, fieldId );
 
 	const { saveStoryField, clearErrors } = useDispatch( storeNamespace );
@@ -54,18 +60,24 @@ export default ( {
 	const [ editedValue, setEditedValue ] = useState( value );
 	const [ isOpen, setIsOpen ] = useState( saveInPlace && !! fieldError );
 
+	const displayValue = useMemo( () => {
+		return field ? utils.fields.getDisplayValue( field, value ) : null;
+	}, [ field, value ] );
+
+	const collapsedValue = useMemo( () => {
+		return displayValue && displayValue.length > 70
+			? `${ displayValue.slice( 0, 67 ) }...`
+			: null;
+	}, [ displayValue ] );
+
+	const canEdit = useMemo(
+		() => allowEdit && canEditStory && field.is_editable,
+		[ allowEdit, canEditStory, field ]
+	);
+
 	if ( ! field ) {
 		return null;
 	}
-
-	const canEdit = allowEdit && canEditStory && field.is_editable;
-
-	const displayValue = utils.fields.getDisplayValue( field, value );
-
-	const collapsedValue =
-		displayValue?.length > 70
-			? `${ displayValue.slice( 0, 67 ) }...`
-			: null;
 
 	if ( ! canEdit ) {
 		return (
@@ -100,13 +112,8 @@ export default ( {
 			onClick={ e => e.stopPropagation() }
 		>
 			<Dropdown
-				open={ isOpen && ! isLoadingStory }
-				popoverProps={
-					popoverProps || {
-						placement: 'right-start',
-						shift: true,
-					}
-				}
+				open={ isOpen }
+				popoverProps={ popoverProps || DEFAULT_POPOVER_PROPS }
 				contentClassName="newspack-story-budget__field__popover"
 				onToggle={ () => setIsOpen( ! isOpen ) }
 				renderToggle={ ( { onToggle } ) => (
@@ -124,7 +131,10 @@ export default ( {
 					>
 						{ displayValue === null ? (
 							<span className="newspack-story-budget__field__empty-value">
-								Click to set
+								{ __(
+									'Click to set',
+									'newspack-story-budget'
+								) }
 							</span>
 						) : (
 							collapsedValue || displayValue
@@ -192,7 +202,11 @@ export default ( {
 									>
 										<Button
 											variant="primary"
-											disabled={ value === editedValue }
+											disabled={
+												value === editedValue ||
+												isLoadingStory
+											}
+											isBusy={ isLoadingStory }
 											type="submit"
 										>
 											{ __(
@@ -202,6 +216,7 @@ export default ( {
 										</Button>
 										<Button
 											variant="secondary"
+											disabled={ isLoadingStory }
 											onClick={ () => {
 												onClose();
 												setEditedValue( value );
