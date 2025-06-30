@@ -1,3 +1,16 @@
+# [4.14.0](https://github.com/Automattic/newspack-blocks/compare/v4.13.1...v4.14.0) (2025-06-30)
+
+
+### Bug Fixes
+
+* **homepage-articles:** add styles outside of the block markup ([#2145](https://github.com/Automattic/newspack-blocks/issues/2145)) ([f16ea93](https://github.com/Automattic/newspack-blocks/commit/f16ea93855b33a6513ca018899e8afe89759f51e))
+* **modal-checkout:** better management of modal states ([#2146](https://github.com/Automattic/newspack-blocks/issues/2146)) ([30f3ccc](https://github.com/Automattic/newspack-blocks/commit/30f3ccc0238923c4333d8fb418e91f55b47b46e4))
+
+
+### Features
+
+* **modal-checkout:** change subscription payment method ([#2141](https://github.com/Automattic/newspack-blocks/issues/2141)) ([797223c](https://github.com/Automattic/newspack-blocks/commit/797223c58a25277a9aa3d66be3b2613c2ffb8866))
+
 ## [4.13.1](https://github.com/Automattic/newspack-blocks/compare/v4.13.0...v4.13.1) (2025-06-25)
 
 
