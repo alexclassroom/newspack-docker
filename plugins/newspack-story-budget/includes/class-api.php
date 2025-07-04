@@ -486,7 +486,7 @@ class API {
 		}
 
 		$story = new Story( $post_id );
-		
+
 		$excluded_keys = [ 'title', 'newBudgetName', '_locale' ];
 		$custom_fields = array_diff_key( $fields, array_flip( $excluded_keys ) );
 		$set_fields    = $story->update( $custom_fields );
@@ -529,6 +529,7 @@ class API {
 		foreach ( $story_ids as $story_id ) {
 			$story = new Story( $story_id );
 			if ( ! $story->is_valid() ) {
+				$results[ $story_id ] = new \WP_Error( 'invalid_story', __( 'Invalid story.', 'newspack-story-budget' ) );
 				continue;
 			}
 			if ( ! $is_editor && (int) $story->post->post_author !== (int) get_current_user_id() ) {

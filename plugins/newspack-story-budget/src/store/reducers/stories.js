@@ -3,6 +3,7 @@ import { INITIAL_STATE } from '../constants';
 export const actions = {
 	STORIES_SET: 'STORIES_SET',
 	STORIES_APPEND: 'STORIES_APPEND',
+	STORIES_REMOVE: 'STORIES_REMOVE',
 	STORY_META_SET: 'STORY_META_SET',
 	STORY_META_BATCH_SET: 'STORY_META_BATCH_SET',
 };
@@ -19,6 +20,11 @@ export default ( state = INITIAL_STATE.stories, action ) => {
 			for ( const [ id, story ] of Object.entries( action.payload ) ) {
 				newState[ id ] = story;
 			}
+			return newState;
+		}
+		case actions.STORIES_REMOVE: {
+			const newState = { ...state };
+			delete newState[ action.payload ];
 			return newState;
 		}
 		case 'CREATE_STORY_SUCCESS':

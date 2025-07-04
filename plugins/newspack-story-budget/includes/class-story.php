@@ -48,7 +48,11 @@ class Story {
 	 * @return bool
 	 */
 	public function is_valid() {
-		return ! empty( $this->id ) && ! empty( $this->post ) && ! is_wp_error( $this->post ) && in_array( \get_post_type( $this->id ), Budgets::get_post_types(), true );
+		return ! empty( $this->id ) &&
+			! empty( $this->post ) &&
+			! is_wp_error( $this->post ) &&
+			in_array( $this->post->post_status, [ 'publish', 'draft', 'pending', 'future' ], true ) &&
+			in_array( \get_post_type( $this->id ), Budgets::get_post_types(), true );
 	}
 
 	/**

@@ -23,10 +23,13 @@ const StoryBudgetPanel = () => {
 		select( 'core/editor' ).getCurrentPostId()
 	);
 
-	const { isSavingPost, storyError } = useSelect( select => ( {
-		storyError: select( storeNamespace ).getStoryError( postId ),
-		isSavingPost: select( 'core/editor' ).isSavingPost(),
-	} ) );
+	const { storyError, isSavingPost, isDeletingPost } = useSelect(
+		select => ( {
+			storyError: select( storeNamespace ).getStoryError( postId ),
+			isSavingPost: select( 'core/editor' ).isSavingPost(),
+			isDeletingPost: select( 'core/editor' ).isDeletingPost(),
+		} )
+	);
 
 	const story = useStory( postId );
 	const fields = useFields();
@@ -50,7 +53,7 @@ const StoryBudgetPanel = () => {
 	}, [ story ] );
 
 	useEffect( () => {
-		if ( isSavingPost ) {
+		if ( isSavingPost && ! isDeletingPost ) {
 			// Save only the edited fields.
 			const filteredStory = editableFields.reduce(
 				( acc, field ) => {
@@ -61,7 +64,7 @@ const StoryBudgetPanel = () => {
 			);
 			saveStory( postId, filteredStory );
 		}
-	}, [ isSavingPost ] );
+	}, [ isSavingPost, isDeletingPost ] );
 
 	return (
 		<PluginPostStatusInfo className="newspack-story-budget__post-status-info">

@@ -443,6 +443,16 @@ export function* fetchStoryMetaBatch( storyIds ) {
 			method: 'POST',
 			data: { ids: storyIds },
 		} );
+		// Remove stories that are invalid.
+		for ( const [ id, item ] of Object.entries( result ) ) {
+			if ( item.errors?.invalid_story ) {
+				yield {
+					type: 'STORIES_REMOVE',
+					payload: id,
+				};
+				delete result[ id ];
+			}
+		}
 		return {
 			type: 'STORY_META_BATCH_SET',
 			payload: result,

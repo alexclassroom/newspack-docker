@@ -9,6 +9,7 @@ export default {
 		// fetched asynchronously.
 		STORIES_SET: stories.STORIES_SET,
 		STORIES_APPEND: stories.STORIES_APPEND,
+		STORIES_REMOVE: stories.STORIES_REMOVE,
 	},
 	view,
 };
