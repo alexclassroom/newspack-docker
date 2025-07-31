@@ -19,6 +19,7 @@ import { warning } from '@wordpress/icons';
 import StoryFieldControl from './story-field-control';
 import { NAMESPACE as storeNamespace } from '../store/constants';
 import { getDisplayValue } from '../utils/fields';
+import { useFields, useStoryField } from '../hooks';
 
 const EMPTY_STRING = '';
 
@@ -80,6 +81,34 @@ const EditFieldPanel = ( {
 	);
 };
 
+const FieldControl = ( { field, story, onChange, disabled } ) => {
+	const fieldProps = useStoryField( story.id, field.slug );
+	if ( ! fieldProps?.is_editable ) {
+		return null;
+	}
+	return (
+		<VStack spacing={ 2 }>
+			<Heading level={ 5 }>{ fieldProps.name }</Heading>
+			{ fieldProps.description && (
+				<p className="newspack-story-budget__field-description">
+					{ fieldProps.description }
+				</p>
+			) }
+			<StoryFieldControl
+				field={ fieldProps }
+				value={ story[ fieldProps.slug ] || EMPTY_STRING }
+				onChange={ data =>
+					onChange( {
+						...story,
+						[ fieldProps.slug ]: data,
+					} )
+				}
+				disabled={ disabled }
+			/>
+		</VStack>
+	);
+};
+
 const getItemsTitle = items => {
 	if ( ! items || ! items.length ) {
 		return '';
@@ -120,11 +149,12 @@ const getItemsTitle = items => {
 export default ( { items, closeModal, onActionPerformed } ) => {
 	const isBulk = items.length > 1;
 
-	const { fields, saveError, isSavingStories } = useSelect( select => ( {
-		fields: select( storeNamespace ).getFields(),
+	const { saveError, isSavingStories } = useSelect( select => ( {
 		saveError: select( storeNamespace ).getSaveStoriesError(),
 		isSavingStories: select( storeNamespace ).isSavingStories(),
 	} ) );
+
+	const fields = useFields();
 
 	const [ previousSavingStories, setPreviousSavingStories ] =
 		useState( false );
@@ -169,7 +199,10 @@ export default ( { items, closeModal, onActionPerformed } ) => {
 
 	const nonBulkTypes = [ 'date', 'datetime', 'longtext', 'number' ];
 	const bulkFields = fields.filter(
-		field => ! nonBulkTypes.includes( field.type ) && field.is_editable
+		field =>
+			! nonBulkTypes.includes( field.type ) &&
+			field.is_editable &&
+			field.slug !== 'status'
 	);
 
 	const handleFieldToggle = field => open => {
@@ -253,30 +286,18 @@ export default ( { items, closeModal, onActionPerformed } ) => {
 						{ fields
 							.filter( field => field.is_editable )
 							.map( field => (
-								<VStack key={ field.slug } spacing={ 2 }>
-									<Heading level={ 5 }>
-										{ field.name }
-									</Heading>
-									{ field.description && (
-										<p className="newspack-story-budget__field-description">
-											{ field.description }
-										</p>
-									) }
-									<StoryFieldControl
-										field={ field }
-										value={
-											editedStory[ field.slug ] ||
-											EMPTY_STRING
-										}
-										onChange={ data =>
-											setEditedStory( {
-												...editedStory,
-												[ field.slug ]: data,
-											} )
-										}
-										disabled={ isSavingStories }
-									/>
-								</VStack>
+								<FieldControl
+									key={ field.slug }
+									field={ field }
+									story={ editedStory }
+									onChange={ data =>
+										setEditedStory( {
+											...editedStory,
+											[ field.slug ]: data,
+										} )
+									}
+									disabled={ isSavingStories }
+								/>
 							) ) }
 					</VStack>
 				) }
