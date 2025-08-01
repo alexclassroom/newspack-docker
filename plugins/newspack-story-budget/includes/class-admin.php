@@ -73,9 +73,10 @@ class Admin {
 			'newspack-story-budget-data',
 			'newspackStoryBudget',
 			[
-				'apiNamespace' => API::NAMESPACE,
-				'siteUrl'      => get_site_url(),
-				'refreshCache' => isset( $_GET['page'] ) && 'newspack-story-budget' === $_GET['page'], // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				'apiNamespace'       => API::NAMESPACE,
+				'siteUrl'            => get_site_url(),
+				'refreshCache'       => isset( $_GET['page'] ) && 'newspack-story-budget' === $_GET['page'], // phpcs:ignore WordPress.Security.NonceVerification.Recommended,
+				'alwaysFetchStories' => defined( 'NEWSPACK_STORY_BUDGET_ALWAYS_FETCH_STORIES' ) && NEWSPACK_STORY_BUDGET_ALWAYS_FETCH_STORIES,
 			]
 		);
 

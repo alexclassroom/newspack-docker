@@ -10,6 +10,7 @@ export default {
 		STORIES_SET: stories.STORIES_SET,
 		STORIES_APPEND: stories.STORIES_APPEND,
 		STORIES_REMOVE: stories.STORIES_REMOVE,
+		CREATE_STORY_SUCCESS: stories.CREATE_STORY_SUCCESS,
 	},
 	view,
 };

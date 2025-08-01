@@ -6,6 +6,7 @@ export const actions = {
 	STORIES_REMOVE: 'STORIES_REMOVE',
 	STORY_META_SET: 'STORY_META_SET',
 	STORY_META_BATCH_SET: 'STORY_META_BATCH_SET',
+	CREATE_STORY_SUCCESS: 'CREATE_STORY_SUCCESS',
 };
 
 export default ( state = INITIAL_STATE.stories, action ) => {
@@ -27,7 +28,7 @@ export default ( state = INITIAL_STATE.stories, action ) => {
 			delete newState[ action.payload ];
 			return newState;
 		}
-		case 'CREATE_STORY_SUCCESS':
+		case actions.CREATE_STORY_SUCCESS:
 			return {
 				...state,
 				[ action.payload.id ]: action.payload,

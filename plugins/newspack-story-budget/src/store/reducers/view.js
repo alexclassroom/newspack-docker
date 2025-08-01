@@ -5,6 +5,17 @@ export const actions = {
 
 export default ( state = {}, action ) => {
 	switch ( action.type ) {
+		case 'HYDRATE':
+			if ( action.payload.key === 'view' ) {
+				return {
+					...action.payload.data,
+					// Reset page, filters, and search when hydrating from cache.
+					page: 1,
+					filters: [],
+					search: '',
+				};
+			}
+			return state;
 		case actions.VIEW_SET:
 			return action.payload;
 		case actions.FIELDS_SET:

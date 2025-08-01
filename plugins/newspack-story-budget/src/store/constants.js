@@ -28,4 +28,8 @@ export const INITIAL_STATE = {
 	},
 };
 
+export const ALWAYS_FETCH_STORIES = window.newspackStoryBudget?.alwaysFetchStories ?? false;
+
+export const REFRESH_CACHE = window.newspackStoryBudget?.refreshCache ?? false;
+
 export const NOTICE_CONTEXT = 'newspack-story-budget';

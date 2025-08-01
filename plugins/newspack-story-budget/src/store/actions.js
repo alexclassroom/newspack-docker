@@ -1,4 +1,3 @@
-/* global newspackStoryBudget */
 import { __ } from '@wordpress/i18n';
 import { apiFetch } from './controls';
 import { resolveSelect, select, dispatch } from '@wordpress/data';
@@ -8,7 +7,7 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import { STORAGE_KEYS, getCache, canUseCache } from './cache';
-import { NAMESPACE } from './constants';
+import { NAMESPACE, REFRESH_CACHE } from './constants';
 import { isBudgetStories, getCurrentBudget } from '../utils/budgets';
 
 export function* initializeEntitiesConfig() {
@@ -34,7 +33,7 @@ export function* initializeEntitiesConfig() {
 	yield resolveSelect( NAMESPACE ).getStoriesMeta();
 
 	// Periodically refresh cacheable state.
-	if ( canUseCache() && newspackStoryBudget.refreshCache ) {
+	if ( canUseCache() && REFRESH_CACHE ) {
 		for ( const key in STORAGE_KEYS ) {
 			const cache = STORAGE_KEYS[ key ];
 			if ( cache?.actions?.length && cache?.ttl ) {
