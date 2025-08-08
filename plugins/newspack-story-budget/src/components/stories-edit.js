@@ -97,12 +97,7 @@ const FieldControl = ( { field, story, onChange, disabled } ) => {
 			<StoryFieldControl
 				field={ fieldProps }
 				value={ story[ fieldProps.slug ] || EMPTY_STRING }
-				onChange={ data =>
-					onChange( {
-						...story,
-						[ fieldProps.slug ]: data,
-					} )
-				}
+				onChange={ onChange }
 				disabled={ disabled }
 			/>
 		</VStack>
