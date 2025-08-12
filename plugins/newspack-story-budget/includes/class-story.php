@@ -122,7 +122,7 @@ class Story {
 	 *
 	 * @param array $fields Array of fields to update, keyed by field slug.
 	 *
-	 * @return bool|WP_Error True if updated successfully, otherwise WP_Error.
+	 * @return bool|\WP_Error True if updated successfully, otherwise WP_Error.
 	 */
 	public function update( $fields = [] ) {
 		$updated = false;
@@ -140,9 +140,20 @@ class Story {
 					)
 				);
 			}
+			// Skip unaltered fields.
+			if ( $field->get_value( $this->id ) === $value ) {
+				continue;
+			}
 			$result = $field->update_value( $this->id, $value );
-			if ( \is_wp_error( $result ) ) {
-				return $result;
+			if ( false === $result ) {
+				return new \WP_Error(
+					'failed_to_update_field',
+					sprintf(
+						// Translators: field slug.
+						__( 'Failed to update field "%s".', 'newspack-story-budget' ),
+						$slug
+					)
+				);
 			}
 			$updated = true;
 		}

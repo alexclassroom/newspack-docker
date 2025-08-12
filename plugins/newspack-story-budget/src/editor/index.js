@@ -57,7 +57,9 @@ const StoryBudgetPanel = () => {
 			// Save only the edited fields.
 			const filteredStory = editableFields.reduce(
 				( acc, field ) => {
-					acc[ field.slug ] = editedStory[ field.slug ];
+					if ( editedStory[ field.slug ] !== story[ field.slug ] ) {
+						acc[ field.slug ] = editedStory[ field.slug ];
+					}
 					return acc;
 				},
 				{ id: editedStory.id }

@@ -446,7 +446,7 @@ class API {
 				[
 					'key'     => Abstract_Field::FIELD_PREFIX . '_modified',
 					'value'   => $request->get_param( 'since' ),
-					'compare' => '>',
+					'compare' => '>=',
 				],
 			];
 		}

@@ -327,6 +327,7 @@ export function* refreshStories( silent = true ) {
 	const lastRefresh =
 		select( NAMESPACE ).getLastRefresh() || Date.now() - 30 * 60 * 1000;
 
+	const timestamp = Date.now(); // eslint-disable-line @wordpress/no-unused-vars-before-return
 	yield { type: 'REFRESH_START', payload: { silent } };
 	try {
 		const params = { metadata: true };
@@ -347,6 +348,7 @@ export function* refreshStories( silent = true ) {
 		if ( ! stories.length ) {
 			return;
 		}
+		yield { type: 'REFRESH_SUCCESS', payload: { timestamp } };
 		return {
 			type: 'STORIES_APPEND',
 			payload: stories.reduce( ( acc, story ) => {

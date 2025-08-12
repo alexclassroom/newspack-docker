@@ -29,7 +29,11 @@ export default ( state = INITIAL_STATE.meta, action ) => {
 			return {
 				...state,
 				refreshing: action.payload.silent ? false : true,
-				lastRefresh: Date.now(),
+			};
+		case 'REFRESH_SUCCESS':
+			return {
+				...state,
+				lastRefresh: action.payload.timestamp,
 			};
 		case 'REFRESH_END':
 			return {
