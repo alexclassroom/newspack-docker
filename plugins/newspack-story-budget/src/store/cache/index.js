@@ -18,6 +18,7 @@ export const STORAGE_KEYS = {
 		ttl: 1000 * 30, // 30 seconds
 	},
 	view: {}, // No expiration.
+	meta: {}, // No expiration.
 };
 
 /**

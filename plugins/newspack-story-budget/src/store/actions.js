@@ -270,6 +270,7 @@ export function* fetchStories() {
 		payload: { progress: 0 }, // Start progress bar.
 	};
 	yield { type: 'FETCH_START' };
+	const timestamp = Date.now(); // eslint-disable-line @wordpress/no-unused-vars-before-return
 	try {
 		const path = isBudgetStories()
 			? addQueryArgs( `/budgets/${ getCurrentBudget() }/stories` )
@@ -292,6 +293,7 @@ export function* fetchStories() {
 				payload: { result: next, progress: stories.length / total },
 			};
 		}
+		yield { type: 'FETCH_SUCCESS', payload: { timestamp } };
 		return {
 			type: 'STORIES_SET',
 			payload: stories.reduce( ( acc, story ) => {
@@ -323,9 +325,15 @@ export function* fetchStories() {
  * @return {Object} Action object.
  */
 export function* refreshStories( silent = true ) {
-	// If no last refresh timestamp is found, resort to 30 minutes ago.
-	const lastRefresh =
-		select( NAMESPACE ).getLastRefresh() || Date.now() - 30 * 60 * 1000;
+	const lastRefresh = select( NAMESPACE ).getLastRefresh();
+
+	// If no last refresh timestamp is found, bail or refresh the page.
+	if ( ! lastRefresh ) {
+		if ( ! silent ) {
+			window.location.reload();
+		}
+		return;
+	}
 
 	const timestamp = Date.now(); // eslint-disable-line @wordpress/no-unused-vars-before-return
 	yield { type: 'REFRESH_START', payload: { silent } };
@@ -345,10 +353,10 @@ export function* refreshStories( silent = true ) {
 			} );
 			stories.push( ...next.stories );
 		}
+		yield { type: 'REFRESH_SUCCESS', payload: { timestamp } };
 		if ( ! stories.length ) {
 			return;
 		}
-		yield { type: 'REFRESH_SUCCESS', payload: { timestamp } };
 		return {
 			type: 'STORIES_APPEND',
 			payload: stories.reduce( ( acc, story ) => {

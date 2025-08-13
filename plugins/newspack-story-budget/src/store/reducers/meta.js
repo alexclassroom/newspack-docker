@@ -1,41 +1,56 @@
 import { INITIAL_STATE } from '../constants';
 
+export const actions = {
+	FETCH_START: 'FETCH_START',
+	FETCH_END: 'FETCH_END',
+	FETCH_PROGRESS: 'FETCH_PROGRESS',
+	FETCH_SUCCESS: 'FETCH_SUCCESS',
+	REFRESH_START: 'REFRESH_START',
+	REFRESH_SUCCESS: 'REFRESH_SUCCESS',
+	REFRESH_END: 'REFRESH_END',
+};
+
 export default ( state = INITIAL_STATE.meta, action ) => {
 	switch ( action.type ) {
-		case 'FETCH_START':
+		case 'HYDRATE':
+			if ( action.payload.key === 'meta' ) {
+				return {
+					...INITIAL_STATE.meta,
+					lastRefresh: action.payload?.data?.lastRefresh || undefined,
+				};
+			}
+			return state;
+		case actions.FETCH_START:
 			return {
 				...state,
 				loading: true,
 			};
-		case 'FETCH_END':
+		case actions.FETCH_END:
 			return {
 				...state,
 				loading: false,
 			};
-		case 'FETCH_PROGRESS':
+		case actions.FETCH_PROGRESS:
 			return {
 				...state,
 				progress: action.payload.progress,
 			};
-		case 'HYDRATE':
-			if ( action.payload.key === 'stories' ) {
-				return {
-					...state,
-					lastRefresh: action.payload.timestamp,
-				};
-			}
-			return state;
-		case 'REFRESH_START':
-			return {
-				...state,
-				refreshing: action.payload.silent ? false : true,
-			};
-		case 'REFRESH_SUCCESS':
+		case actions.FETCH_SUCCESS:
 			return {
 				...state,
 				lastRefresh: action.payload.timestamp,
 			};
-		case 'REFRESH_END':
+		case actions.REFRESH_START:
+			return {
+				...state,
+				refreshing: action.payload.silent ? false : true,
+			};
+		case actions.REFRESH_SUCCESS:
+			return {
+				...state,
+				lastRefresh: action.payload.timestamp,
+			};
+		case actions.REFRESH_END:
 			return {
 				...state,
 				refreshing: false,

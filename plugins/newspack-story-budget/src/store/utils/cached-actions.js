@@ -1,6 +1,7 @@
 import { actions as fields } from '../reducers/fields';
 import { actions as stories } from '../reducers/stories';
 import { actions as view } from '../reducers/view';
+import { actions as meta } from '../reducers/meta';
 
 export default {
 	fields,
@@ -13,4 +14,8 @@ export default {
 		CREATE_STORY_SUCCESS: stories.CREATE_STORY_SUCCESS,
 	},
 	view,
+	meta: {
+		FETCH_SUCCESS: meta.FETCH_SUCCESS,
+		REFRESH_SUCCESS: meta.REFRESH_SUCCESS,
+	},
 };
