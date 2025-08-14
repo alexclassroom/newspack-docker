@@ -2,14 +2,14 @@
 # This file is distributed under the GPL2.
 msgid ""
 msgstr ""
-"Project-Id-Version: Newspack Newsletters 3.19.0\n"
+"Project-Id-Version: Newspack Newsletters 3.19.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/project\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-08-14T17:59:56+00:00\n"
+"POT-Creation-Date: 2025-08-14T19:59:18+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: newspack-newsletters\n"
@@ -111,195 +111,203 @@ msgstr ""
 msgid "Filter by ad placement"
 msgstr ""
 
-#: includes/ads/class-ads.php:188
+#: includes/ads/class-ads.php:189
 msgid "Newsletters Ads"
 msgstr ""
 
-#: includes/ads/class-ads.php:189
+#: includes/ads/class-ads.php:190
 #: src/editor/blocks/ad/edit.js:102
 msgid "Ads"
 msgstr ""
 
-#: includes/ads/class-ads.php:219
+#: includes/ads/class-ads.php:229
+msgid "Sorry, you are not allowed to manage newsletter advertisers."
+msgstr ""
+
+#: includes/ads/class-ads.php:230
+msgid "You need permission to manage newsletter ads"
+msgstr ""
+
+#: includes/ads/class-ads.php:242
 msgctxt "post type general name"
 msgid "Newsletter Ads"
 msgstr ""
 
-#: includes/ads/class-ads.php:220
+#: includes/ads/class-ads.php:243
 msgctxt "post type singular name"
 msgid "Newsletter Ad"
 msgstr ""
 
-#: includes/ads/class-ads.php:221
+#: includes/ads/class-ads.php:244
 msgctxt "admin menu"
 msgid "Newsletter Ads"
 msgstr ""
 
-#: includes/ads/class-ads.php:222
+#: includes/ads/class-ads.php:245
 msgctxt "add new on admin bar"
 msgid "Newsletter Ad"
 msgstr ""
 
-#: includes/ads/class-ads.php:223
+#: includes/ads/class-ads.php:246
 msgctxt "popup"
 msgid "Add New"
 msgstr ""
 
-#: includes/ads/class-ads.php:224
+#: includes/ads/class-ads.php:247
 msgid "Add New Newsletter Ad"
 msgstr ""
 
-#: includes/ads/class-ads.php:225
+#: includes/ads/class-ads.php:248
 msgid "New Newsletter Ad"
 msgstr ""
 
-#: includes/ads/class-ads.php:226
+#: includes/ads/class-ads.php:249
 msgid "Edit Newsletter Ad"
 msgstr ""
 
-#: includes/ads/class-ads.php:227
+#: includes/ads/class-ads.php:250
 msgid "View Newsletter Ad"
 msgstr ""
 
-#: includes/ads/class-ads.php:228
+#: includes/ads/class-ads.php:251
 msgid "All Newsletter Ads"
 msgstr ""
 
-#: includes/ads/class-ads.php:229
+#: includes/ads/class-ads.php:252
 msgid "Search Newsletter Ads"
 msgstr ""
 
-#: includes/ads/class-ads.php:230
+#: includes/ads/class-ads.php:253
 msgid "Parent Newsletter Ads:"
 msgstr ""
 
-#: includes/ads/class-ads.php:231
+#: includes/ads/class-ads.php:254
 msgid "No Newsletter Ads found."
 msgstr ""
 
-#: includes/ads/class-ads.php:232
+#: includes/ads/class-ads.php:255
 msgid "No Newsletter Ads found in Trash."
 msgstr ""
 
-#: includes/ads/class-ads.php:233
+#: includes/ads/class-ads.php:256
 msgid "Newsletter Ads list"
 msgstr ""
 
-#: includes/ads/class-ads.php:234
+#: includes/ads/class-ads.php:257
 msgid "Newsletter Ad published"
 msgstr ""
 
-#: includes/ads/class-ads.php:235
+#: includes/ads/class-ads.php:258
 msgid "Newsletter Ad published privately"
 msgstr ""
 
-#: includes/ads/class-ads.php:236
+#: includes/ads/class-ads.php:259
 msgid "Newsletter Ad reverted to draft"
 msgstr ""
 
-#: includes/ads/class-ads.php:237
+#: includes/ads/class-ads.php:260
 msgid "Newsletter Ad scheduled"
 msgstr ""
 
-#: includes/ads/class-ads.php:238
+#: includes/ads/class-ads.php:261
 msgid "Newsletter Ad updated"
 msgstr ""
 
-#: includes/ads/class-ads.php:257
+#: includes/ads/class-ads.php:280
 msgid "Advertisers"
 msgstr ""
 
-#: includes/ads/class-ads.php:258
+#: includes/ads/class-ads.php:281
 msgid "Advertiser"
 msgstr ""
 
-#: includes/ads/class-ads.php:259
+#: includes/ads/class-ads.php:282
 msgid "Search Advertisers"
 msgstr ""
 
-#: includes/ads/class-ads.php:260
+#: includes/ads/class-ads.php:283
 msgid "Popular Advertisers"
 msgstr ""
 
-#: includes/ads/class-ads.php:261
+#: includes/ads/class-ads.php:284
 msgid "All Advertisers"
 msgstr ""
 
-#: includes/ads/class-ads.php:262
+#: includes/ads/class-ads.php:285
 msgid "Parent Advertisers"
 msgstr ""
 
-#: includes/ads/class-ads.php:263
+#: includes/ads/class-ads.php:286
 msgid "Parent Advertiser"
 msgstr ""
 
-#: includes/ads/class-ads.php:264
+#: includes/ads/class-ads.php:287
 msgid "The advertiser name"
 msgstr ""
 
-#: includes/ads/class-ads.php:266
+#: includes/ads/class-ads.php:289
 msgid "Assign a parent advertiser"
 msgstr ""
 
-#: includes/ads/class-ads.php:267
+#: includes/ads/class-ads.php:290
 msgid "Optional description for this advertiser"
 msgstr ""
 
-#: includes/ads/class-ads.php:268
+#: includes/ads/class-ads.php:291
 msgid "Edit Advertiser"
 msgstr ""
 
-#: includes/ads/class-ads.php:269
+#: includes/ads/class-ads.php:292
 msgid "View Advertiser"
 msgstr ""
 
-#: includes/ads/class-ads.php:270
+#: includes/ads/class-ads.php:293
 msgid "Update Advertiser"
 msgstr ""
 
-#: includes/ads/class-ads.php:271
+#: includes/ads/class-ads.php:294
 msgid "Add New Advertiser"
 msgstr ""
 
-#: includes/ads/class-ads.php:272
+#: includes/ads/class-ads.php:295
 msgid "New Advertiser Name"
 msgstr ""
 
-#: includes/ads/class-ads.php:273
+#: includes/ads/class-ads.php:296
 msgid "No advertisers found"
 msgstr ""
 
-#: includes/ads/class-ads.php:274
+#: includes/ads/class-ads.php:297
 msgid "No advertisers"
 msgstr ""
 
-#: includes/ads/class-ads.php:275
+#: includes/ads/class-ads.php:298
 msgid "Filter by advertiser"
 msgstr ""
 
-#: includes/ads/class-ads.php:277
+#: includes/ads/class-ads.php:300
 msgid "Newspack Newsletters Ads Advertisers"
 msgstr ""
 
-#: includes/ads/class-ads.php:376
+#: includes/ads/class-ads.php:399
 msgid "promotion"
 msgstr ""
 
-#: includes/ads/class-ads.php:376
+#: includes/ads/class-ads.php:399
 msgid "ad"
 msgstr ""
 
-#: includes/ads/class-ads.php:577
+#: includes/ads/class-ads.php:600
 msgid "Start Date"
 msgstr ""
 
-#: includes/ads/class-ads.php:578
+#: includes/ads/class-ads.php:601
 #: dist/adsEditor.js:19
 #: src/ads/editor/index.js:357
 msgid "Expiration Date"
 msgstr ""
 
-#: includes/ads/class-ads.php:579
+#: includes/ads/class-ads.php:602
 #: dist/adsEditor.js:13
 #: src/ads/editor/index.js:140
 msgid "Price"
