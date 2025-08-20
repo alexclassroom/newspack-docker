@@ -126,6 +126,11 @@ export function canUseCache() {
 		return false;
 	}
 
+	// Don't use cache if we're in the post editor.
+	if ( window.location?.pathname?.indexOf( '/post.php' ) !== -1 || window.location?.pathname?.indexOf( '/post-new.php' ) !== -1 ) {
+		return false;
+	}
+
 	// Don't use cache if sessionStorage is not available.
 	if ( 'undefined' === typeof sessionStorage ) {
 		return false;

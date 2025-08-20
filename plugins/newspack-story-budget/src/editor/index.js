@@ -13,7 +13,7 @@ import { useState, useEffect } from '@wordpress/element';
  */
 import { NAMESPACE as storeNamespace } from '../store/constants';
 import StoryFieldPanel from '../components/story-field-panel';
-import { useFields, useStory } from '../hooks';
+import { useFields } from '../hooks';
 import '../style.scss';
 
 const StoryBudgetPanel = () => {
@@ -21,13 +21,17 @@ const StoryBudgetPanel = () => {
 
 	const postId = useSelect( select => select( 'core/editor' ).getCurrentPostId() );
 
-	const { storyError, isSavingPost, isDeletingPost } = useSelect( select => ( {
+	const { storyError, isSavingPost, isDeletingPost, isEditedPostNew } = useSelect( select => ( {
 		storyError: select( storeNamespace ).getStoryError( postId ),
 		isSavingPost: select( 'core/editor' ).isSavingPost(),
 		isDeletingPost: select( 'core/editor' ).isDeletingPost(),
+		isEditedPostNew: select( 'core/editor' ).isEditedPostNew(),
 	} ) );
 
-	const story = useStory( postId );
+	const story = useSelect(
+		select => ( ! postId || isEditedPostNew ? {} : select( storeNamespace ).getStory( postId ) ),
+		[ postId, isEditedPostNew ]
+	);
 	const fields = useFields();
 
 	const editableFields = fields.filter( field => field.show_in_editor );
@@ -49,26 +53,26 @@ const StoryBudgetPanel = () => {
 	}, [ story ] );
 
 	useEffect( () => {
-		if ( isSavingPost && ! isDeletingPost ) {
+		if ( isSavingPost && ! isDeletingPost && ! isEditedPostNew ) {
 			// Save only the edited fields.
 			const filteredStory = editableFields.reduce(
 				( acc, field ) => {
-					if ( editedStory[ field.slug ] !== story[ field.slug ] ) {
+					if ( editedStory[ field.slug ] !== story?.[ field.slug ] ) {
 						acc[ field.slug ] = editedStory[ field.slug ];
 					}
 					return acc;
 				},
-				{ id: editedStory.id }
+				{ id: postId }
 			);
 			if ( Object.keys( filteredStory ).length > 1 ) {
 				saveStory( postId, filteredStory );
 			}
 		}
-	}, [ isSavingPost, isDeletingPost ] );
+	}, [ isSavingPost, isDeletingPost, isEditedPostNew ] );
 
 	return (
 		<PluginPostStatusInfo className="newspack-story-budget__post-status-info">
-			{ postId && fields?.length && editedStory?.id ? (
+			{ editedStory?.id && fields?.length ? (
 				<StoryFieldPanel
 					fields={ editableFields.map( field => {
 						// Change the field name to distinguish from WordPress post status

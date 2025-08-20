@@ -188,10 +188,11 @@ class Admin {
 	 * Enqueue editor assets.
 	 */
 	public static function enqueue_editor_assets() {
-		$story = new Story( \get_the_ID() );
-		if ( ! $story->is_valid() ) {
+		$screen = get_current_screen();
+		if ( ! in_array( $screen->post_type, Budgets::get_post_types(), true ) ) {
 			return;
 		}
+
 		$editor_asset = require NEWSPACK_STORY_BUDGET_PLUGIN_DIR . 'dist/story-budget-editor.asset.php';
 		wp_enqueue_script(
 			'newspack-story-budget-editor',
