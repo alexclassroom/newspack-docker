@@ -987,6 +987,14 @@ p.has-background {
 	figcaption a:hover {
 		color: #fff;
 	}
+
+	&.alignwide,
+	&.alignfull {
+		figcaption {
+			margin-left: auto;
+			margin-right: auto;
+		}
+	}
 }
 
 //! Separator
