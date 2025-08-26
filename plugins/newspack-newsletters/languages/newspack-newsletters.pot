@@ -2,14 +2,14 @@
 # This file is distributed under the GPL2.
 msgid ""
 msgstr ""
-"Project-Id-Version: Newspack Newsletters 3.19.1\n"
+"Project-Id-Version: Newspack Newsletters 3.21.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/project\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-08-19T12:59:31+00:00\n"
+"POT-Creation-Date: 2025-08-26T01:26:24+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: newspack-newsletters\n"
@@ -925,8 +925,8 @@ msgid "Active Campaign API credentials are missing."
 msgstr ""
 
 #: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:158
-#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:933
-#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1016
+#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:945
+#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1028
 msgid "ActiveCampaign API credentials are missing."
 msgstr ""
 
@@ -948,82 +948,82 @@ msgstr ""
 msgid "Untitled %s"
 msgstr ""
 
-#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:816
+#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:828
 msgid "Missing or invalid ActiveCampign credentials."
 msgstr ""
 
 #. translators: %s are comma-separated emails.
-#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:998
+#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1010
 #, php-format
 msgid "ActiveCampaign test message sent successfully to %s."
 msgstr ""
 
-#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1022
+#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1034
 #: includes/service-providers/campaign_monitor/class-newspack-newsletters-campaign-monitor.php:572
 #: includes/service-providers/constant_contact/class-newspack-newsletters-constant-contact.php:824
 #: includes/service-providers/mailchimp/class-newspack-newsletters-mailchimp.php:1119
 msgid "The newsletter subject cannot be empty."
 msgstr ""
 
-#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1062
+#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1074
 msgid "Please input sender name and email address."
 msgstr ""
 
-#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1068
+#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1080
 msgid "Please select a list."
 msgstr ""
 
-#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1097
+#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1109
 msgid "ActiveCampaign sync error: "
 msgstr ""
 
-#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1127
+#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1139
 msgid "Error creating campaign: Message HTML is missing. Campaign not sent."
 msgstr ""
 
-#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1178
+#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1191
 msgid "Campaign is not deletable."
 msgstr ""
 
-#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1665
+#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1678
 msgid "Active Campaign List"
 msgstr ""
 
-#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1666
+#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1679
 msgid "Active Campaign Tag"
 msgstr ""
 
-#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1667
+#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1680
 #: includes/service-providers/class-newspack-newsletters-service-provider.php:527
 #: src/newsletter-editor/sidebar/send-to.js:36
 msgid "list"
 msgstr ""
 
-#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1668
+#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1681
 #: includes/service-providers/class-newspack-newsletters-service-provider.php:528
 msgid "lists"
 msgstr ""
 
-#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1669
+#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1682
 msgid "segment"
 msgstr ""
 
-#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1670
+#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1683
 #: includes/service-providers/class-newspack-newsletters-service-provider.php:530
 msgid "List"
 msgstr ""
 
-#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1671
+#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1684
 #: includes/service-providers/class-newspack-newsletters-service-provider.php:531
 msgid "Lists"
 msgstr ""
 
-#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1672
+#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1685
 msgid "Segments"
 msgstr ""
 
 #. translators: %1$s and %2$s are opening and closing link tag to Active Campaign documentation.
-#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1691
+#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1704
 #, php-format
 msgid "Note for Active Campaign: You need to manually create a segment using the above tag to be able to send campaigns to this list. %1$sLearn more%2$s"
 msgstr ""
