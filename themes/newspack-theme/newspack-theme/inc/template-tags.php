@@ -15,7 +15,7 @@ if ( ! function_exists( 'newspack_posted_on' ) ) :
 		}
 
 		$time_string = '<time class="entry-date published updated" datetime="%1$s">%2$s</time>';
-		if ( get_the_time( 'U' ) !== get_the_modified_time( 'U' ) ) {
+		if ( get_the_time( 'U' ) < get_the_modified_time( 'U' ) ) {
 			$time_string = '<time class="entry-date published" datetime="%1$s">%2$s</time>%3$s<time class="updated" datetime="%4$s">%5$s</time>';
 		}
 
@@ -146,13 +146,18 @@ if ( ! function_exists( 'newspack_posted_by' ) ) :
 			</span><!-- .byline -->
 			<?php
 		else :
+			$author = get_the_author();
+			if ( empty( $author ) ) {
+				return;
+			}
+
 			printf(
 				/* translators: 1: Author avatar. 2: post author, only visible to screen readers. 3: author link. */
 				'<span class="author-avatar">%1$s</span><span class="byline"><span>%2$s</span> <span class="author vcard"><a class="url fn n" href="%3$s">%4$s</a></span></span>',
 				get_avatar( get_the_author_meta( 'ID' ) ),
 				esc_html__( 'by', 'newspack-theme' ),
 				esc_url( get_author_posts_url( get_the_author_meta( 'ID' ) ) ),
-				esc_html( get_the_author() )
+				esc_html( $author )
 			);
 
 		endif;
@@ -164,7 +169,7 @@ if ( ! function_exists( 'newspack_post_subtitle' ) ) :
 	 * Prints the post subtitle.
 	 */
 	function newspack_post_subtitle() {
-		$subtitle = get_post_meta( get_the_ID(), 'newspack_post_subtitle', true );
+		$subtitle              = get_post_meta( get_the_ID(), 'newspack_post_subtitle', true );
 		$subtitle_allowed_tags = array(
 			'b'      => true,
 			'strong' => true,
