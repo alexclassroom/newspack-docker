@@ -1,3 +1,17 @@
+## [3.21.3](https://github.com/Automattic/newspack-newsletters/compare/v3.21.2...v3.21.3) (2025-09-08)
+
+
+### Bug Fixes
+
+* email html update handling ([#1909](https://github.com/Automattic/newspack-newsletters/issues/1909)) ([2ce2e8c](https://github.com/Automattic/newspack-newsletters/commit/2ce2e8cac9084a8af76015b266d411bd2f16fbe1))
+
+## [3.21.2](https://github.com/Automattic/newspack-newsletters/compare/v3.21.1...v3.21.2) (2025-09-04)
+
+
+### Bug Fixes
+
+* wait for fetch before clearing list or sublist ids ([#1907](https://github.com/Automattic/newspack-newsletters/issues/1907)) ([1435d61](https://github.com/Automattic/newspack-newsletters/commit/1435d61e133f6fe869d694dfb834d49725de13c8)), closes [#1905](https://github.com/Automattic/newspack-newsletters/issues/1905)
+
 ## [3.21.1](https://github.com/Automattic/newspack-newsletters/compare/v3.21.0...v3.21.1) (2025-09-02)
 
 
