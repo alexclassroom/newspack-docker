@@ -121,6 +121,18 @@ function newspack_blocks_get_iframe_html( $mode, $src, $height, $width, $is_full
 			clearInterval(timerId);
 		}
 
+		// Add a listener for dynamic resizing if the iframe supports it.
+		window.addEventListener("message", function(event) {
+			if(event.data.height && iframe.contentWindow === event.source) {
+				// Remove height from the iframe's parent element if needed.
+				if (iframe.parentElement) {
+					iframe.parentElement.style.height = "auto";
+				}
+
+				// Set the new height dynamically.
+				iframe.style.height = event.data.height + "px";
+			}
+		});
 	</script>
 
 	<?php
