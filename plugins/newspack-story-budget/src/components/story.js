@@ -14,11 +14,12 @@ import {
 } from '@wordpress/components';
 import { notAllowed } from '@wordpress/icons';
 import { useSelect, useDispatch } from '@wordpress/data';
-import { useEffect, useState, useCallback } from '@wordpress/element';
+import { useEffect, useState, useCallback, useMemo } from '@wordpress/element';
 
 /**
  * Internal dependencies.
  */
+import utils from '../utils';
 import { NAMESPACE as storeNamespace } from '../store/constants';
 import StoryFieldPanel from './story-field-panel';
 import { useFields, useStory } from '../hooks';
@@ -59,6 +60,10 @@ export default ( { storyId, onCancel } ) => {
 		[ clearErrors, storyId ]
 	);
 
+	const canPreview = useMemo( () => {
+		return story?.metadata?.can_preview && ! utils.sites.isRemoteSite();
+	}, [ story?.metadata?.can_preview, utils.sites.isRemoteSite ] );
+
 	if ( ! story ) {
 		if ( isLoadingStory ) {
 			return (
@@ -75,7 +80,7 @@ export default ( { storyId, onCancel } ) => {
 	return (
 		<HStack alignment="stretch" spacing="0" className="newspack-story-budget__story">
 			<VStack style={ { flexGrow: 1, position: 'relative' } }>
-				{ ! story.metadata?.can_preview && (
+				{ ! canPreview && (
 					<VStack
 						style={ {
 							position: 'absolute',
@@ -90,10 +95,21 @@ export default ( { storyId, onCancel } ) => {
 						justify="center"
 					>
 						<Icon icon={ notAllowed } size={ 32 } />
-						<p>{ __( 'Preview is unavailable', 'newspack-story-budget' ) }</p>
+						{ utils.sites.isRemoteSite() ? (
+							<>
+								<p>{ __( 'Preview is unavailable when accessing remotely', 'newspack-story-budget' ) }</p>
+								{ story.metadata?.preview_url && (
+									<Button variant="secondary" href={ story.metadata?.preview_url } target="_blank">
+										{ __( 'Preview in a new tab', 'newspack-story-budget' ) }
+									</Button>
+								) }
+							</>
+						) : (
+							<p>{ __( 'Preview is unavailable', 'newspack-story-budget' ) }</p>
+						) }
 					</VStack>
 				) }
-				{ story.metadata?.can_preview && isIframeLoading && (
+				{ canPreview && isIframeLoading && (
 					<VStack
 						style={ {
 							position: 'absolute',
