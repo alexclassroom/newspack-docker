@@ -14,9 +14,9 @@ final class Checkout_Data {
 	/**
 	 * Get price string for the price summary card to render in auth flow.
 	 *
-	 * @param string $name      The name.
-	 * @param string $price     The price. Optional. If not provided, the price string will contain 0.
-	 * @param string $frequency The frequency. Optional. If not provided, the price will be treated as a one-time payment.
+	 * @param string $name       The name.
+	 * @param string $price      The price. Optional. If not provided, the price string will contain 0.
+	 * @param string $frequency  The frequency. Optional. If not provided, the price will be treated as a one-time payment.
 	 * @param int    $product_id Product ID to get additional subscription details. Optional.
 	 *
 	 * @return string The price string.
@@ -154,6 +154,10 @@ final class Checkout_Data {
 			if ( \Newspack\Donations::is_donation_product( $product_id ) ) {
 				$action_type = 'donation';
 			}
+		}
+		// Check if it's a subscription switch.
+		if ( method_exists( 'WC_Subscriptions_Switcher', 'cart_contains_switches' ) && \WC_Subscriptions_Switcher::cart_contains_switches( 'any' ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$action_type = 'subscription_switch';
 		}
 		if ( isset( $_GET['action_type'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$action_type = sanitize_text_field( wp_unslash( $_GET['action_type'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
