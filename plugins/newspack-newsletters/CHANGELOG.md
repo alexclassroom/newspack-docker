@@ -1,3 +1,10 @@
+## [3.23.7](https://github.com/Automattic/newspack-newsletters/compare/v3.23.6...v3.23.7) (2025-10-14)
+
+
+### Bug Fixes
+
+* revert borders and padding in email HTML hotfix ([#1947](https://github.com/Automattic/newspack-newsletters/issues/1947)) ([d7525eb](https://github.com/Automattic/newspack-newsletters/commit/d7525ebcacc678ae1fa262cba00195c1702c3948))
+
 ## [3.23.6](https://github.com/Automattic/newspack-newsletters/compare/v3.23.5...v3.23.6) (2025-10-13)
 
 
