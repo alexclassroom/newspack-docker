@@ -7,7 +7,7 @@
 	},
 	"homepage": "https://newspack.com",
 	"devDependencies": {
-		"@rushstack/eslint-patch": "^1.13.0",
+		"@rushstack/eslint-patch": "^1.14.1",
 		"@types/react": "^18.3.26",
 		"@wordpress/browserslist-config": "^6.32.0",
 		"eslint": "^8.57.0",
