@@ -4,8 +4,6 @@
 import { __ } from '@wordpress/i18n';
 import { useMemo } from '@wordpress/element';
 import { useSelect, useDispatch } from '@wordpress/data';
-import { Icon } from '@wordpress/components';
-import { seen, update, pencil, external } from '@wordpress/icons';
 import { applyFilters } from '@wordpress/hooks';
 
 /**
@@ -130,8 +128,7 @@ export const useStoryActions = () => {
 				{
 					id: 'view-story',
 					label: __( 'View', 'newspack-story-budget' ),
-					isPrimary: true,
-					icon: <Icon icon={ seen } />,
+					isPrimary: false,
 					callback: items => {
 						fetchStory( items[ 0 ].id );
 						window.location.hash = '#/stories/' + items[ 0 ].id;
@@ -140,18 +137,16 @@ export const useStoryActions = () => {
 				{
 					id: 'edit-fields',
 					label: __( 'Edit Fields', 'newspack-story-budget' ),
-					isPrimary: true,
+					isPrimary: false,
 					supportsBulk: true,
-					icon: <Icon icon={ pencil } />,
 					hideModalHeader: true,
 					RenderModal: StoriesEdit,
 				},
 				{
 					id: 'refresh',
 					label: __( 'Refresh', 'newspack-story-budget' ),
-					isPrimary: true,
+					isPrimary: false,
 					supportsBulk: true,
-					icon: <Icon icon={ update } />,
 					callback: items => {
 						for ( const item of items ) {
 							clearErrors( item.id );
@@ -164,7 +159,6 @@ export const useStoryActions = () => {
 					label: __( 'Edit Post', 'newspack-story-budget' ),
 					isEligible: item => canManage && !! item.metadata?.edit_url,
 					isPrimary: false,
-					icon: <Icon icon={ external } />,
 					callback: items => {
 						if ( items[ 0 ].metadata?.edit_url ) {
 							window.open( items[ 0 ].metadata.edit_url );

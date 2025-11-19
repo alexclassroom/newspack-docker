@@ -31,8 +31,8 @@ export default function TableRowField( { story, field, allowEdit = false } ) {
 			{ fieldIdx === 0 && isLoadingStory ? (
 				<Spinner
 					style={ {
-						width: '13px',
-						height: '13px',
+						width: '12px',
+						height: '12px',
 					} }
 				/>
 			) : (

@@ -30,31 +30,18 @@ body.toplevel_page_newspack-story-budget {
 	$parent-selector: &;
 
 	&__content {
-		padding: 48px;
+		padding: 64px 64px 0;
 		// DataViews custom styles for rendering inside content area.
 		.dataviews-wrapper {
 			overflow: auto;
 			height: calc(100vh - 140px);
-			margin-top: -48px;
-			margin-left: -48px;
-			margin-right: -48px;
-			padding-left: 48px;
-			padding-right: 48px;
-			padding-top: 48px;
 		}
 		.dataviews__view-actions,
 		.dataviews-filters__container {
-			padding: 16px 0;
-			position: sticky;
+			padding: 0 0 16px;
 			left: 0;
 		}
-		.dataviews-footer {
-			left: -48px;
-			margin-left: -48px;
-			margin-right: -48px;
-		}
 		.dataviews-view-table {
-			margin-left: -8px;
 			thead {
 				top: -48px;
 				background: #fff;
@@ -64,51 +51,22 @@ body.toplevel_page_newspack-story-budget {
 				padding-left: 8px;
 			}
 			&__actions-column {
-				position: sticky;
-				right: 0;
 				background: transparent;
-				vertical-align: bottom;
 				pointer-events: none;
 				padding-bottom: 0 !important;
-				> div {
+				right: 0;
+				vertical-align: top;
+				.dataviews-item-actions {
 					pointer-events: auto;
+					right: 0;
 					.components-button.has-icon {
-						min-width: 28px;
-						width: 28px;
-						height: 28px;
-						svg {
-							width: 20px;
-							height: 20px;
-						}
+						min-width: 32px;
+						width: 32px;
+						height: 32px;
 					}
 				}
 				.dataviews-view-table-header {
 					display: none;
-				}
-				button {
-					opacity: 0;
-				}
-			}
-		}
-		tr.is-hovered,
-		tr:focus-within,
-		tr:hover {
-			.dataviews-view-table__actions-column {
-				> div {
-					border-top: 1px solid wp-colors.$gray-300;
-					border-left: 1px solid wp-colors.$gray-300;
-					border-right: 1px solid wp-colors.$gray-300;
-					// box-shadow:
-					// 	0 0 0 1px wp-colors.$gray-300,
-					// 	0 2px 3px rgba(0, 0, 0, 0.05),
-					// 	0 4px 5px rgba(0, 0, 0, 0.04),
-					// 	0 12px 12px rgba(0, 0, 0, 0.03),
-					// 	0 16px 16px rgba(0, 0, 0, 0.02);
-					background: #fff;
-					border-radius: 4px 4px 0 0;
-				}
-				button {
-					opacity: 1;
 				}
 			}
 		}
@@ -404,7 +362,7 @@ body.toplevel_page_newspack-story-budget {
 
 	&__budgets {
 		&-actions {
-			margin-bottom: 32px;
+			margin-bottom: 16px;
 
 			&__primary {
 				width: auto !important;
@@ -577,4 +535,9 @@ body.toplevel_page_newspack-story-budget {
 // Fix header logo background color.
 .newspack-wizard__title svg {
 	background: var(--wp-components-color-accent) !important;
+}
+
+// Fix menu item cursor.
+div[role="menuitem"] {
+	cursor: pointer;
 }
