@@ -1,3 +1,11 @@
+## [2.15.1-alpha.3](https://github.com/Automattic/newspack-theme/compare/v2.15.1-alpha.2...v2.15.1-alpha.3) (2025-11-19)
+
+
+### Bug Fixes
+
+* prevent stretchy text from overflowing stack, row blocks ([#2592](https://github.com/Automattic/newspack-theme/issues/2592)) ([d83b8e8](https://github.com/Automattic/newspack-theme/commit/d83b8e88df4b36339114b6449bc03342aae35df5))
+* update the styles for the new accordion block ([#2593](https://github.com/Automattic/newspack-theme/issues/2593)) ([813699e](https://github.com/Automattic/newspack-theme/commit/813699e9bb0cfa2676aaa46c8f06317b6a5b7f86))
+
 ## [2.15.1-alpha.2](https://github.com/Automattic/newspack-theme/compare/v2.15.1-alpha.1...v2.15.1-alpha.2) (2025-11-19)
 
 
