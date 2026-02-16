@@ -1,3 +1,10 @@
+## [3.28.3](https://github.com/Automattic/newspack-newsletters/compare/v3.28.2...v3.28.3) (2026-02-16)
+
+
+### Bug Fixes
+
+* try adding build-distributable job before release-wporg ([835ac05](https://github.com/Automattic/newspack-newsletters/commit/835ac05a424b3664f54bd6df06519e6acc903107))
+
 ## [3.28.2](https://github.com/Automattic/newspack-newsletters/compare/v3.28.1...v3.28.2) (2026-02-16)
 
 
