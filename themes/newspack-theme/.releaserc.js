@@ -1,6 +1,11 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-
-const { THEMES } = require( './scripts/create-child-releases.js' );
+const THEMES = [
+	'newspack-theme',
+	'newspack-joseph',
+	'newspack-katharine',
+	'newspack-nelson',
+	'newspack-sacha',
+	'newspack-scott',
+];
 
 module.exports = {
 	branches: [
