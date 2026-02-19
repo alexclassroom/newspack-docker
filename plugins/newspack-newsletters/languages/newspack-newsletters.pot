@@ -2,14 +2,14 @@
 # This file is distributed under the GPL2.
 msgid ""
 msgstr ""
-"Project-Id-Version: Newspack Newsletters 3.28.4\n"
+"Project-Id-Version: Newspack Newsletters 3.28.5\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/newspack-newsletters\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-02-17T17:03:46+00:00\n"
+"POT-Creation-Date: 2026-02-19T21:38:21+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: newspack-newsletters\n"
@@ -337,8 +337,8 @@ msgid_plural "%d newsletters now have public page disabled."
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/class-newspack-newsletters-contacts.php:318
-#: includes/class-newspack-newsletters-contacts.php:353
+#: includes/class-newspack-newsletters-contacts.php:331
+#: includes/class-newspack-newsletters-contacts.php:366
 #: includes/class-newspack-newsletters-subscription.php:620
 msgid "Not supported for this provider"
 msgstr ""
@@ -770,11 +770,11 @@ msgstr ""
 msgid "Thank you for activating Newspack Newsletters. Please <a href=\"%s\">head to settings</a> to set up your API credentials."
 msgstr ""
 
-#: includes/class-newspack-newsletters.php:1301
+#: includes/class-newspack-newsletters.php:1313
 msgid "Lists not available while using manual configuration."
 msgstr ""
 
-#: includes/class-newspack-newsletters.php:1307
+#: includes/class-newspack-newsletters.php:1319
 msgid "Lists not available for the current Newsletters setup."
 msgstr ""
 
@@ -929,8 +929,8 @@ msgid "Active Campaign API credentials are missing."
 msgstr ""
 
 #: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:158
-#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:956
-#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1039
+#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:968
+#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1051
 msgid "ActiveCampaign API credentials are missing."
 msgstr ""
 
@@ -953,82 +953,82 @@ msgstr ""
 msgid "Untitled %s"
 msgstr ""
 
-#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:839
+#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:851
 msgid "Missing or invalid ActiveCampign credentials."
 msgstr ""
 
 #. translators: %s are comma-separated emails.
-#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1021
+#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1033
 #, php-format
 msgid "ActiveCampaign test message sent successfully to %s."
 msgstr ""
 
-#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1045
+#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1057
 #: includes/service-providers/campaign_monitor/class-newspack-newsletters-campaign-monitor.php:572
 #: includes/service-providers/constant_contact/class-newspack-newsletters-constant-contact.php:824
 #: includes/service-providers/mailchimp/class-newspack-newsletters-mailchimp.php:1120
 msgid "The newsletter subject cannot be empty."
 msgstr ""
 
-#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1085
+#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1097
 msgid "Please input sender name and email address."
 msgstr ""
 
-#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1091
+#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1103
 msgid "Please select a list."
 msgstr ""
 
-#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1120
+#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1132
 msgid "ActiveCampaign sync error: "
 msgstr ""
 
-#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1150
+#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1162
 msgid "Error creating campaign: Message HTML is missing. Campaign not sent."
 msgstr ""
 
-#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1202
+#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1226
 msgid "Campaign is not deletable."
 msgstr ""
 
-#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1694
+#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1718
 msgid "Active Campaign List"
 msgstr ""
 
-#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1695
+#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1719
 msgid "Active Campaign Tag"
 msgstr ""
 
-#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1696
-#: includes/service-providers/class-newspack-newsletters-service-provider.php:527
+#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1720
+#: includes/service-providers/class-newspack-newsletters-service-provider.php:539
 #: src/newsletter-editor/sidebar/send-to.js:40
 msgid "list"
 msgstr ""
 
-#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1697
-#: includes/service-providers/class-newspack-newsletters-service-provider.php:528
+#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1721
+#: includes/service-providers/class-newspack-newsletters-service-provider.php:540
 msgid "lists"
 msgstr ""
 
-#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1698
+#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1722
 msgid "segment"
 msgstr ""
 
-#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1699
-#: includes/service-providers/class-newspack-newsletters-service-provider.php:530
+#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1723
+#: includes/service-providers/class-newspack-newsletters-service-provider.php:542
 msgid "List"
 msgstr ""
 
-#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1700
-#: includes/service-providers/class-newspack-newsletters-service-provider.php:531
+#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1724
+#: includes/service-providers/class-newspack-newsletters-service-provider.php:543
 msgid "Lists"
 msgstr ""
 
-#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1701
+#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1725
 msgid "Segments"
 msgstr ""
 
 #. translators: %1$s and %2$s are opening and closing link tag to Active Campaign documentation.
-#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1720
+#: includes/service-providers/active_campaign/class-newspack-newsletters-active-campaign.php:1744
 #, php-format
 msgid "Note for Active Campaign: You need to manually create a segment using the above tag to be able to send campaigns to this list. %1$sLearn more%2$s"
 msgstr ""
@@ -1142,7 +1142,7 @@ msgid "Failed to send %d times. Please check the provider connection and try sen
 msgstr ""
 
 #. translators: %1$s is the campaign title, %2$s is the edit link, %3$s is the error message.
-#: includes/service-providers/class-newspack-newsletters-service-provider.php:460
+#: includes/service-providers/class-newspack-newsletters-service-provider.php:472
 #, php-format
 msgid ""
 "Hi,\n"
@@ -1157,36 +1157,36 @@ msgid ""
 "\t"
 msgstr ""
 
-#: includes/service-providers/class-newspack-newsletters-service-provider.php:480
+#: includes/service-providers/class-newspack-newsletters-service-provider.php:492
 msgid "ERROR: Sending a newsletter failed"
 msgstr ""
 
-#: includes/service-providers/class-newspack-newsletters-service-provider.php:529
+#: includes/service-providers/class-newspack-newsletters-service-provider.php:541
 #: src/newsletter-editor/sidebar/send-to.js:41
 msgid "sublist"
 msgstr ""
 
-#: includes/service-providers/class-newspack-newsletters-service-provider.php:532
+#: includes/service-providers/class-newspack-newsletters-service-provider.php:544
 msgid "Sublist"
 msgstr ""
 
-#: includes/service-providers/class-newspack-newsletters-service-provider.php:534
+#: includes/service-providers/class-newspack-newsletters-service-provider.php:546
 msgid "Once this list is saved, a tag will be created for it."
 msgstr ""
 
-#: includes/service-providers/class-newspack-newsletters-service-provider.php:535
+#: includes/service-providers/class-newspack-newsletters-service-provider.php:547
 msgid "Tag created for this list"
 msgstr ""
 
-#: includes/service-providers/class-newspack-newsletters-service-provider.php:605
+#: includes/service-providers/class-newspack-newsletters-service-provider.php:617
 msgid "Sorry, an error has occurred. Please try again later or contact us for support."
 msgstr ""
 
-#: includes/service-providers/class-newspack-newsletters-service-provider.php:725
+#: includes/service-providers/class-newspack-newsletters-service-provider.php:737
 msgid "Local list not properly configured for the provider"
 msgstr ""
 
-#: includes/service-providers/class-newspack-newsletters-service-provider.php:751
+#: includes/service-providers/class-newspack-newsletters-service-provider.php:763
 msgid "Local list not found"
 msgstr ""
 
