@@ -666,6 +666,18 @@ add_action( 'enqueue_block_editor_assets', 'newspack_enqueue_scripts' );
  * @return array List of allowed FSE blocks.
  */
 function newspack_is_fse_blocks_allowed() {
+	/**
+	 * Specifies additional Full Site Editing (FSE) blocks to allow in the
+	 * editor. By default, Newspack theme removes certain FSE blocks for
+	 * compatibility. Use this constant to re-enable specific blocks.
+	 *
+	 * @constant NEWSPACK_FSE_BLOCKS_ALLOWED
+	 * @type     array
+	 * @default  No additional FSE blocks allowed
+	 * @status   draft
+	 *
+	 * @example define( 'NEWSPACK_FSE_BLOCKS_ALLOWED', ['core/avatar', 'core/loginout'] );
+	 */
 	if ( defined( 'NEWSPACK_FSE_BLOCKS_ALLOWED' ) ) {
 		return NEWSPACK_FSE_BLOCKS_ALLOWED;
 	}
