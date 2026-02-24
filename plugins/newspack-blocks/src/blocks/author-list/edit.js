@@ -2,7 +2,7 @@
  * WordPress dependencies
  */
 import apiFetch from '@wordpress/api-fetch';
-import { BlockControls, InspectorControls } from '@wordpress/block-editor';
+import { BlockControls, InspectorControls, useBlockProps } from '@wordpress/block-editor';
 import {
 	BaseControl,
 	CheckboxControl,
@@ -48,8 +48,9 @@ const AuthorList = ( { attributes, clientId, setAttributes } ) => {
 	const [ error, setError ] = useState( null );
 	const [ isLoading, setIsLoading ] = useState( false );
 	const [ maxItemsToSuggest, setMaxItemsToSuggest ] = useState( 0 );
-	const canUseCAP = Boolean( window.newspack_blocks_data?.can_use_cap );
-	const editableRoles = window.newspack_blocks_data?.editable_roles;
+	const canUseCAP = Boolean( window?.newspack_blocks_data?.can_use_cap );
+	const editableRoles = window?.newspack_blocks_data?.editable_roles || [];
+
 	const separators = [];
 	const {
 		authorRoles,
@@ -72,6 +73,10 @@ const AuthorList = ( { attributes, clientId, setAttributes } ) => {
 	useEffect( () => {
 		getAuthors();
 	}, [ authorRoles, authorType, avatarHideDefault, exclude, excludeEmpty ] );
+
+	const blockProps = useBlockProps( {
+		className: classnames( attributes.className, 'wp-block-newspack-blocks-author-list' ),
+	} );
 
 	const getAuthors = async () => {
 		setError( null );
@@ -363,7 +368,7 @@ const AuthorList = ( { attributes, clientId, setAttributes } ) => {
 					/>
 				</BlockControls>
 			) }
-			<div className={ classnames( attributes.className, 'wp-block-newspack-blocks-author-list' ) }>
+			<div { ...blockProps }>
 				{ ! isLoading && ! error && authors && Array.isArray( authors ) && (
 					<>
 						{ isColumns && showSeparators && separatorSections ? (
