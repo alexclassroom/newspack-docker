@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Newspack Blocks 1.0.0-alpha.20\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/newspack-blocks\n"
-"POT-Creation-Date: 2026-03-04T22:45:07+00:00\n"
+"POT-Creation-Date: 2026-03-10T18:49:07+00:00\n"
 "PO-Revision-Date: 2024-08-30 08:46-0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -488,32 +488,32 @@ msgstr ""
 
 #. Translators: %s: The name of the type.
 #. Translators: %s: the name of a post type.
-#: src/blocks/author-profile/view.php:25 dist/editor.js:16 dist/editor.js:20
-#: dist/editor.js:21 dist/editor.js:30 src/blocks/author-profile/edit.js:54
-#: src/blocks/author-profile/edit.js:720 src/blocks/author-profile/edit.js:783
-#: src/blocks/author-profile/edit.js:804 src/blocks/author-profile/edit.js:845
-#: src/blocks/author-profile/edit.js:910 src/blocks/author-profile/edit.js:1001
-#: src/blocks/author-profile/edit.js:1039 src/blocks/author-profile/index.js:29
+#: src/blocks/author-profile/view.php:25 dist/editor.js:16 dist/editor.js:19
+#: dist/editor.js:20 dist/editor.js:30 src/blocks/author-profile/edit.js:59
+#: src/blocks/author-profile/edit.js:635 src/blocks/author-profile/edit.js:689
+#: src/blocks/author-profile/edit.js:710 src/blocks/author-profile/edit.js:756
+#: src/blocks/author-profile/edit.js:821 src/blocks/author-profile/edit.js:912
+#: src/blocks/author-profile/edit.js:950 src/blocks/author-profile/index.js:30
 msgid "Author Profile"
 msgstr ""
 
 #. translators: %s: author name
 #. translators: %s: author name.
 #: src/blocks/author-profile/view.php:62 dist/editor.js:5 dist/editor.js:17
-#: dist/editor.js:18 src/blocks/author-profile/edit.js:80
-#: src/blocks/author-profile/edit.js:297
+#: dist/editor.js:30 src/blocks/author-profile/edit.js:85
 #: src/blocks/author-profile/single-author.js:84
+#: src/blocks/author-profile/templates.js:126
 #, php-format
 msgid "More by %s"
 msgstr ""
 
-#: src/blocks/author-profile/view.php:112 dist/editor.js:21 dist/editor.js:51
+#: src/blocks/author-profile/view.php:112 dist/editor.js:20 dist/editor.js:51
 #: src/blocks/author-list/index.js:51 src/blocks/homepage-articles/index.js:52
 msgctxt "block style"
 msgid "Default"
 msgstr ""
 
-#: src/blocks/author-profile/view.php:120 dist/editor.js:21
+#: src/blocks/author-profile/view.php:120 dist/editor.js:20
 #: src/blocks/author-list/index.js:52
 msgctxt "block style"
 msgid "Centered"
@@ -756,9 +756,9 @@ msgstr ""
 msgid "(no title)"
 msgstr ""
 
-#: dist/editor.js:1 dist/editor.js:20 dist/editor.js:21 dist/editor.js:30
-#: src/blocks/author-list/edit.js:249 src/blocks/author-profile/edit.js:874
-#: src/blocks/author-profile/edit.js:1083 src/components/query-controls.js:79
+#: dist/editor.js:1 dist/editor.js:19 dist/editor.js:20 dist/editor.js:29
+#: src/blocks/author-list/edit.js:249 src/blocks/author-profile/edit.js:785
+#: src/blocks/author-profile/edit.js:994 src/components/query-controls.js:79
 #: src/components/query-controls.js:94
 msgid "(no name)"
 msgstr ""
@@ -929,15 +929,15 @@ msgstr ""
 msgid "9:16"
 msgstr ""
 
-#: dist/editor.js:7 dist/editor.js:20 dist/editor.js:33 dist/editor.js:45
-#: dist/editor.js:57 src/blocks/author-profile/edit.js:653
+#: dist/editor.js:7 dist/editor.js:19 dist/editor.js:33 dist/editor.js:45
+#: dist/editor.js:57 src/blocks/author-profile/edit.js:568
 #: src/blocks/carousel/edit.js:208 src/blocks/checkout-button/edit.js:300
 #: src/blocks/video-playlist/edit.js:191
 msgid "Settings"
 msgstr ""
 
-#: dist/editor.js:7 dist/editor.js:20 dist/editor.js:45
-#: src/blocks/author-profile/edit.js:642 src/blocks/carousel/edit.js:234
+#: dist/editor.js:7 dist/editor.js:19 dist/editor.js:45
+#: src/blocks/author-profile/edit.js:557 src/blocks/carousel/edit.js:234
 msgid "Display"
 msgstr ""
 
@@ -1071,395 +1071,424 @@ msgstr ""
 #. translators: label for small text size option
 #. translators: label for small avatar size option
 #. translators: label for small size option
-#: dist/editor.js:17 dist/editor.js:45 src/blocks/author-profile/edit.js:131
-#: src/blocks/author-profile/edit.js:155
+#: dist/editor.js:17 dist/editor.js:45 src/blocks/author-profile/edit.js:136
+#: src/blocks/author-profile/edit.js:160
 msgid "Small"
 msgstr ""
 
 #. translators: abbreviation for small text size option
 #. translators: abbreviation for small avatar size option
 #. translators: abbreviation for small size
-#: dist/editor.js:17 dist/editor.js:45 src/blocks/author-profile/edit.js:132
-#: src/blocks/author-profile/edit.js:156
+#: dist/editor.js:17 dist/editor.js:45 src/blocks/author-profile/edit.js:137
+#: src/blocks/author-profile/edit.js:161
 msgid "S"
 msgstr ""
 
 #. translators: label for medium text size option
 #. translators: label for medium avatar size option
 #. translators: label for medium size option
-#: dist/editor.js:17 dist/editor.js:45 src/blocks/author-profile/edit.js:136
-#: src/blocks/author-profile/edit.js:160
+#: dist/editor.js:17 dist/editor.js:45 src/blocks/author-profile/edit.js:141
+#: src/blocks/author-profile/edit.js:165
 msgid "Medium"
 msgstr ""
 
 #. translators: abbreviation for medium text size option
 #. translators: abbreviation for medium avatar size option
 #. translators: abbreviation for medium size
-#: dist/editor.js:17 dist/editor.js:45 src/blocks/author-profile/edit.js:137
-#: src/blocks/author-profile/edit.js:161
+#: dist/editor.js:17 dist/editor.js:45 src/blocks/author-profile/edit.js:142
+#: src/blocks/author-profile/edit.js:166
 msgid "M"
 msgstr ""
 
 #. translators: label for small text size option
 #. translators: label for large avatar size option
 #. translators: label for large size option
-#: dist/editor.js:17 dist/editor.js:45 src/blocks/author-profile/edit.js:141
-#: src/blocks/author-profile/edit.js:165
+#: dist/editor.js:17 dist/editor.js:45 src/blocks/author-profile/edit.js:146
+#: src/blocks/author-profile/edit.js:170
 msgid "Large"
 msgstr ""
 
 #. translators: abbreviation for large text size option
 #. translators: abbreviation for large avatar size option
 #. translators: abbreviation for large size
-#: dist/editor.js:17 dist/editor.js:45 src/blocks/author-profile/edit.js:142
-#: src/blocks/author-profile/edit.js:166
+#: dist/editor.js:17 dist/editor.js:45 src/blocks/author-profile/edit.js:147
+#: src/blocks/author-profile/edit.js:171
 msgid "L"
 msgstr ""
 
 #. translators: label for extra-large text size option
 #. translators: label for extra large size option
-#: dist/editor.js:17 dist/editor.js:45 src/blocks/author-profile/edit.js:146
+#: dist/editor.js:17 dist/editor.js:45 src/blocks/author-profile/edit.js:151
 msgid "Extra Large"
 msgstr ""
 
 #. translators: abbreviation for small text size option
 #. translators: abbreviation for extra-large avatar size option
 #. translators: abbreviation for extra large size
-#: dist/editor.js:17 dist/editor.js:45 src/blocks/author-profile/edit.js:147
-#: src/blocks/author-profile/edit.js:171
+#: dist/editor.js:17 dist/editor.js:45 src/blocks/author-profile/edit.js:152
+#: src/blocks/author-profile/edit.js:176
 msgid "XL"
 msgstr ""
 
 #. translators: label for extra-large avatar size option
-#: dist/editor.js:17 src/blocks/author-profile/edit.js:170
+#: dist/editor.js:17 src/blocks/author-profile/edit.js:175
 msgid "Extra-large"
 msgstr ""
 
-#: dist/editor.js:17 dist/editor.js:18 src/blocks/author-profile/edit.js:245
-#: src/blocks/author-profile/edit.js:254 src/blocks/author-profile/edit.js:298
-msgid "Author Name"
-msgstr ""
-
-#: dist/editor.js:17 src/blocks/author-profile/edit.js:263
-#: src/blocks/author-profile/edit.js:272
-msgid "Job Title"
-msgstr ""
-
-#: dist/editor.js:17 src/blocks/author-profile/edit.js:289
-msgid "Role"
-msgstr ""
-
-#: dist/editor.js:17 src/blocks/author-profile/edit.js:290
-msgid "Employer"
-msgstr ""
-
-#: dist/editor.js:17 src/blocks/author-profile/edit.js:291
-msgid "Biography"
+#: dist/editor.js:17 src/blocks/author-profile/edit.js:205
+msgid "Select a layout to start with:"
 msgstr ""
 
 #. translators: %s: error text for when no authors are found.
-#: dist/editor.js:19 dist/editor.js:20 src/blocks/author-profile/edit.js:501
-#: src/blocks/author-profile/edit.js:512
+#: dist/editor.js:18 dist/editor.js:19 src/blocks/author-profile/edit.js:420
+#: src/blocks/author-profile/edit.js:431
 msgid "No authors or guest authors found for ID %s."
 msgstr ""
 
-#: dist/editor.js:20 src/blocks/author-profile/edit.js:545
+#: dist/editor.js:19 src/blocks/author-profile/edit.js:464
 msgid "Error fetching authors for this post."
 msgstr ""
 
-#: dist/editor.js:20 src/blocks/author-profile/edit.js:576
+#: dist/editor.js:19 src/blocks/author-profile/edit.js:495
 msgid "Error fetching byline authors."
 msgstr ""
 
-#: dist/editor.js:20 src/blocks/author-profile/edit.js:644
+#: dist/editor.js:19 src/blocks/author-profile/edit.js:559
 msgid "Show authors without bio"
 msgstr ""
 
-#: dist/editor.js:20 src/blocks/author-profile/edit.js:645
+#: dist/editor.js:19 src/blocks/author-profile/edit.js:560
 msgid "Display author profiles even if their bio is empty."
 msgstr ""
 
-#: dist/editor.js:20 src/blocks/author-profile/edit.js:655
+#: dist/editor.js:19 src/blocks/author-profile/edit.js:570
 msgid "Text size"
 msgstr ""
 
-#: dist/editor.js:20 dist/editor.js:30 src/blocks/author-list/edit.js:277
-#: src/blocks/author-profile/edit.js:670
+#: dist/editor.js:19 dist/editor.js:29 src/blocks/author-list/edit.js:277
+#: src/blocks/author-profile/edit.js:585
 msgid "Avatar"
 msgstr ""
 
-#: dist/editor.js:20 dist/editor.js:30 src/blocks/author-list/edit.js:279
-#: src/blocks/author-profile/edit.js:672
+#: dist/editor.js:19 dist/editor.js:29 src/blocks/author-list/edit.js:279
+#: src/blocks/author-profile/edit.js:587
 msgid "Display avatar"
 msgstr ""
 
-#: dist/editor.js:20 dist/editor.js:30 src/blocks/author-list/edit.js:285
-#: src/blocks/author-profile/edit.js:679
+#: dist/editor.js:19 dist/editor.js:29 src/blocks/author-list/edit.js:285
+#: src/blocks/author-profile/edit.js:594
 msgid "Hide default avatar"
 msgstr ""
 
-#: dist/editor.js:20 dist/editor.js:30 dist/editor.js:51
-#: src/blocks/author-list/edit.js:292 src/blocks/author-profile/edit.js:687
+#: dist/editor.js:19 dist/editor.js:29 dist/editor.js:51
+#: src/blocks/author-list/edit.js:292 src/blocks/author-profile/edit.js:602
 msgid "Size"
 msgstr ""
 
-#: dist/editor.js:20 dist/editor.js:30 src/blocks/author-list/edit.js:293
-#: src/blocks/author-profile/edit.js:688
+#: dist/editor.js:19 dist/editor.js:29 src/blocks/author-list/edit.js:293
+#: src/blocks/author-profile/edit.js:603
 msgid "Avatar size"
 msgstr ""
 
-#: dist/editor.js:20 dist/editor.js:30 src/blocks/author-list/edit.js:306
-#: src/blocks/author-profile/edit.js:701
+#: dist/editor.js:19 dist/editor.js:29 src/blocks/author-list/edit.js:306
+#: src/blocks/author-profile/edit.js:616
 msgid "Border radius"
 msgstr ""
 
-#: dist/editor.js:20 dist/editor.js:30 src/blocks/author-list/edit.js:307
-#: src/blocks/author-profile/edit.js:702
+#: dist/editor.js:19 dist/editor.js:29 src/blocks/author-list/edit.js:307
+#: src/blocks/author-profile/edit.js:617
 msgid "Avatar border radius"
 msgstr ""
 
-#: dist/editor.js:20 dist/editor.js:21 dist/editor.js:30
-#: src/blocks/author-list/edit.js:446 src/blocks/author-profile/edit.js:723
-#: src/blocks/author-profile/edit.js:1048
+#: dist/editor.js:19 dist/editor.js:20 dist/editor.js:29
+#: src/blocks/author-list/edit.js:446 src/blocks/author-profile/edit.js:638
+#: src/blocks/author-profile/edit.js:959
 msgid "Fetching authors…"
 msgstr ""
 
-#: dist/editor.js:20 dist/editor.js:30 src/blocks/author-list/edit.js:345
-#: src/blocks/author-profile/edit.js:737
+#: dist/editor.js:19 dist/editor.js:29 src/blocks/author-list/edit.js:345
+#: src/blocks/author-profile/edit.js:652
 msgid "Show avatar on left"
 msgstr ""
 
-#: dist/editor.js:20 dist/editor.js:30 src/blocks/author-list/edit.js:351
-#: src/blocks/author-profile/edit.js:743
+#: dist/editor.js:19 dist/editor.js:29 src/blocks/author-list/edit.js:351
+#: src/blocks/author-profile/edit.js:658
 msgid "Show avatar on right"
 msgstr ""
 
-#: dist/editor.js:20 dist/editor.js:30 src/blocks/author-list/edit.js:362
-#: src/blocks/author-profile/edit.js:755
+#: dist/editor.js:19 dist/editor.js:29 src/blocks/author-list/edit.js:362
+#: src/blocks/author-profile/edit.js:670
 msgid "Edit selection"
 msgstr ""
 
-#: dist/editor.js:20 src/blocks/author-profile/edit.js:766
-#: src/blocks/author-profile/edit.js:767
-msgid "Reset layout"
+#: dist/editor.js:19 src/blocks/author-profile/edit.js:690
+msgid "Select a type:"
 msgstr ""
 
-#: dist/editor.js:20 src/blocks/author-profile/edit.js:768
-msgid "Reset"
-msgstr ""
-
-#: dist/editor.js:20 src/blocks/author-profile/edit.js:784
-msgid "Select a type to start with."
-msgstr ""
-
-#: dist/editor.js:20 src/blocks/author-profile/edit.js:787
+#: dist/editor.js:19 src/blocks/author-profile/edit.js:693
 msgid "Contextual"
 msgstr ""
 
-#: dist/editor.js:20 src/blocks/author-profile/edit.js:790
+#: dist/editor.js:19 src/blocks/author-profile/edit.js:696
 msgid "Specific"
 msgstr ""
 
-#: dist/editor.js:20 src/blocks/author-profile/edit.js:806
+#: dist/editor.js:19 src/blocks/author-profile/edit.js:712
 msgid ""
 "This block was created with a block theme and is not supported in the "
 "current theme. It will render using the classic layout on the frontend."
 msgstr ""
 
-#: dist/editor.js:20 dist/editor.js:21 src/blocks/author-profile/edit.js:833
-#: src/blocks/author-profile/edit.js:989
+#: dist/editor.js:19 dist/editor.js:20 src/blocks/author-profile/edit.js:744
+#: src/blocks/author-profile/edit.js:900
 msgid "Author bio is hidden because Custom Byline is active on this post."
 msgstr ""
 
-#: dist/editor.js:20 dist/editor.js:21 src/blocks/author-profile/edit.js:852
-#: src/blocks/author-profile/edit.js:1053
+#: dist/editor.js:19 dist/editor.js:20 src/blocks/author-profile/edit.js:763
+#: src/blocks/author-profile/edit.js:964
 msgid "Search for an author to display"
 msgstr ""
 
-#: dist/editor.js:20 dist/editor.js:21 src/blocks/author-profile/edit.js:853
-#: src/blocks/author-profile/edit.js:1054
+#: dist/editor.js:19 dist/editor.js:20 src/blocks/author-profile/edit.js:764
+#: src/blocks/author-profile/edit.js:965
 msgid "Begin typing name, click autocomplete result to select."
 msgstr ""
 
-#: dist/editor.js:20 dist/editor.js:21 dist/editor.js:30
+#: dist/editor.js:19 dist/editor.js:20 dist/editor.js:29 dist/editor.js:30
 #: src/blocks/author-list/edit.js:256 src/blocks/author-list/index.js:48
-#: src/blocks/author-profile/edit.js:896 src/blocks/author-profile/edit.js:1110
-#: src/blocks/author-profile/index.js:49
+#: src/blocks/author-profile/edit.js:807 src/blocks/author-profile/edit.js:1021
+#: src/blocks/author-profile/index.js:50
 msgid "author"
 msgstr ""
 
-#: dist/editor.js:20 dist/editor.js:21 dist/editor.js:30
-#: src/blocks/author-list/edit.js:257 src/blocks/author-profile/edit.js:897
-#: src/blocks/author-profile/edit.js:1111
+#: dist/editor.js:19 dist/editor.js:20 dist/editor.js:29
+#: src/blocks/author-list/edit.js:257 src/blocks/author-profile/edit.js:808
+#: src/blocks/author-profile/edit.js:1022
 msgid "authors"
 msgstr ""
 
-#: dist/editor.js:20 dist/editor.js:21 src/blocks/author-profile/edit.js:911
-#: src/blocks/author-profile/edit.js:1002
+#: dist/editor.js:19 dist/editor.js:20 src/blocks/author-profile/edit.js:822
+#: src/blocks/author-profile/edit.js:913
 msgid "No authors found for this post."
 msgstr ""
 
-#: dist/editor.js:20 src/blocks/author-profile/edit.js:940
+#: dist/editor.js:19 src/blocks/author-profile/edit.js:851
 msgid "Preview author"
 msgstr ""
 
 #. translators: %d: number of authors
-#: dist/editor.js:21 src/blocks/author-profile/edit.js:949
+#: dist/editor.js:20 src/blocks/author-profile/edit.js:860
 msgid "Previewing 1 of %d authors. All authors display on frontend."
 msgstr ""
 
-#: dist/editor.js:21
+#: dist/editor.js:20
 msgid "Post-Checkout Button"
 msgstr ""
 
-#: dist/editor.js:21
+#: dist/editor.js:20
 msgid ""
 "After a successful purchase, a button will be presented to finish the "
 "process."
 msgstr ""
 
-#: dist/editor.js:21
+#: dist/editor.js:20
 msgid "Close the modal"
 msgstr ""
 
-#: dist/editor.js:21
+#: dist/editor.js:20
 msgid "Go to a custom URL"
 msgstr ""
 
-#: dist/editor.js:21
+#: dist/editor.js:20
 msgid "Go to the previous page"
 msgstr ""
 
-#: dist/editor.js:21
+#: dist/editor.js:20
 msgid "Button Label"
 msgstr ""
 
-#: dist/editor.js:21
+#: dist/editor.js:20
 msgid "Custom URL"
 msgstr ""
 
-#: dist/editor.js:21
+#: dist/editor.js:20
 msgid "https://example.com"
 msgstr ""
 
-#: dist/editor.js:21 dist/editor.js:30 src/blocks/author-list/edit.js:437
+#: dist/editor.js:20 dist/editor.js:29 src/blocks/author-list/edit.js:437
 #: src/blocks/author-list/index.js:28
 msgid "Author List"
 msgstr ""
 
-#: dist/editor.js:21 dist/editor.js:30 src/blocks/author-list/index.js:48
-#: src/blocks/author-profile/index.js:49
+#: dist/editor.js:20 dist/editor.js:30 src/blocks/author-list/index.js:48
+#: src/blocks/author-profile/index.js:50
 msgid "profile"
 msgstr ""
 
-#: dist/editor.js:21 src/blocks/author-list/index.js:49
+#: dist/editor.js:20 src/blocks/author-list/index.js:49
 msgid "Display a list of author profile cards."
 msgstr ""
 
-#: dist/editor.js:21 src/blocks/author-list/edit.js:107
+#: dist/editor.js:20 src/blocks/author-list/edit.js:107
 #: src/blocks/author-list/edit.js:111
 msgid "Error fetching authors."
 msgstr ""
 
-#: dist/editor.js:21 src/blocks/author-list/edit.js:132
+#: dist/editor.js:20 src/blocks/author-list/edit.js:132
 msgid "Author List Settings"
 msgstr ""
 
-#: dist/editor.js:21 src/blocks/author-list/edit.js:136
+#: dist/editor.js:20 src/blocks/author-list/edit.js:136
 msgid "Author Type"
 msgstr ""
 
 #. translators: %s: help text for author type selection.
-#: dist/editor.js:24 src/blocks/author-list/edit.js:139
+#: dist/editor.js:23 src/blocks/author-list/edit.js:139
 msgid "%s will be displayed."
 msgstr ""
 
-#: dist/editor.js:24 src/blocks/author-list/edit.js:141
+#: dist/editor.js:23 src/blocks/author-list/edit.js:141
 msgid "Both guest authors and WP users"
 msgstr ""
 
 #. translators: %s: currently selected author type option.
-#: dist/editor.js:27 src/blocks/author-list/edit.js:144
+#: dist/editor.js:26 src/blocks/author-list/edit.js:144
 msgid "%s only"
 msgstr ""
 
-#: dist/editor.js:27 src/blocks/author-list/edit.js:146
+#: dist/editor.js:26 src/blocks/author-list/edit.js:146
 #: src/blocks/author-list/edit.js:153
 msgid "Guest authors"
 msgstr ""
 
-#: dist/editor.js:27 src/blocks/author-list/edit.js:147
+#: dist/editor.js:26 src/blocks/author-list/edit.js:147
 #: src/blocks/author-list/edit.js:154
 msgid "WP users"
 msgstr ""
 
-#: dist/editor.js:27 src/blocks/author-list/edit.js:152
+#: dist/editor.js:26 src/blocks/author-list/edit.js:152
 msgid "All authors"
 msgstr ""
 
-#: dist/editor.js:27 dist/editor.js:30 dist/editor.js:45
+#: dist/editor.js:26 dist/editor.js:29 dist/editor.js:45
 #: src/blocks/author-list/edit.js:163 src/blocks/author-list/edit.js:332
 msgid "Columns"
 msgstr ""
 
-#: dist/editor.js:27 src/blocks/author-list/edit.js:174
+#: dist/editor.js:26 src/blocks/author-list/edit.js:174
 msgid "WP User Roles"
 msgstr ""
 
-#: dist/editor.js:27 src/blocks/author-list/edit.js:195
+#: dist/editor.js:26 src/blocks/author-list/edit.js:195
 msgid "Display alphabetical separators"
 msgstr ""
 
-#: dist/editor.js:27 src/blocks/author-list/edit.js:196
+#: dist/editor.js:26 src/blocks/author-list/edit.js:196
 msgid "Chunk authors alphabetically."
 msgstr ""
 
-#: dist/editor.js:27 src/blocks/author-list/edit.js:204
+#: dist/editor.js:26 src/blocks/author-list/edit.js:204
 msgid "Group authors by alphabet"
 msgstr ""
 
-#: dist/editor.js:27 src/blocks/author-list/edit.js:205
+#: dist/editor.js:26 src/blocks/author-list/edit.js:205
 msgid "Display each alphabetical chunk as a discrete section."
 msgstr ""
 
-#: dist/editor.js:27 src/blocks/author-list/edit.js:215
+#: dist/editor.js:26 src/blocks/author-list/edit.js:215
 msgid "Exclude authors with 0 posts"
 msgstr ""
 
 #. translators: %s: help message for "include empty authors" toggle.
-#: dist/editor.js:30 src/blocks/author-list/edit.js:218
+#: dist/editor.js:29 src/blocks/author-list/edit.js:218
 msgid "Authors with no published posts will be %s."
 msgstr ""
 
-#: dist/editor.js:30 src/blocks/author-list/edit.js:219
+#: dist/editor.js:29 src/blocks/author-list/edit.js:219
 msgid "hidden"
 msgstr ""
 
-#: dist/editor.js:30 src/blocks/author-list/edit.js:219
+#: dist/editor.js:29 src/blocks/author-list/edit.js:219
 msgid "displayed"
 msgstr ""
 
-#: dist/editor.js:30 src/blocks/author-list/edit.js:227
+#: dist/editor.js:29 src/blocks/author-list/edit.js:227
 msgid "Search by author name"
 msgstr ""
 
-#: dist/editor.js:30 src/blocks/author-list/edit.js:228
+#: dist/editor.js:29 src/blocks/author-list/edit.js:228
 msgid "Authors selected here will not be displayed."
 msgstr ""
 
-#: dist/editor.js:30 src/blocks/author-list/edit.js:263
+#: dist/editor.js:29 src/blocks/author-list/edit.js:263
 msgid "Author Profile Settings"
 msgstr ""
 
-#: dist/editor.js:30 src/blocks/author-list/edit.js:265
+#: dist/editor.js:29 src/blocks/author-list/edit.js:265
 msgid "Text Size"
 msgstr ""
 
-#: dist/editor.js:30 src/blocks/author-list/edit.js:324
+#: dist/editor.js:29 src/blocks/author-list/edit.js:324
 msgid "List"
 msgstr ""
 
-#: dist/editor.js:30 src/blocks/author-profile/index.js:50
+#: dist/editor.js:29 dist/editor.js:30
+#: src/blocks/author-profile/templates.js:72
+#: src/blocks/author-profile/templates.js:81
+#: src/blocks/author-profile/templates.js:127
+msgid "Author Name"
+msgstr ""
+
+#: dist/editor.js:29 src/blocks/author-profile/templates.js:92
+#: src/blocks/author-profile/templates.js:101
+msgid "Job Title"
+msgstr ""
+
+#: dist/editor.js:29 src/blocks/author-profile/templates.js:120
+msgid "Role"
+msgstr ""
+
+#: dist/editor.js:29 src/blocks/author-profile/templates.js:121
+msgid "Employer"
+msgstr ""
+
+#: dist/editor.js:29 src/blocks/author-profile/templates.js:122
+msgid "Biography"
+msgstr ""
+
+#: dist/editor.js:30 src/blocks/author-profile/variations.js:49
+msgid "Avatar left"
+msgstr ""
+
+#: dist/editor.js:30 src/blocks/author-profile/variations.js:50
+msgid "Avatar on the left, content on the right."
+msgstr ""
+
+#: dist/editor.js:30 src/blocks/author-profile/variations.js:59
+msgid "Avatar right"
+msgstr ""
+
+#: dist/editor.js:30 src/blocks/author-profile/variations.js:60
+msgid "Content on the left, avatar on the right."
+msgstr ""
+
+#: dist/editor.js:30 src/blocks/author-profile/variations.js:68
+msgid "Centered"
+msgstr ""
+
+#: dist/editor.js:30 src/blocks/author-profile/variations.js:69
+msgid "Large centered avatar with center-aligned text."
+msgstr ""
+
+#: dist/editor.js:30 src/blocks/author-profile/variations.js:77
+msgid "Compact"
+msgstr ""
+
+#: dist/editor.js:30 src/blocks/author-profile/variations.js:78
+msgid "No avatar, vertical stack."
+msgstr ""
+
+#: dist/editor.js:30 src/blocks/author-profile/index.js:51
 msgid "Display an author profile card."
 msgstr ""
 
