@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Newspack Blocks 1.0.0-alpha.25\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/newspack-blocks\n"
-"POT-Creation-Date: 2026-03-10T18:49:07+00:00\n"
+"POT-Creation-Date: 2026-03-13T14:45:18+00:00\n"
 "PO-Revision-Date: 2024-08-30 08:46-0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -520,24 +520,24 @@ msgid "Centered"
 msgstr ""
 
 #. translators: %d: Slide number.
-#: src/blocks/carousel/view.php:227
+#: src/blocks/carousel/view.php:229
 #, php-format
 msgid "Go to slide %d"
 msgstr ""
 
-#: src/blocks/carousel/view.php:248
+#: src/blocks/carousel/view.php:250
 msgid "Previous Slide"
 msgstr "Slide Anterior"
 
-#: src/blocks/carousel/view.php:249
+#: src/blocks/carousel/view.php:251
 msgid "Next Slide"
 msgstr "Próximo Slide"
 
-#: src/blocks/carousel/view.php:293
+#: src/blocks/carousel/view.php:295
 msgid "Pause Slideshow"
 msgstr "Pausa na apresentação"
 
-#: src/blocks/carousel/view.php:294
+#: src/blocks/carousel/view.php:296
 msgid "Play Slideshow"
 msgstr ""
 
@@ -748,94 +748,102 @@ msgid ""
 msgstr ""
 
 #: dist/editor.js:1 dist/editor.js:54 src/blocks/video-playlist/edit.js:137
-#: src/blocks/video-playlist/edit.js:158 src/components/query-controls.js:25
-#: src/components/query-controls.js:27 src/components/query-controls.js:44
-#: src/components/query-controls.js:63 src/components/query-controls.js:139
-#: src/components/query-controls.js:166 src/components/query-controls.js:180
-#: src/components/query-controls.js:235
+#: src/blocks/video-playlist/edit.js:158 src/components/query-controls.js:26
+#: src/components/query-controls.js:28 src/components/query-controls.js:45
+#: src/components/query-controls.js:64 src/components/query-controls.js:140
+#: src/components/query-controls.js:167 src/components/query-controls.js:181
+#: src/components/query-controls.js:236
 msgid "(no title)"
 msgstr "(sem título)"
 
 #: dist/editor.js:1 dist/editor.js:19 dist/editor.js:20 dist/editor.js:29
 #: src/blocks/author-list/edit.js:249 src/blocks/author-profile/edit.js:785
-#: src/blocks/author-profile/edit.js:994 src/components/query-controls.js:79
-#: src/components/query-controls.js:94
+#: src/blocks/author-profile/edit.js:994 src/components/query-controls.js:80
+#: src/components/query-controls.js:95
 msgid "(no name)"
 msgstr "(sem nome)"
 
-#: dist/editor.js:1 src/components/query-controls.js:146
+#: dist/editor.js:1 src/components/query-controls.js:147
 msgid "Deleted category"
 msgstr ""
 
-#: dist/editor.js:1 src/components/query-controls.js:187
+#: dist/editor.js:1 src/components/query-controls.js:188
 msgid "Deleted tag"
 msgstr ""
 
-#: dist/editor.js:1 src/components/query-controls.js:285
+#: dist/editor.js:1 src/components/query-controls.js:288
 msgid "Mode"
 msgstr ""
 
-#: dist/editor.js:1 src/components/query-controls.js:297
+#: dist/editor.js:1 src/components/query-controls.js:300
 msgid "The block will display only the specifically selected content."
 msgstr ""
 
-#: dist/editor.js:1 src/components/query-controls.js:298
+#: dist/editor.js:1 src/components/query-controls.js:301
 msgid "The block will display content based on the filtering settings below."
 msgstr ""
 
-#: dist/editor.js:1 src/components/query-controls.js:302
+#: dist/editor.js:1 src/components/query-controls.js:305
 msgid "Dynamic"
 msgstr ""
 
-#: dist/editor.js:1 src/components/query-controls.js:303
+#: dist/editor.js:1 src/components/query-controls.js:306
 msgid "Static"
 msgstr ""
 
-#: dist/editor.js:1 src/components/query-controls.js:312
+#: dist/editor.js:1 src/components/query-controls.js:315
 msgid "Content"
 msgstr ""
 
-#: dist/editor.js:1 src/components/query-controls.js:313
+#: dist/editor.js:1 src/components/query-controls.js:316
 msgid ""
 "Begin typing any word in a title. Click on an autocomplete result to select "
 "it."
 msgstr ""
 
-#: dist/editor.js:1 dist/editor.js:5 src/components/query-controls.js:321
+#: dist/editor.js:1 dist/editor.js:5 src/components/query-controls.js:324
 msgid "Category"
 msgstr ""
 
-#: dist/editor.js:1 src/components/query-controls.js:326
+#: dist/editor.js:1 src/components/query-controls.js:329
 msgid "is one of"
 msgstr ""
 
-#: dist/editor.js:1 src/components/query-controls.js:327
+#: dist/editor.js:1 src/components/query-controls.js:330
 msgid "is all of"
 msgstr ""
 
-#: dist/editor.js:1 src/components/query-controls.js:350
+#: dist/editor.js:1 src/components/query-controls.js:353
 msgid "Include subcategories"
 msgstr ""
 
-#: dist/editor.js:1 src/components/query-controls.js:359
+#: dist/editor.js:1 src/components/query-controls.js:362
 msgid "Tags"
 msgstr "Tags"
 
-#: dist/editor.js:1 src/components/query-controls.js:368
+#: dist/editor.js:1 src/components/query-controls.js:371
 msgid "Authors"
 msgstr "Autores"
 
-#: dist/editor.js:1 src/components/query-controls.js:390
+#: dist/editor.js:1 src/components/query-controls.js:393
 msgid "Excluded categories"
 msgstr ""
 
-#: dist/editor.js:1 src/components/query-controls.js:399
+#: dist/editor.js:1 src/components/query-controls.js:402
 msgid "Excluded tags"
 msgstr ""
 
 #. translators: %s is the custom taxonomy label.
-#: dist/editor.js:4 src/components/query-controls.js:411
+#: dist/editor.js:4 src/components/query-controls.js:414
 msgid "Excluded %s"
+msgstr ""
+
+#: dist/editor.js:4 src/components/query-controls.js:426
+msgid "Allow duplicate content"
+msgstr ""
+
+#: dist/editor.js:4 src/components/query-controls.js:427
+msgid "Exclude this block from the page's deduplication logic."
 msgstr ""
 
 #: dist/editor.js:5
@@ -937,104 +945,104 @@ msgid "Settings"
 msgstr ""
 
 #: dist/editor.js:7 dist/editor.js:19 dist/editor.js:45
-#: src/blocks/author-profile/edit.js:557 src/blocks/carousel/edit.js:234
+#: src/blocks/author-profile/edit.js:557 src/blocks/carousel/edit.js:236
 msgid "Display"
 msgstr ""
 
-#: dist/editor.js:7 src/blocks/carousel/edit.js:236
+#: dist/editor.js:7 src/blocks/carousel/edit.js:238
 msgid "Hide Controls"
 msgstr ""
 
-#: dist/editor.js:7 src/blocks/carousel/edit.js:237
+#: dist/editor.js:7 src/blocks/carousel/edit.js:239
 msgid "Remove navigation indicators from view."
 msgstr ""
 
-#: dist/editor.js:7 src/blocks/carousel/edit.js:244
+#: dist/editor.js:7 src/blocks/carousel/edit.js:246
 msgid "Autoplay"
 msgstr ""
 
-#: dist/editor.js:7 src/blocks/carousel/edit.js:245
+#: dist/editor.js:7 src/blocks/carousel/edit.js:247
 msgid "Automatically advance through slides."
 msgstr ""
 
-#: dist/editor.js:7 src/blocks/carousel/edit.js:253
+#: dist/editor.js:7 src/blocks/carousel/edit.js:255
 msgid "Transition delay"
 msgstr ""
 
-#: dist/editor.js:7 src/blocks/carousel/edit.js:260
+#: dist/editor.js:7 src/blocks/carousel/edit.js:262
 msgid "Set the waiting time between automatic slide transitions in seconds."
 msgstr ""
 
-#: dist/editor.js:7 src/blocks/carousel/edit.js:266
+#: dist/editor.js:7 src/blocks/carousel/edit.js:268
 msgid "Slides per view"
 msgstr ""
 
-#: dist/editor.js:7 src/blocks/carousel/edit.js:275
+#: dist/editor.js:7 src/blocks/carousel/edit.js:277
 msgid "Choose how many slides appear on screen simultaneously."
 msgstr ""
 
-#: dist/editor.js:7 dist/editor.js:51 src/blocks/carousel/edit.js:280
+#: dist/editor.js:7 dist/editor.js:51 src/blocks/carousel/edit.js:282
 msgid "Featured Image"
 msgstr ""
 
-#: dist/editor.js:7 src/blocks/carousel/edit.js:282
+#: dist/editor.js:7 src/blocks/carousel/edit.js:284
 msgid "Aspect ratio"
 msgstr ""
 
-#: dist/editor.js:7 src/blocks/carousel/edit.js:283
+#: dist/editor.js:7 src/blocks/carousel/edit.js:285
 msgid "All slides will share the same aspect ratio, for consistency."
 msgstr ""
 
-#: dist/editor.js:7 src/blocks/carousel/edit.js:294
+#: dist/editor.js:7 src/blocks/carousel/edit.js:296
 msgid "Fit"
 msgstr ""
 
-#: dist/editor.js:7 src/blocks/carousel/edit.js:297
+#: dist/editor.js:7 src/blocks/carousel/edit.js:299
 msgid "The image will fill the entire slide and will be cropped if necessary."
 msgstr ""
 
-#: dist/editor.js:7 src/blocks/carousel/edit.js:298
+#: dist/editor.js:7 src/blocks/carousel/edit.js:300
 msgid ""
 "The image will be resized to fit inside the slide without being cropped."
 msgstr ""
 
-#: dist/editor.js:7 src/blocks/carousel/edit.js:305
+#: dist/editor.js:7 src/blocks/carousel/edit.js:307
 msgid "Cover"
 msgstr ""
 
-#: dist/editor.js:7 src/blocks/carousel/edit.js:306
+#: dist/editor.js:7 src/blocks/carousel/edit.js:308
 msgid "Contain"
 msgstr ""
 
-#: dist/editor.js:7 dist/editor.js:51 src/blocks/carousel/edit.js:309
+#: dist/editor.js:7 dist/editor.js:51 src/blocks/carousel/edit.js:311
 msgid "Show caption"
 msgstr ""
 
-#: dist/editor.js:7 dist/editor.js:51 src/blocks/carousel/edit.js:314
+#: dist/editor.js:7 dist/editor.js:51 src/blocks/carousel/edit.js:316
 msgid "Show credit"
 msgstr ""
 
-#: dist/editor.js:7 dist/editor.js:51 src/blocks/carousel/edit.js:319
+#: dist/editor.js:7 dist/editor.js:51 src/blocks/carousel/edit.js:321
 msgid "Post Meta"
 msgstr ""
 
-#: dist/editor.js:7 src/blocks/carousel/edit.js:321
+#: dist/editor.js:7 src/blocks/carousel/edit.js:323
 msgid "Show title"
 msgstr ""
 
-#: dist/editor.js:7 dist/editor.js:51 src/blocks/carousel/edit.js:326
+#: dist/editor.js:7 dist/editor.js:51 src/blocks/carousel/edit.js:328
 msgid "Show date"
 msgstr ""
 
-#: dist/editor.js:7 dist/editor.js:51 src/blocks/carousel/edit.js:331
+#: dist/editor.js:7 dist/editor.js:51 src/blocks/carousel/edit.js:333
 msgid "Show category"
 msgstr ""
 
-#: dist/editor.js:7 dist/editor.js:51 src/blocks/carousel/edit.js:336
+#: dist/editor.js:7 dist/editor.js:51 src/blocks/carousel/edit.js:338
 msgid "Show author"
 msgstr ""
 
-#: dist/editor.js:7 dist/editor.js:51 src/blocks/carousel/edit.js:341
+#: dist/editor.js:7 dist/editor.js:51 src/blocks/carousel/edit.js:343
 msgid "Show avatar"
 msgstr ""
 
@@ -1733,14 +1741,6 @@ msgstr ""
 
 #: dist/editor.js:45
 msgid "Grid"
-msgstr ""
-
-#: dist/editor.js:45
-msgid "Allow duplicate content"
-msgstr ""
-
-#: dist/editor.js:45
-msgid "Exclude this block from the page's deduplication logic."
 msgstr ""
 
 #: dist/editor.js:45
