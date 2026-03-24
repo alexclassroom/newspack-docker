@@ -70,6 +70,16 @@ if ( $sharing_enabled ) :
 						<?php
 						newspack_posted_by();
 						newspack_posted_on();
+
+						/**
+						 * Fires immediately after the publish date is rendered.
+						 *
+						 * Used by newspack-plugin to render the "Updated" date
+						 * adjacent to the publish date on classic themes.
+						 *
+						 * @since 2.20.0
+						 */
+						do_action( 'newspack_theme_after_posted_on' );
 						?>
 					</div>
 				<?php endif; ?>
@@ -82,6 +92,8 @@ if ( $sharing_enabled ) :
 							// If not showing the author, we still need to show the date.
 						if ( ! $display_sponsors_and_authors ) {
 							newspack_posted_on();
+							/** This action is documented in template-parts/header/entry-header.php */
+							do_action( 'newspack_theme_after_posted_on' );
 						}
 							do_action( 'newspack_theme_entry_meta' );
 						?>
@@ -92,6 +104,8 @@ if ( $sharing_enabled ) :
 					<?php
 						newspack_posted_by();
 						newspack_posted_on();
+						/** This action is documented in template-parts/header/entry-header.php */
+						do_action( 'newspack_theme_after_posted_on' );
 						do_action( 'newspack_theme_entry_meta' );
 					?>
 				</div><!-- .meta-info -->

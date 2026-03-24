@@ -14,35 +14,13 @@ if ( ! function_exists( 'newspack_posted_on' ) ) :
 			return;
 		}
 
-		$time_string = '<time class="entry-date published updated" datetime="%1$s">%2$s</time>';
-		if ( get_the_time( 'U' ) < get_the_modified_time( 'U' ) ) {
-			$time_string = '<time class="entry-date published" datetime="%1$s">%2$s</time>%3$s<time class="updated" datetime="%4$s">%5$s</time>';
-		}
-
-		if ( newspack_should_display_updated_date() ) {
-			add_filter( 'get_the_modified_date', 'newspack_convert_modified_to_time_ago', 10, 3 );
-
-			$time_string = sprintf(
-				$time_string,
-				esc_attr( get_the_date( DATE_W3C ) ),
-				esc_html( get_the_date() ),
-				'<span class="updated-label">' . esc_html__( 'Updated', 'newspack-theme' ) . ' </span>',
-				esc_attr( get_the_modified_date( DATE_W3C ) ),
-				esc_html( get_the_modified_date() )
-			);
-
-			remove_filter( 'get_the_modified_date', 'newspack_convert_modified_to_time_ago', 10, 3 );
-		} else {
-
-			$time_string = sprintf(
-				$time_string,
-				esc_attr( get_the_date( DATE_W3C ) ),
-				esc_html( get_the_date() ),
-				'',
-				esc_attr( get_the_modified_date( DATE_W3C ) ),
-				esc_html( get_the_modified_date() )
-			);
-		}
+		$updated     = get_the_time( 'U' ) === get_the_modified_time( 'U' ) ? ' updated' : '';
+		$time_string = sprintf(
+			'<time class="entry-date published%1$s" datetime="%2$s">%3$s</time>',
+			$updated,
+			esc_attr( get_the_date( DATE_W3C ) ),
+			esc_html( get_the_date() )
+		);
 
 		if ( is_single() ) {
 			printf(
@@ -53,9 +31,6 @@ if ( ! function_exists( 'newspack_posted_on' ) ) :
 						'time' => array(
 							'class'    => array(),
 							'datetime' => array(),
-						),
-						'span' => array(
-							'class' => array(),
 						),
 					)
 				)
@@ -71,7 +46,6 @@ if ( ! function_exists( 'newspack_posted_on' ) ) :
 							'class'    => array(),
 							'datetime' => array(),
 						),
-						'span' => array(),
 					)
 				)
 			);
