@@ -1,3 +1,10 @@
+# [2.21.0-alpha.2](https://github.com/Automattic/newspack-theme/compare/v2.21.0-alpha.1...v2.21.0-alpha.2) (2026-04-08)
+
+
+### Bug Fixes
+
+* remove colour from gallery lightbox buttons ([#2666](https://github.com/Automattic/newspack-theme/issues/2666)) ([cec9eee](https://github.com/Automattic/newspack-theme/commit/cec9eee88d57aeaee36eb86134e38467ec0101d1))
+
 # [2.21.0-alpha.1](https://github.com/Automattic/newspack-theme/compare/v2.20.2...v2.21.0-alpha.1) (2026-04-02)
 
 
