@@ -1,3 +1,12 @@
+## [4.26.1](https://github.com/Automattic/newspack-blocks/compare/v4.26.0...v4.26.1) (2026-04-13)
+
+
+### Bug Fixes
+
+* **modal-checkout:** register NYP AJAX handler for logged-out users ([#2323](https://github.com/Automattic/newspack-blocks/issues/2323)) ([291223e](https://github.com/Automattic/newspack-blocks/commit/291223e5f52bf3af096a07466199d625bdd68e50))
+* reinstate WP 7.0 enqueue_block_assets workaround ([#2319](https://github.com/Automattic/newspack-blocks/issues/2319)) ([4cff5a6](https://github.com/Automattic/newspack-blocks/commit/4cff5a625e5244e2c5b4f78e32328af956446af5))
+* track seen blocks to prevent infinite recursion in cache checks ([#2327](https://github.com/Automattic/newspack-blocks/issues/2327)) ([9116fc0](https://github.com/Automattic/newspack-blocks/commit/9116fc0e1a9e6b4cf75cd30f3d6286f63a3d744c))
+
 # [4.26.0](https://github.com/Automattic/newspack-blocks/compare/v4.25.4...v4.26.0) (2026-03-30)
 
 
