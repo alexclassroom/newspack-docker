@@ -1,0 +1,90 @@
+@use "~@wordpress/base-styles/colors" as wp-colors;
+
+.newspack-newsletters {
+	&__editor-block {
+		&__warning {
+			display: block;
+			color: wp-colors.$gray-900;
+			ul {
+				margin: 0 !important;
+			}
+		}
+	}
+
+	&__loading-data {
+		align-items: center;
+		display: flex;
+
+		.components-spinner {
+			margin-top: 0;
+		}
+	}
+
+	&__to-selectcontrol,
+	&__sendmode-radiocontrol {
+		.components-base-control__label {
+			font-weight: 600;
+		}
+	}
+
+	&__sidebar {
+		.components-notice + * {
+			margin-top: 16px;
+		}
+	}
+
+	&__send-to {
+		margin: 16px 0;
+		.components-button-group {
+			margin-top: 8px;
+		}
+		.newspack-newsletters__send-to-details {
+			font-weight: 500;
+			margin-bottom: 0;
+			span {
+				color: wp-colors.$gray-600;
+				display: block;
+			}
+		}
+	}
+
+	&__send-test {
+		.components-button + .components-button {
+			margin-left: 12px;
+		}
+	}
+
+	&__pre-publish-errors {
+		margin: 0;
+
+		> li:last-child {
+			margin-bottom: 0;
+		}
+	}
+
+	&__error {
+		color: wp-colors.$alert-red;
+	}
+
+	&__error input.components-text-control__input {
+		border-color: wp-colors.$alert-red;
+	}
+
+	&__label {
+		display: block;
+		margin-bottom: 8px;
+		text-transform: uppercase;
+	}
+}
+
+.editor-post-publish-panel__prepublish {
+	.components-notice {
+		margin: 0;
+	}
+}
+
+.interface-interface-skeleton__sidebar {
+	.components-notice {
+		margin: 0;
+	}
+}

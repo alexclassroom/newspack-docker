@@ -1,0 +1,20 @@
+.post-type-newspack_nl_cpt {
+	.components-button.editor-post-publish-button__button.is-primary {
+		display: none;
+	}
+
+	.editor-post-switch-to-draft {
+		display: none;
+	}
+
+	.newspack-newsletters-buttons-group {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 12px;
+
+		.components-button {
+			flex: 1 1 100%;
+			justify-content: center;
+		}
+	}
+}
