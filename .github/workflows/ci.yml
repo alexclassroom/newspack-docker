@@ -1,0 +1,167 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - trunk
+      - alpha
+      - release
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  # Pinned via package.json's packageManager field; this is just a fallback.
+  PNPM_VERSION: 10.33.0
+
+jobs:
+  # ----------------------------------------------------------------------------
+  # Detect which workspace packages are affected by this push/PR.
+  # ----------------------------------------------------------------------------
+  changed-packages:
+    name: Detect changed packages
+    runs-on: ubuntu-latest
+    outputs:
+      js-matrix: ${{ steps.detect.outputs.js-matrix }}
+      php-matrix: ${{ steps.detect.outputs.php-matrix }}
+      any: ${{ steps.detect.outputs.any }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
+      - id: detect
+        name: Compute package matrices
+        run: |
+          set -euo pipefail
+          BASE_REF="${{ github.event.pull_request.base.sha || github.event.before }}"
+          if [ -z "$BASE_REF" ] || [ "$BASE_REF" = "0000000000000000000000000000000000000000" ]; then
+            BASE_REF=$(git merge-base HEAD origin/main || echo HEAD~1)
+          fi
+
+          # pnpm's change filter already handles transitive dependency graphs.
+          CHANGED=$(pnpm --silent --filter "...[$BASE_REF]" exec node -e 'console.log(process.env.npm_package_name)' 2>/dev/null | sort -u || true)
+
+          if [ -z "$CHANGED" ]; then
+            echo "js-matrix={\"include\":[]}" >> "$GITHUB_OUTPUT"
+            echo "php-matrix={\"include\":[]}" >> "$GITHUB_OUTPUT"
+            echo "any=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          JS_INCLUDE=$(printf '%s\n' "$CHANGED" | jq -R -s -c 'split("\n") | map(select(length>0)) | map({package: .})')
+          echo "js-matrix={\"include\":$JS_INCLUDE}" >> "$GITHUB_OUTPUT"
+
+          # PHP matrix: packages with a phpunit config or composer.json.
+          PHP_INCLUDE=$(printf '%s\n' "$CHANGED" | while read -r pkg; do
+            dir=$(pnpm --silent --filter "$pkg" exec pwd 2>/dev/null || true)
+            [ -n "$dir" ] || continue
+            if [ -f "$dir/phpunit.xml" ] || [ -f "$dir/phpunit.xml.dist" ] || [ -f "$dir/composer.json" ]; then
+              printf '%s\n' "$pkg"
+            fi
+          done | jq -R -s -c 'split("\n") | map(select(length>0)) | map({package: .})')
+          echo "php-matrix={\"include\":$PHP_INCLUDE}" >> "$GITHUB_OUTPUT"
+          echo "any=true" >> "$GITHUB_OUTPUT"
+
+  # ----------------------------------------------------------------------------
+  # Shared root install cache. Everything downstream reuses it.
+  # ----------------------------------------------------------------------------
+  install:
+    name: Install deps
+    needs: changed-packages
+    if: needs.changed-packages.outputs.any == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
+      - name: pnpm install
+        run: pnpm install --frozen-lockfile
+
+  # ----------------------------------------------------------------------------
+  # JS/TS lint, build, test — one job per affected package.
+  # ----------------------------------------------------------------------------
+  js:
+    name: JS / ${{ matrix.package }}
+    needs: [changed-packages, install]
+    if: needs.changed-packages.outputs.any == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.changed-packages.outputs.js-matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter "${{ matrix.package }}" run lint:js
+        continue-on-error: false
+      - run: pnpm --filter "${{ matrix.package }}" run build
+      - run: pnpm --filter "${{ matrix.package }}" run test
+        continue-on-error: true
+
+  # ----------------------------------------------------------------------------
+  # PHP lint and PHPUnit — one job per affected package that has PHP.
+  # ----------------------------------------------------------------------------
+  php:
+    name: PHP / ${{ matrix.package }}
+    needs: changed-packages
+    if: needs.changed-packages.outputs.any == 'true' && needs.changed-packages.outputs.php-matrix != '{"include":[]}'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.changed-packages.outputs.php-matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer, cs2pr
+          coverage: none
+      - name: composer install (root)
+        run: composer install --no-interaction --no-progress --prefer-dist
+      - name: phpcs
+        run: composer phpcs -- $(pnpm --silent --filter "${{ matrix.package }}" exec pwd)
+      - name: phpunit
+        run: |
+          dir=$(pnpm --silent --filter "${{ matrix.package }}" exec pwd)
+          if [ -f "$dir/phpunit.xml" ]; then
+            ./vendor/bin/phpunit -c "$dir/phpunit.xml"
+          elif [ -f "$dir/phpunit.xml.dist" ]; then
+            ./vendor/bin/phpunit -c "$dir/phpunit.xml.dist"
+          fi
+
+  # ----------------------------------------------------------------------------
+  # Summary gate: fail the workflow if any needed job failed.
+  # ----------------------------------------------------------------------------
+  ci-ok:
+    name: CI OK
+    needs: [js, php]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          if [ "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}" = "true" ]; then
+            echo "One or more jobs failed or were cancelled."
+            exit 1
+          fi
+          echo "All jobs passed (or no affected packages)."

@@ -1,0 +1,8 @@
+packages:
+  - 'packages/*'
+  - 'plugins/*'
+  - 'themes/*'
+  # Phase 6 cleanup will fold these up to the top-level packages/ directory.
+  # For now, exposing them in place keeps them resolvable as workspace:* deps
+  # without moving files during the initial import.
+  - 'plugins/newspack-plugin/packages/*'
