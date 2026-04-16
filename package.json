@@ -12,8 +12,10 @@
 		"node": ">=20"
 	},
 	"scripts": {
-		"build": "pnpm --filter './plugins/*' --filter './themes/*' run build",
-		"build:changed": "pnpm --filter '...[origin/main]' run build",
+		"build:packages": "pnpm --filter './plugins/newspack-plugin/packages/*' run --if-present build",
+		"build": "pnpm run build:packages && pnpm --filter './plugins/*' --filter './themes/*' run build",
+		"build:changed": "pnpm run build:packages && pnpm --filter '...[origin/main]' run build",
+		"prepare": "pnpm run build:packages",
 		"lint": "pnpm --filter './plugins/*' --filter './themes/*' run lint:js && composer phpcs",
 		"lint:changed": "pnpm --filter '...[origin/main]' run lint:js",
 		"test:js": "pnpm --filter './plugins/*' --filter './themes/*' run test",
@@ -23,6 +25,7 @@
 	},
 	"devDependencies": {
 		"newspack-scripts": "workspace:*",
+		"multi-semantic-release": "^3.0.2",
 		"@commitlint/cli": "^20.1.0",
 		"@commitlint/config-conventional": "^19.8.1",
 		"commitizen": "^4.3.1",

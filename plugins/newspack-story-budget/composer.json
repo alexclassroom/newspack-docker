@@ -8,7 +8,6 @@
 		"issues": "https://github.com/Automattic/newspack-story-budget/issues"
 	},
 	"require-dev": {
-		"brainmaestro/composer-git-hooks": "^3.0",
 		"automattic/vipwpcs": "^3.0",
 		"wp-coding-standards/wpcs": "^3.0",
 		"dealerdirect/phpcodesniffer-composer-installer": "*",
@@ -22,22 +21,11 @@
 		]
 	},
 	"scripts": {
-		"post-install-cmd": [
-			"vendor/bin/cghooks add --no-lock"
-		],
 		"post-update-cmd": [
 			"vendor/bin/cghooks update"
 		]
 	},
-	"extra": {
-		"hooks": {
-			"pre-commit": "./node_modules/.bin/lint-staged",
-			"pre-push": "./.hooks/pre-push",
-			"commit-msg": [
-				"cat $1 | ./node_modules/.bin/newspack-scripts commitlint"
-			]
-		}
-	},
+	"extra": {},
 	"config": {
 		"platform": {
 			"php": "8.3"

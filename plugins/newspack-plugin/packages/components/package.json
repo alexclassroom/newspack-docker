@@ -55,6 +55,7 @@
 		"compile:esm": "babel src --extensions='.js,.jsx,.ts,.tsx' --out-dir dist/esm",
 		"compile": "npm run compile:cjs && npm run compile:esm",
 		"prepublishOnly": "npm run clean && npm run compile && node copy-styles.js",
-		"postpublish": "npm run clean"
+		"postpublish": "npm run clean",
+		"build": "npm run clean && npm run compile && node copy-styles.js"
 	}
 }
