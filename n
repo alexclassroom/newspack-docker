@@ -92,14 +92,26 @@ start() {
         fi
         docker compose -f $file up -d
 
+    # Create shared network for inter-container communication.
+    # Env containers join this network with their domain as an alias,
+    # so they can reach each other by domain name via Docker DNS.
+    if ! docker network inspect newspack_envs >/dev/null 2>&1; then
+        if ! docker network create newspack_envs >/dev/null; then
+            echo "Error: failed to create Docker network 'newspack_envs'. Is Docker running?" >&2
+            exit 1
+        fi
+        echo "Created shared network: newspack_envs"
+    fi
+
     # macOS: set up loopback aliases for isolated environments.
-    # Pre-allocate 127.0.0.2–10 so agents can create envs without sudo later.
+    # Pre-allocate 127.0.0.2–100 so agents can create envs without sudo later.
     # These don't survive reboots, so this runs on every start.
     if [[ "$(uname)" == "Darwin" ]]; then
         missing_aliases=()
-        for octet in $(seq 2 10); do
+        lo0_addrs=$(ifconfig lo0 2>/dev/null)
+        for octet in $(seq 2 100); do
             ip="127.0.0.$octet"
-            if ! ifconfig lo0 2>/dev/null | grep -q "$ip"; then
+            if ! echo "$lo0_addrs" | grep -q "$ip"; then
                 missing_aliases+=("$ip")
             fi
         done
@@ -114,15 +126,30 @@ start() {
             fi
         done
         if [[ ${#missing_aliases[@]} -gt 0 || ${#missing_hosts[@]} -gt 0 ]]; then
-            echo ""
-            echo "Setting up networking for isolated environments (requires sudo)..."
-            for ip in "${missing_aliases[@]}"; do
-                sudo ifconfig lo0 alias "$ip"
-            done
-            for entry in "${missing_hosts[@]}"; do
-                echo "$entry" | sudo tee -a /etc/hosts > /dev/null
-            done
-            echo "Ready: loopback aliases 127.0.0.2–10, $(( ${#missing_hosts[@]} )) hosts entries."
+            # Use the wrapper script if installed (passwordless sudo), otherwise fall back to raw sudo.
+            if command -v newspack-manage-host >/dev/null 2>&1; then
+                for ip in "${missing_aliases[@]}"; do
+                    sudo newspack-manage-host alias-add "$ip"
+                done
+                for entry in "${missing_hosts[@]}"; do
+                    read -r ip domain <<< "$entry"
+                    if [[ "$domain" == *.local ]]; then
+                        sudo newspack-manage-host host-add "$ip" "$domain"
+                    else
+                        echo "$ip $domain" | sudo tee -a /etc/hosts > /dev/null
+                    fi
+                done
+            else
+                echo ""
+                echo "Setting up networking for isolated environments (requires sudo)..."
+                for ip in "${missing_aliases[@]}"; do
+                    sudo ifconfig lo0 alias "$ip"
+                done
+                for entry in "${missing_hosts[@]}"; do
+                    echo "$entry" | sudo tee -a /etc/hosts > /dev/null
+                done
+            fi
+            echo "Ready: loopback aliases 127.0.0.2–100, $(( ${#missing_hosts[@]} )) hosts entries."
         fi
     fi
 }

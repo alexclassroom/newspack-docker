@@ -119,7 +119,7 @@ case $1 in
         done
         ip=$(next_loopback_ip)
         if [[ -z "$domain" ]]; then
-            domain="$ip"
+            domain="${env_name}.local"
         fi
         compose_file="$NABSPATH/docker-compose.env-${env_name}.yml"
         container_name=$(echo "newspack_env_${env_name}" | tr '-' '_')
@@ -159,12 +159,22 @@ ${worktree_volumes}      - ./envs/${env_name}/html:/var/www/html
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:
-      - default
+      default: {}
+      newspack_envs:
+        aliases:
+          - ${domain}
+networks:
+  newspack_envs:
+    external: true
 YAML
         echo "Created $compose_file (db: $db_name, domain: $domain, ip: $ip)"
         # Check networking prerequisites (macOS only — Linux routes all 127.x.x.x by default).
         if [[ "$(uname)" == "Darwin" ]] && ! ifconfig lo0 2>/dev/null | grep -q "$ip"; then
-            echo "Note: loopback alias for $ip is missing. Run 'n start' or: sudo ifconfig lo0 alias $ip"
+            if command -v newspack-manage-host >/dev/null 2>&1; then
+                sudo newspack-manage-host alias-add "$ip"
+            else
+                echo "Note: loopback alias for $ip is missing. Run 'n start' or: sudo ifconfig lo0 alias $ip"
+            fi
         fi
         # Custom domains (not IP-based) need a /etc/hosts entry.
         if [[ "$domain" != "$ip" ]] && ! grep -q "[[:space:]]${domain}" /etc/hosts 2>/dev/null; then
@@ -197,7 +207,32 @@ YAML
         env_name="$2"
         if [[ -z "$env_name" ]]; then
             echo "Usage: n env up <name> [--build]"
+            echo "       n env up --all [--build]"
             exit 1
+        fi
+        # --all: start all existing environments.
+        if [[ "$env_name" == "--all" ]]; then
+            shift 2
+            pass_args=()
+            while [[ $# -gt 0 ]]; do
+                pass_args+=("$1"); shift
+            done
+            started=0
+            failed=0
+            for f in "$NABSPATH"/docker-compose.env-*.yml; do
+                [[ -f "$f" ]] || continue
+                name=$(basename "$f" | sed 's/docker-compose\.env-//' | sed 's/\.yml//')
+                echo ""
+                echo "=== Starting $name ==="
+                if "$NABSPATH/bin/env.sh" up "$name" "${pass_args[@]}"; then
+                    started=$((started + 1))
+                else
+                    failed=$((failed + 1))
+                fi
+            done
+            echo ""
+            echo "Done: $started started, $failed failed."
+            exit 0
         fi
         validate_env_name "$env_name"
         shift 2
@@ -217,11 +252,45 @@ YAML
         db_name=$(db_name_for_env "$env_name")
         domain=$(domain_for_env "$compose_file")
         ip=$(ip_for_env "$compose_file")
+        # --- Migration: add shared network + domain if missing ---
+        if ! grep -q 'newspack_envs' "$compose_file"; then
+            # Assign a .local domain if the env is IP-based.
+            if [[ "$domain" == "$ip" || -z "$domain" ]]; then
+                domain="${env_name}.local"
+                # Update WP_DOMAIN in the compose file.
+                sed -i '' "s|WP_DOMAIN=${ip}|WP_DOMAIN=${domain}|" "$compose_file" 2>/dev/null || \
+                    sed -i "s|WP_DOMAIN=${ip}|WP_DOMAIN=${domain}|" "$compose_file"
+            fi
+            # Replace the old networks block. All existing env compose files end with:
+            #     networks:
+            #       - default
+            # Remove those two trailing lines, then append the new config.
+            # BSD head doesn't support -n -2, so use wc + awk.
+            total=$(wc -l < "$compose_file")
+            awk -v n="$((total - 2))" 'NR <= n' "$compose_file" > "${compose_file}.tmp" && mv "${compose_file}.tmp" "$compose_file"
+            cat >> "$compose_file" <<MIGRATE
+    networks:
+      default: {}
+      newspack_envs:
+        aliases:
+          - ${domain}
+networks:
+  newspack_envs:
+    external: true
+MIGRATE
+            echo "Migrated $env_name: added shared network (domain: $domain)"
+        fi
+        # Re-read domain after potential migration.
+        domain=$(domain_for_env "$compose_file")
         # Ensure loopback alias exists (macOS only — Linux routes all 127.x.x.x by default).
         if [[ "$(uname)" == "Darwin" && -n "$ip" && "$ip" != "127.0.0.1" ]] && ! ifconfig lo0 | grep -q "$ip"; then
-            echo "Error: loopback alias for $ip is not set up."
-            echo "Run 'n start' to set up networking, or manually: sudo ifconfig lo0 alias $ip"
-            exit 1
+            if command -v newspack-manage-host >/dev/null 2>&1; then
+                sudo newspack-manage-host alias-add "$ip"
+            else
+                echo "Error: loopback alias for $ip is not set up."
+                echo "Run 'n start' to set up networking, or manually: sudo ifconfig lo0 alias $ip"
+                exit 1
+            fi
         fi
         # Custom domains (not IP-based) need a /etc/hosts entry.
         if [[ -n "$domain" && "$domain" != "$ip" ]] && ! grep -q "[[:space:]]${domain}" /etc/hosts 2>/dev/null; then
@@ -243,7 +312,7 @@ YAML
         docker compose -f "$NABSPATH/docker-compose.yml" up -d db
         echo "Creating database $db_name..."
         docker compose -f "$NABSPATH/docker-compose.yml" exec -T db \
-            mysql -h localhost -u root -p"${MYSQL_ROOT_PASSWORD}" \
+            mariadb -h localhost -u root -p"${MYSQL_ROOT_PASSWORD}" \
             -e "CREATE DATABASE IF NOT EXISTS \`${db_name}\`; GRANT ALL PRIVILEGES ON \`${db_name}\`.* TO '${MYSQL_USER}'@'%'; FLUSH PRIVILEGES;" 2>/dev/null
         # Start the env container.
         if ! docker compose -f "$NABSPATH/docker-compose.yml" -f "$compose_file" up -d "env-${env_name}"; then
@@ -278,6 +347,13 @@ YAML
                 # Check if core tables exist (wp core is-installed returns true even without them).
                 if docker exec "$container_name" wp --allow-root db query "SELECT 1 FROM wp_options LIMIT 1" 2>/dev/null | grep -q 1; then
                     echo "WordPress already installed."
+                    # Update site URL if domain changed (e.g., migration from IP to .local).
+                    current_url=$(docker exec "$container_name" wp --allow-root option get siteurl 2>/dev/null)
+                    if [[ -n "$current_url" && "$current_url" != "https://${domain}" ]]; then
+                        docker exec "$container_name" wp --allow-root search-replace "$current_url" "https://${domain}" --skip-columns=guid --quiet 2>/dev/null
+                        docker exec "$container_name" wp --allow-root cache flush 2>/dev/null
+                        echo "Updated site URL: $current_url -> https://${domain}"
+                    fi
                     break
                 fi
                 echo "Installing WordPress..."
@@ -362,7 +438,7 @@ YAML
         set +a
         docker compose -f "$NABSPATH/docker-compose.yml" up -d db 2>/dev/null
         docker compose -f "$NABSPATH/docker-compose.yml" exec -T db \
-            mysql -h localhost -u root -p"${MYSQL_ROOT_PASSWORD}" \
+            mariadb -h localhost -u root -p"${MYSQL_ROOT_PASSWORD}" \
             -e "DROP DATABASE IF EXISTS \`${db_name}\`" 2>/dev/null
         echo "Dropped database $db_name"
         # Remove env html and certs directories.
@@ -377,9 +453,13 @@ YAML
         fi
         # Remove /etc/hosts entry (only for custom domains, not IP-based).
         if [[ -n "$domain" && "$domain" != "$ip" ]] && grep -q "$domain" /etc/hosts 2>/dev/null; then
-            escaped_domain="${domain//./\\.}"
-            { sudo sed -i '' "/[[:space:]]${escaped_domain}$/d" /etc/hosts 2>/dev/null || \
-              sudo sed -i "/[[:space:]]${escaped_domain}$/d" /etc/hosts; }
+            if command -v newspack-manage-host >/dev/null 2>&1 && [[ "$domain" == *.local ]]; then
+                sudo newspack-manage-host host-remove "$domain"
+            else
+                escaped_domain="${domain//./\\.}"
+                { sudo sed -i '' "/[[:space:]]${escaped_domain}$/d" /etc/hosts 2>/dev/null || \
+                  sudo sed -i "/[[:space:]]${escaped_domain}$/d" /etc/hosts; }
+            fi
             echo "Removed $domain from /etc/hosts"
         fi
         # Remove compose file before worktrees so worktree.sh doesn't see them as env-bound.
@@ -392,16 +472,39 @@ YAML
         echo "Destroyed environment '$env_name'"
         ;;
     list)
-        echo "Environments:"
+        porcelain=false
+        if [[ "$2" == "--porcelain" ]]; then
+            porcelain=true
+        fi
+        [[ "$porcelain" == false ]] && echo "Environments:"
         for f in "$NABSPATH"/docker-compose.env-*.yml; do
             [[ -f "$f" ]] || continue
             name=$(basename "$f" | sed 's/docker-compose\.env-//' | sed 's/\.yml//')
             container_name=$(echo "newspack_env_${name}" | tr '-' '_')
             domain=$(domain_for_env "$f")
             if status=$(docker inspect -f '{{.State.Status}}' "$container_name" 2>/dev/null); then
-                echo "  $name ($status) https://${domain}/"
+                :
             else
-                echo "  $name (stopped) https://${domain}/"
+                status="stopped"
+            fi
+            # Collect worktrees as repo:branch pairs.
+            worktrees=""
+            while read -r repo; do
+                wt_path=$(grep "newspack-repos/$repo" "$f" | sed 's/^ *- //' | cut -d: -f1)
+                branch=$(echo "$wt_path" | sed "s|.*worktrees/${repo}/||")
+                [[ -n "$worktrees" ]] && worktrees="$worktrees,"
+                worktrees="${worktrees}${repo}:${branch}"
+            done < <(grep 'worktrees/' "$f" 2>/dev/null | sed 's|.*/newspack-repos/||')
+            if [[ "$porcelain" == true ]]; then
+                printf '%s\t%s\thttps://%s/\t%s\n' "$name" "$status" "$domain" "$worktrees"
+            else
+                echo "  $name ($status) https://${domain}/"
+                # Show worktrees mounted by this environment.
+                grep 'worktrees/' "$f" 2>/dev/null | sed 's|.*/newspack-repos/||' | while read -r repo; do
+                    wt_path=$(grep "newspack-repos/$repo" "$f" | sed 's/^ *- //' | cut -d: -f1)
+                    branch=$(echo "$wt_path" | sed "s|.*worktrees/${repo}/||")
+                    echo "    └ $repo ($branch)"
+                done
             fi
         done
         ;;
@@ -495,6 +598,8 @@ YAML
         ;;
     *)
         echo "Usage: n env <create|up|down|destroy|list|cleanup>"
+        echo "  up <name> [--build]      Start an environment"
+        echo "  up --all [--build]       Start all environments"
         echo "  cleanup [--all] [--yes]  Remove environments (--all selects everything, --yes skips confirmation)"
         ;;
 esac
