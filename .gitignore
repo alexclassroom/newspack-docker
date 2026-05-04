@@ -20,3 +20,5 @@ docker-compose.env-*.yml
 node_modules/
 vendor/
 composer.lock
+packages/*/dist/
+packages/*/build/
