@@ -5,7 +5,8 @@
 	"license": "GPL-3.0",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/Automattic/newspack-network.git"
+		"url": "git+https://github.com/Automattic/newspack-workspace.git",
+		"directory": "plugins/newspack-network"
 	},
 	"bugs": {
 		"url": "https://github.com/Automattic/newspack-network/issues"

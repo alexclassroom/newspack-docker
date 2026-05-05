@@ -4,7 +4,8 @@
 	"description": "",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/Automattic/newspack-listings.git"
+		"url": "git+https://github.com/Automattic/newspack-workspace.git",
+		"directory": "plugins/newspack-listings"
 	},
 	"license": "GPL-2.0-or-later",
 	"bugs": {

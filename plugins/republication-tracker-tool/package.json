@@ -14,7 +14,8 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/Automattic/republication-tracker-tool.git"
+		"url": "git+https://github.com/Automattic/newspack-workspace.git",
+		"directory": "plugins/republication-tracker-tool"
 	},
 	"license": "GPL-2.0-or-later",
 	"bugs": {

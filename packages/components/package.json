@@ -15,8 +15,8 @@
 	"homepage": "https://github.com/Automattic/newspack-plugin",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/Automattic/newspack-plugin.git",
-		"directory": "src/components"
+		"url": "git+https://github.com/Automattic/newspack-workspace.git",
+		"directory": "packages/components"
 	},
 	"main": "dist/esm/index.js",
 	"publishConfig": {

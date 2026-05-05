@@ -50,7 +50,8 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/Automattic/newspack-multibranded-site.git"
+		"url": "git+https://github.com/Automattic/newspack-workspace.git",
+		"directory": "plugins/newspack-multibranded-site"
 	},
 	"bugs": {
 		"url": "https://github.com/Automattic/newspack-multibranded-site/issues"

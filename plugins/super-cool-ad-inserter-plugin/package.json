@@ -11,7 +11,8 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/Automattic/super-cool-ad-inserter-plugin.git"
+		"url": "git+https://github.com/Automattic/newspack-workspace.git",
+		"directory": "plugins/super-cool-ad-inserter-plugin"
 	},
 	"license": "GPL-2.0-or-later",
 	"bugs": {

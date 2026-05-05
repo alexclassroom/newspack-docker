@@ -51,5 +51,10 @@
 		"rtlcss": "^4.3.0",
 		"sass": "^1.98.0"
 	},
-	"private": true
+	"private": true,
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Automattic/newspack-workspace.git",
+		"directory": "themes/newspack-theme"
+	}
 }

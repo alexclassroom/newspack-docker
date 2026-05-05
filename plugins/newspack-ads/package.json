@@ -5,7 +5,8 @@
 	"private": true,
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/Automattic/newspack-ads.git"
+		"url": "git+https://github.com/Automattic/newspack-workspace.git",
+		"directory": "plugins/newspack-ads"
 	},
 	"license": "GPL-3.0-or-later",
 	"bugs": {
