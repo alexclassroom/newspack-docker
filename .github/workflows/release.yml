@@ -49,10 +49,11 @@ jobs:
       - name: Build all
         run: pnpm run build
       - name: Release
-        run: pnpm exec multi-semantic-release
+        run: pnpm exec multi-semantic-release --sequential-init
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_OPTIONS: --max-old-space-size=12288
 
   post-release:
     name: Post-release notifications
