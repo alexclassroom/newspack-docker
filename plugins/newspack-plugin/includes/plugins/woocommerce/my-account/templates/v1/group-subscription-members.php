@@ -25,7 +25,6 @@ $current_user_id      = get_current_user_id();
 $invite_link          = Group_Subscription_Invite::get_link_invite( $subscription, $current_user_id );
 $invite_link_url      = $invite_link ? Group_Subscription_Invite::get_link_invite_url( $subscription->get_id(), $current_user_id, $invite_link['key'] ) : '';
 $is_at_limit = $member_limit > 0 && ( count( $members ) + count( $pending_invites ) ) >= $member_limit;
-$active_tab  = ( isset( $_GET['activeTab'] ) && 'invites' === sanitize_key( wp_unslash( $_GET['activeTab'] ) ) ) ? 'invites' : 'members'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 ?>
 <header class="newspack-my-account__subscription--header">
 	<?php
@@ -123,41 +122,32 @@ $active_tab  = ( isset( $_GET['activeTab'] ) && 'invites' === sanitize_key( wp_u
 	</div>
 </header>
 
-<div class="newspack-my-account__group_subscription__content" data-subscription-id="<?php echo esc_attr( $subscription->get_id() ); ?>" data-invite-link="<?php echo esc_attr( $invite_link_url ); ?>">
-	<div class="newspack-ui__segmented-control newspack-my-account__group_subscription__segmented-control">
-		<div class="newspack-ui__segmented-control__tabs" role="tablist">
-			<button
-				type="button"
-				role="tab"
-				id="newspack-my-account__group_subscription__tab-members"
-				aria-controls="newspack-my-account__group_subscription__panel-members"
-				aria-selected="<?php echo 'members' === $active_tab ? 'true' : 'false'; ?>"
-				tabindex="<?php echo 'members' === $active_tab ? '0' : '-1'; ?>"
-				class="newspack-ui__button newspack-ui__button--small<?php echo 'members' === $active_tab ? ' selected' : ''; ?>"
-			>
-				<?php esc_html_e( 'Members', 'newspack-plugin' ); ?>
-				<span class="newspack-ui__badge newspack-ui__badge--outline newspack-group-subscription--members-count"><?php echo esc_html( count( $managers_and_members ) ); ?></span>
-			</button>
-			<button
-				type="button"
-				role="tab"
-				id="newspack-my-account__group_subscription__tab-invites"
-				aria-controls="newspack-my-account__group_subscription__panel-invites"
-				aria-selected="<?php echo 'invites' === $active_tab ? 'true' : 'false'; ?>"
-				tabindex="<?php echo 'invites' === $active_tab ? '0' : '-1'; ?>"
-				class="newspack-ui__button newspack-ui__button--small<?php echo 'invites' === $active_tab ? ' selected' : ''; ?>"
-			>
-				<?php esc_html_e( 'Invitations', 'newspack-plugin' ); ?>
-				<span class="newspack-ui__badge newspack-ui__badge--outline newspack-group-subscription--invitations-count"><?php echo esc_html( count( $all_invites ) ); ?></span>
-			</button>
-		</div>
-		<div class="newspack-ui__segmented-control__content">
-			<div
-				id="newspack-my-account__group_subscription__panel-members"
-				role="tabpanel"
-				aria-labelledby="newspack-my-account__group_subscription__tab-members"
-				class="newspack-ui__segmented-control__panel<?php echo 'members' === $active_tab ? ' selected' : ''; ?>"
-			>
+<div class="newspack-my-account__group_subscription__content" data-active-tab="members" data-subscription-id="<?php echo esc_attr( $subscription->get_id() ); ?>" data-invite-link="<?php echo esc_attr( $invite_link_url ); ?>">
+	<p class="newspack-my-account__group_subscription__tabs">
+		<a href="#" data-tab="members" class="newspack-my-account__group_subscription__tabs--members">
+			<?php
+			echo wp_kses_post(
+				sprintf(
+					// translators: %d: The number of members.
+					__( 'Members (<span class="newspack-group-subscription--members-count">%d</span>)', 'newspack-plugin' ),
+					count( $managers_and_members )
+				)
+			);
+			?>
+		</a>
+		|
+		<a href="#" data-tab="invites" class="newspack-my-account__group_subscription__tabs--invites">
+			<?php
+			echo wp_kses_post(
+				sprintf(
+					// translators: %d: The number of members.
+					__( 'Invitations (<span class="newspack-group-subscription--invitations-count">%d</span>)', 'newspack-plugin' ),
+					count( $all_invites )
+				)
+			);
+			?>
+		</a>
+	</p>
 	<table class="shop_table shop_table_responsive newspack-my-account__group_subscription__members">
 		<thead>
 			<tr>
@@ -221,8 +211,7 @@ $active_tab  = ( isset( $_GET['activeTab'] ) && 'invites' === sanitize_key( wp_u
 		<?php endforeach; ?>
 		</tbody>
 	</table>
-			</div><!-- .newspack-ui__segmented-control__panel (members) -->
-			<div class="newspack-ui__segmented-control__panel<?php echo 'invites' === $active_tab ? ' selected' : ''; ?>">
+
 	<table class="shop_table shop_table_responsive newspack-my-account__group_subscription__invites">
 		<thead>
 			<tr>
@@ -279,9 +268,6 @@ $active_tab  = ( isset( $_GET['activeTab'] ) && 'invites' === sanitize_key( wp_u
 		<?php endforeach; ?>
 		</tbody>
 	</table>
-			</div><!-- .newspack-ui__segmented-control__panel (invites) -->
-		</div><!-- .newspack-ui__segmented-control__content -->
-	</div><!-- .newspack-ui__segmented-control -->
 
 	<!-- .newspack-ui__modal: invite by email -->
 	<div id="newspack-my-account__group_subscription--invite-member" class="newspack-ui__modal-container">
@@ -303,15 +289,7 @@ $active_tab  = ( isset( $_GET['activeTab'] ) && 'invites' === sanitize_key( wp_u
 						</p>
 					<?php else : ?>
 						<p>
-							<?php
-							echo esc_html(
-								sprintf(
-									// translators: %s is a duration label like "30 days" or "1 hour".
-									__( 'They\'ll get an email with a link to join the group. The link expires in %s.', 'newspack-plugin' ),
-									Group_Subscription_Invite::get_expiration_label()
-								)
-							);
-							?>
+							<?php esc_html_e( 'Invite a member by email, or share a link to let multiple members join.', 'newspack-plugin' ); ?>
 						</p>
 						<form name="newspack-group-subscription-invite-member" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 							<input type="hidden" name="action" value="newspack_group_subscription_invite">
@@ -344,10 +322,10 @@ $active_tab  = ( isset( $_GET['activeTab'] ) && 'invites' === sanitize_key( wp_u
 
 				<section class="newspack-ui__modal__content">
 						<p>
-							<?php esc_html_e( 'The current link will stop working. You\'ll get a new link to share, and anyone who hasn\'t joined yet will need the new link.', 'newspack-plugin' ); ?>
+							<?php esc_html_e( 'The existing link will no longer allow users to join the group. Create a new link?', 'newspack-plugin' ); ?>
 						</p>
 
-						<button type="button" class="newspack-ui__button newspack-ui__button--primary newspack-ui__button--wide newspack-my-account__group_subscription__invite-link__regenerate" data-error-text="<?php echo esc_attr( __( 'Could not regenerate. Please try again.', 'newspack-plugin' ) ); ?>"><span><?php esc_html_e( 'Regenerate link', 'newspack-plugin' ); ?></span></button>
+						<button type="button" class="newspack-ui__button newspack-ui__button--primary newspack-ui__button--wide newspack-ui__button--destructive newspack-my-account__group_subscription__invite-link__regenerate" data-error-text="<?php echo esc_attr( __( 'Could not regenerate. Please try again.', 'newspack-plugin' ) ); ?>"><span><?php esc_html_e( 'OK', 'newspack-plugin' ); ?></span></button>
 						<button type="button" class="newspack-ui__button newspack-ui__button--ghost newspack-ui__button--wide newspack-ui__modal__close"><?php esc_html_e( 'Cancel', 'newspack-plugin' ); ?></button>
 				</section>
 			</div><!-- .newspack-ui__modal__small -->
@@ -368,10 +346,10 @@ $active_tab  = ( isset( $_GET['activeTab'] ) && 'invites' === sanitize_key( wp_u
 
 				<section class="newspack-ui__modal__content">
 						<p>
-							<?php esc_html_e( 'The current link will stop working. Anyone who hasn\'t joined yet will no longer be able to. You can create a new link at any time.', 'newspack-plugin' ); ?>
+							<?php esc_html_e( 'The existing link will no longer allow users to join the group. Disable the link?', 'newspack-plugin' ); ?>
 						</p>
 
-						<button type="button" class="newspack-ui__button newspack-ui__button--primary newspack-ui__button--wide newspack-ui__button--destructive newspack-my-account__group_subscription__invite-link__disable" data-error-text="<?php echo esc_attr( __( 'Could not disable. Please try again.', 'newspack-plugin' ) ); ?>"><span><?php esc_html_e( 'Disable link', 'newspack-plugin' ); ?></span></button>
+						<button type="button" class="newspack-ui__button newspack-ui__button--primary newspack-ui__button--wide newspack-ui__button--destructive newspack-my-account__group_subscription__invite-link__disable" data-error-text="<?php echo esc_attr( __( 'Could not disable. Please try again.', 'newspack-plugin' ) ); ?>"><span><?php esc_html_e( 'OK', 'newspack-plugin' ); ?></span></button>
 						<button type="button" class="newspack-ui__button newspack-ui__button--ghost newspack-ui__button--wide newspack-ui__modal__close"><?php esc_html_e( 'Cancel', 'newspack-plugin' ); ?></button>
 				</section>
 			</div><!-- .newspack-ui__modal__small -->
