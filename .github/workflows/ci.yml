@@ -154,18 +154,8 @@ jobs:
         run: composer install --no-interaction --no-progress --prefer-dist
       - name: phpcs
         run: |
-          # Each plugin/theme ships its own phpcs.xml with the project's
-          # standard exclusions (short array syntax, Yoda conditions, etc.,
-          # all explicitly allowed per AGENTS.md). Running from inside the
-          # package dir lets phpcs auto-discover phpcs.xml / phpcs.xml.dist
-          # and apply the local ruleset. Root phpcs.xml is the fallback
-          # for packages without their own config.
           dir=$(pnpm --silent --filter "${{ matrix.package }}" exec pwd)
-          if [ -f "$dir/phpcs.xml" ] || [ -f "$dir/phpcs.xml.dist" ]; then
-            cd "$dir" && "$GITHUB_WORKSPACE/vendor/bin/phpcs"
-          else
-            "$GITHUB_WORKSPACE/vendor/bin/phpcs" --standard="$GITHUB_WORKSPACE/phpcs.xml" "$dir"
-          fi
+          composer phpcs -- "$dir"
 
   php-test:
     name: PHPUnit / ${{ matrix.package }}
