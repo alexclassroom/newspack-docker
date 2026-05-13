@@ -240,6 +240,15 @@ p.has-background {
 	padding: 20px 30px;
 }
 
+.entry-content,
+[id="pico"],
+.newspack-popup,
+.widget {
+	p:empty {
+		display: none;
+	}
+}
+
 //! Newspack Article Block
 .wpnbha {
 	figcaption {
