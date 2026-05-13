@@ -120,10 +120,13 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
-      - run: pnpm --filter "${{ matrix.package }}" run lint:js
+      # --if-present skips packages whose package.json doesn't define the
+       # script (e.g. newspack-colors has no lint:js, newspack-scripts has no
+       # build). Without it pnpm exits non-zero on a missing script.
+      - run: pnpm --filter "${{ matrix.package }}" run --if-present lint:js
         continue-on-error: false
-      - run: pnpm --filter "${{ matrix.package }}" run build
-      - run: pnpm --filter "${{ matrix.package }}" run test
+      - run: pnpm --filter "${{ matrix.package }}" run --if-present build
+      - run: pnpm --filter "${{ matrix.package }}" run --if-present test
         continue-on-error: true
 
   # ----------------------------------------------------------------------------

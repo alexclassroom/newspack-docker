@@ -45,6 +45,7 @@
 	],
 	"dependencies": {
 		"classnames": "^2.5.1",
+		"lodash": "^4.17.21",
 		"newspack-colors": "workspace:*",
 		"newspack-icons": "workspace:*",
 		"redux": "^5.0.0",

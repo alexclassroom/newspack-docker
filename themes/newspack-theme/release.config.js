@@ -35,8 +35,7 @@ module.exports = {
 				'newspack-sacha/sass/theme-description.scss',
 				'newspack-scott/sass/theme-description.scss',
 			],
-			message:
-				'chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}',
+			message: 'chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}',
 		},
 	],
 	plugins: [

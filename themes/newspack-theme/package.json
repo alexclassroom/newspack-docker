@@ -1,5 +1,5 @@
 {
-	"name": "newspack",
+	"name": "@automattic/newspack-theme",
 	"version": "2.21.1",
 	"description": "A theme for Newspack. https://newspack.com",
 	"bugs": {
