@@ -39,6 +39,7 @@
 		"newspack-components": "workspace:*"
 	},
 	"devDependencies": {
+		"lodash": "^4.17.0",
 		"newspack-scripts": "workspace:*"
 	},
 	"repository": {
