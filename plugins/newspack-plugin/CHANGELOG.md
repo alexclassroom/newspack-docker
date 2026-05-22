@@ -1,3 +1,24 @@
+## [6.41.2](https://github.com/Automattic/newspack-plugin/compare/v6.41.1...v6.41.2) (2026-05-21)
+
+
+### Bug Fixes
+
+* **reader-activation:** Content Gate metadata for legacy ESP sync ([#4742](https://github.com/Automattic/newspack-plugin/issues/4742)) ([28f543a](https://github.com/Automattic/newspack-plugin/commit/28f543ab8571c74793dfa32df10113cfef508498))
+
+## [6.41.1](https://github.com/Automattic/newspack-plugin/compare/v6.41.0...v6.41.1) (2026-05-21)
+
+
+### Bug Fixes
+
+* **access-control:** increase expiration of IP access cookie to 1 year ([#4749](https://github.com/Automattic/newspack-plugin/issues/4749)) ([d8e5b64](https://github.com/Automattic/newspack-plugin/commit/d8e5b64c246e23b9ea04f82af237c3f404d2c662))
+
+# [6.41.0](https://github.com/Automattic/newspack-plugin/compare/v6.40.1...v6.41.0) (2026-05-21)
+
+
+### Features
+
+* **access-control:** add group subscription identifier to metadata ([#4746](https://github.com/Automattic/newspack-plugin/issues/4746)) ([d201b9a](https://github.com/Automattic/newspack-plugin/commit/d201b9af6f57c3f736dd50f733817e53b2f8a524)), closes [#4697](https://github.com/Automattic/newspack-plugin/issues/4697) [#4697](https://github.com/Automattic/newspack-plugin/issues/4697) [#8217](https://github.com/Automattic/newspack-plugin/issues/8217) [#4697](https://github.com/Automattic/newspack-plugin/issues/4697)
+
 ## [6.40.1](https://github.com/Automattic/newspack-plugin/compare/v6.40.0...v6.40.1) (2026-05-18)
 
 
