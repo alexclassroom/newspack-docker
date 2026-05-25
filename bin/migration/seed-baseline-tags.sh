@@ -76,7 +76,7 @@ pkg_field() {
 # Latest non-prerelease GitHub release tag for a legacy repo, stripped of a
 # leading "v". Empty if the repo has no releases.
 gh_latest() {
-  gh release list --repo "Automattic/$1" --exclude-pre-releases --limit 1 2>/dev/null \
+  { gh release list --repo "Automattic/$1" --exclude-pre-releases --limit 1 2>/dev/null || true; } \
     | awk 'NR==1 {print $1}' | sed 's/^v//'
 }
 
@@ -103,8 +103,21 @@ is_releasable() {
   return 1
 }
 
+# Map a workspace directory to the Automattic GitHub repo that publishes its
+# automated releases. Most directories match their basename; the extracted
+# shared package at packages/scripts is the standalone newspack-scripts repo.
+# packages/{colors,components,icons} have no standalone repo (they were split
+# out of newspack-plugin), so they resolve to a non-existent repo and the GH
+# lookup simply returns empty — npm is their source of truth.
+legacy_repo() {
+  case "$1" in
+    packages/scripts) echo "newspack-scripts" ;;
+    *) basename "$1" ;;
+  esac
+}
+
 seed_one() {
-  local dir="$1" source="$2"   # source: "gh" or "npm"
+  local dir="$1"
   local pj="$dir/package.json"
   [ -f "$pj" ] || return 0
   is_releasable "$dir" || return 0
@@ -113,25 +126,21 @@ seed_one() {
   pkg_name=$(pkg_field "$pj" 'name')
   [ -n "$pkg_name" ] || { echo "WARN: no name in $pj, skipping" >&2; return 0; }
 
-  local public
-  if [ "$source" = "gh" ]; then
-    public=$(gh_latest "$(basename "$dir")")
-  else
-    public=$(npm_latest "$pkg_name")
-  fi
-
-  # Baseline = the highest of the last published version and the in-repo
-  # package.json version. Using the max guards both directions: when
-  # package.json is behind a public release (stale synced manifest) the public
-  # version wins; when package.json is ahead of the registry (versions bumped
-  # in-repo but never published, e.g. extracted shared packages) the in-repo
-  # version wins, so the first release is strictly newer and does not rewrite
-  # package.json downward. A package with no version anywhere is skipped.
-  local pjv version
+  # Baseline = the highest version across every source: the legacy repo's latest
+  # GitHub release (authoritative for automated-release packages), the latest
+  # version on npm, and the in-repo package.json. Taking the max guards all
+  # directions at once: the monorepo manifest routinely LAGS the GitHub release
+  # (the sync brings code, not the release commits), while hand-released shared
+  # packages can have a package.json that LEADS the registry. The max is always
+  # strictly >= anything already shipped or claimed, so the first monorepo
+  # release increments cleanly and never rewrites a manifest version downward.
+  local gh npmv pjv version
+  gh=$(gh_latest "$(legacy_repo "$dir")")
+  npmv=$(npm_latest "$pkg_name")
   pjv=$(pkg_field "$pj" 'version')
-  version=$(highest_version "$public" "$pjv")
+  version=$(highest_version "$(highest_version "$gh" "$npmv")" "$pjv")
   if [ -z "$version" ]; then
-    skipped+=("$pkg_name (no version resolvable from $source or package.json)")
+    skipped+=("$pkg_name (no version resolvable from GitHub, npm, or package.json)")
     return 0
   fi
 
@@ -151,16 +160,9 @@ seed_one() {
 
 echo "==> Seeding baseline tags at $REF (msr tag format: <pkgName>@<version>)"
 
-# Plugins and themes: baseline from the legacy repo's latest GitHub release.
-for dir in plugins/* themes/*; do
+for dir in plugins/* themes/* packages/*; do
   [ -d "$dir" ] || continue
-  seed_one "$dir" "gh"
-done
-
-# Shared npm libraries: baseline from the latest version on npm.
-for dir in packages/*; do
-  [ -d "$dir" ] || continue
-  seed_one "$dir" "npm"
+  seed_one "$dir"
 done
 
 echo ""
