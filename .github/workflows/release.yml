@@ -55,21 +55,34 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NODE_OPTIONS: --max-old-space-size=12288
 
+  # Branch maintenance after a stable release: reset alpha and sync release into
+  # the default branch. Only runs on the release branch (not alpha/hotfix/epic).
   post-release:
-    name: Post-release notifications
+    name: Post-release branch sync
+    if: github.ref == 'refs/heads/release'
     needs: release
-    uses: Automattic/newspack-scripts/.github/workflows/reusable-post-release.yml@trunk
-    secrets:
-      GIT_COMMITTER_TOKEN: ${{ secrets.GH_TOKEN }}
-      SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
-      SLACK_AUTH_TOKEN: ${{ secrets.SLACK_AUTH_TOKEN }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GH_TOKEN }}
+      - name: Configure git
+        run: |
+          git config user.name "newspack-release-bot"
+          git config user.email "newspack-release-bot@users.noreply.github.com"
+      - name: Post-release branch maintenance
+        env:
+          SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
+          SLACK_AUTH_TOKEN: ${{ secrets.SLACK_AUTH_TOKEN }}
+        run: ./.github/scripts/post-release.sh
 
   # WP.org deploys are plugin-specific and only run on the release branch.
   release-wporg-newsletters:
     name: WP.org / newspack-newsletters
     if: github.ref == 'refs/heads/release'
     needs: release
-    uses: Automattic/newspack-scripts/.github/workflows/reusable-release-wporg.yml@trunk
+    uses: ./.github/workflows/_release-wporg.yml
     with:
       plugin-name: newspack-newsletters
       plugin-path: plugins/newspack-newsletters
@@ -81,7 +94,7 @@ jobs:
     name: WP.org / super-cool-ad-inserter-plugin
     if: github.ref == 'refs/heads/release'
     needs: release
-    uses: Automattic/newspack-scripts/.github/workflows/reusable-release-wporg.yml@trunk
+    uses: ./.github/workflows/_release-wporg.yml
     with:
       plugin-name: super-cool-ad-inserter-plugin
       plugin-path: plugins/super-cool-ad-inserter-plugin
@@ -93,7 +106,7 @@ jobs:
     name: WP.org / republication-tracker-tool
     if: github.ref == 'refs/heads/release'
     needs: release
-    uses: Automattic/newspack-scripts/.github/workflows/reusable-release-wporg.yml@trunk
+    uses: ./.github/workflows/_release-wporg.yml
     with:
       plugin-name: republication-tracker-tool
       plugin-path: plugins/republication-tracker-tool
