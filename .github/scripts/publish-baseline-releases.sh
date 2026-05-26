@@ -63,10 +63,15 @@ scratch=$(mktemp -d)
 trap 'rm -rf "$scratch"' EXIT
 
 published=()    # sourced from a real legacy release zip
-tag_only=()     # baseline tag with no artifact (shared libs)
-warned=()       # tag-only where a zip was arguably expected (story-budget)
+built=()        # built from the monorepo tree (never-released shipping package)
+tag_only=()     # baseline tag with no artifact (shared npm libs)
 skipped=()      # already published
 failed=()
+
+# Does this package define an npm script? Prints the script body or empty.
+pkg_script() {
+  node -e "const o=JSON.parse(require('fs').readFileSync('$1','utf8')); const s=(o.scripts||{})['$2']; process.stdout.write(s==null?'':String(s))" 2>/dev/null || true
+}
 
 # Already published on the monorepo? A release for this tag existing means a
 # prior run (or the real cutover) handled it. gh release create reuses an
@@ -75,14 +80,14 @@ release_exists() {
   gh release view "$1" "${gh_repo_args[@]+"${gh_repo_args[@]}"}" > /dev/null 2>&1
 }
 
-# Create the monorepo release. $1=tag, rest=asset paths (may be none).
+# Create the monorepo release. $1=tag, $2=notes, rest=asset paths (may be none).
 create_release() {
-  local tag="$1"; shift
+  local tag="$1" notes="$2"; shift 2
   gh release create "$tag" \
     "${gh_repo_args[@]+"${gh_repo_args[@]}"}" \
     --target "$target_sha" \
     --title "$tag" \
-    --notes "Baseline release at monorepo cutover (sourced from the legacy production release)." \
+    --notes "$notes" \
     "$@"
 }
 
@@ -134,7 +139,7 @@ publish_one() {
     while IFS= read -r z; do assets+=("$z"); done < <(find "$dl" -maxdepth 1 -name '*.zip' | sort)
 
     echo "==> [$pkg_name] creating $tag at $target_sha (${#assets[@]} asset(s))"
-    if create_release "$tag" "${assets[@]}"; then
+    if create_release "$tag" "Baseline release at monorepo cutover (sourced from Automattic/$legacy@$legacy_tag)." "${assets[@]}"; then
       published+=("$tag (<- Automattic/$legacy@$legacy_tag, ${#assets[@]} zip)")
     else
       failed+=("$tag (gh release create failed)")
@@ -142,7 +147,7 @@ publish_one() {
     return 0
   fi
 
-  # --- Path 2: no legacy zip → tag-only baseline. ------------------------------
+  # --- Path 2: no legacy zip. --------------------------------------------------
   # Version from the max of legacy release / npm / package.json (shared libs are
   # npm-authoritative; this matches seed-baseline-tags.sh).
   local version
@@ -157,20 +162,56 @@ publish_one() {
     return 0
   fi
 
-  # A plugin/theme reaching here means production has no release to mirror — flag
-  # it. Shared libs (packages/*) are expected to be tag-only.
-  local note="tag-only baseline (no legacy release zip)"
-  case "$dir" in
-    packages/*) tag_only+=("$tag — $note") ;;
-    *) warned+=("$tag — $note; externals will NOT get a zip for this package") ;;
-  esac
+  # 2a: a shipping plugin/theme with no legacy release to mirror (e.g. the
+  # never-released newspack-story-budget). Build its zip from the tree so
+  # externals still gets an artifact. The workflow has already run
+  # `pnpm install` + `build:packages`, so shared deps are present.
+  if [ -n "$(pkg_script "$pj" 'release:archive')" ]; then
+    if [ "$DRY_RUN" = "1" ]; then
+      echo "    [dry-run] $tag  (build from tree + publish)"
+      built+=("$tag (dry-run)")
+      return 0
+    fi
+    echo "==> [$pkg_name] no legacy release — building from tree"
+    if ! ( cd "$dir" && pnpm run build ); then
+      failed+=("$tag (build failed)")
+      return 0
+    fi
+    if [ -f "$dir/composer.json" ]; then
+      composer install --no-dev --no-interaction --no-scripts --working-dir="$dir" || true
+    fi
+    rm -rf "$dir/release"
+    if ! ( cd "$dir" && pnpm run release:archive ); then
+      failed+=("$tag (release:archive failed)")
+      return 0
+    fi
+    local -a assets=()
+    local z
+    while IFS= read -r z; do assets+=("$z"); done < <(find "$dir/release" -maxdepth 1 -name '*.zip' | sort)
+    if [ "${#assets[@]}" -eq 0 ]; then
+      failed+=("$tag (release:archive produced no zip)")
+      return 0
+    fi
+    echo "==> [$pkg_name] creating $tag at $target_sha (built, ${#assets[@]} asset(s))"
+    if create_release "$tag" "Baseline release at monorepo cutover (built from the monorepo tree; no prior release)." "${assets[@]}"; then
+      built+=("$tag (built from tree, ${#assets[@]} zip)")
+    else
+      failed+=("$tag (gh release create failed)")
+    fi
+    return 0
+  fi
 
+  # 2b: shared npm lib (packages/*) — tag-only baseline. Externals doesn't serve
+  # these; the tag just gives msr a baseline. No artifact needed.
   if [ "$DRY_RUN" = "1" ]; then
     echo "    [dry-run] $tag  (tag-only, no artifact)"
+    tag_only+=("$tag")
     return 0
   fi
   echo "==> [$pkg_name] creating tag-only $tag at $target_sha"
-  if ! create_release "$tag"; then
+  if create_release "$tag" "Baseline tag at monorepo cutover (shared package; ships via npm)."; then
+    tag_only+=("$tag")
+  else
     failed+=("$tag (gh release create failed)")
   fi
 }
@@ -187,12 +228,10 @@ done
 echo ""
 echo "==> Published (sourced from legacy) ${#published[@]}:"
 for r in "${published[@]:-}"; do [ -n "$r" ] && echo "    $r"; done
-echo "==> Tag-only baselines ${#tag_only[@]}:"
+echo "==> Built from tree ${#built[@]}:"
+for b in "${built[@]:-}"; do [ -n "$b" ] && echo "    $b"; done
+echo "==> Tag-only baselines (shared libs) ${#tag_only[@]}:"
 for t in "${tag_only[@]:-}"; do [ -n "$t" ] && echo "    $t"; done
-if [ "${#warned[@]}" -gt 0 ]; then
-  echo "==> WARNINGS ${#warned[@]}:"
-  for w in "${warned[@]:-}"; do [ -n "$w" ] && echo "    $w"; done
-fi
 echo "==> Skipped ${#skipped[@]}:"
 for s in "${skipped[@]:-}"; do [ -n "$s" ] && echo "    $s"; done
 echo "==> Failed ${#failed[@]}:"
